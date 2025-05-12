@@ -2,6 +2,7 @@ package Entity;
 
 import main.GamePanel;
 import main.KeyHandler;
+import object.SuperObject;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -10,30 +11,43 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class Player extends Entity {
+    public int hashKey = 0;
     //either
 
     GamePanel gp;
     KeyHandler keyH;
+    int hasKey = 0;
 
-  //  public final int screenX;
+    //  public final int screenX;
     //public final int screenY;
 
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
         this.keyH = keyH;
-       // screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
+        // screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         //screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
+        soildArea = new Rectangle();
+        soildArea.x = 8;
+        soildArea.y = 16;
+
+        solidAreaDefaultX  = soildArea.x;
+        solidAreaDefaultY = soildArea.y;
+
+        soildArea.width = 32;
+        soildArea.height = 32;
+
+
         setDaultValues();
         getPlayerImage();
     }
 
     public void setDaultValues() {
 //        worldX = gp.tileSize*23;
-        worldX = 100;
+        x = 100;
 //        worldY = gp.tileSize*21;
-                worldY = 100;
-        x = gp.tileSize * 23;
-        y = gp.tileSize * 21;
+        y = 100;
+//        x = gp.tileSize * 23;
+//        y = gp.tileSize * 21;
         speed = 4;
         direction = "down";
     }
@@ -65,22 +79,62 @@ public class Player extends Entity {
     }
 
     public void update() {
-        if (keyH.upPressed == true || keyH.downPressed == true
-                || keyH.leftPressed == true || keyH.rightPressed == true) {
+
+
+
+        if (keyH.upPressed == true || keyH.downPressed == true || keyH.leftPressed == true || keyH.rightPressed == true) {
 
             if (keyH.upPressed == true) {
                 direction = "up";
-                y -= speed;
+
             } else if (keyH.downPressed == true) {
                 direction = "down";
-                y += speed;
+
             } else if (keyH.leftPressed == true) {
                 direction = "left";
-                x -= speed;
+
             } else if (keyH.rightPressed == true) {
                 direction = "right";
                 x += speed;
             }
+            collisoinOn = false;
+            gp.cChecker.checkTile(this);
+            if(collisoinOn ==false){
+                switch(direction){
+                    case "up":
+                        y -= speed;
+                        break;
+                    case "down":
+                        y += speed;
+                        break;
+                    case "left":
+                        x -= speed;
+                        break;
+                    case "right":
+                        x += speed;
+                        break;
+                }
+            }
+
+
+            spriteCounter++;
+            if (collisoinOn == false){
+                switch (direction) {
+                    case "up":
+                        y -= speed;
+                        break;
+                    case "down":
+                        y += speed;
+                        break;
+                    case "left":
+                        x -= speed;
+                        break;
+                    case "right":
+                        x += speed;
+                        break;
+                }
+            }
+
 
             spriteCounter++;
             if (spriteCounter > 10) {
@@ -96,6 +150,29 @@ public class Player extends Entity {
         }
     }
 
+    public void pickupObject(int i) {
+
+        if (i != 999) {
+        String objectName = gp.obj[i].name;
+        switch (objectName) {
+            case "key":
+                hasKey++;
+                gp.obj[i] = null;
+                System.out.println("You have " + hasKey + " key(s)");
+                break;
+                case "Chest":
+                    break;
+            case "Door":
+                if (hasKey > 0) {
+                    gp.obj[i] = null;
+                    hasKey--;
+                    System.out.println("You have " + hasKey + " key(s)");
+
+                }
+                break;
+        }
+        }
+    }
     public void draw(Graphics2D g2) {
 //            g2.setColor(Color.white);
 ////
@@ -144,8 +221,8 @@ public class Player extends Entity {
                 break;
 
         }
-       // g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
-        g2.drawImage(image, x, y ,gp.tileSize, gp.tileSize, null);
+        // g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+        g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
 
     }
 

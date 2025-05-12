@@ -1,6 +1,8 @@
 package main;
 
 import Entity.Player;
+import main.object.OBJ_Key;
+import main.object.SuperOdject;
 import main.tile.TileManager;
 
 import javax.swing.*;
@@ -9,19 +11,22 @@ import java.awt.*;
 public class GamePanel extends JPanel implements Runnable {
     final int originalTileSize = 16;
     final int scale = 3;
-    public final int tileSize = originalTileSize * scale;
- public    final int maxScreenCol = 16;
- public    final int maxScreenRow = 12;
-   // public  final int screenWidth = tileSize * maxScreenCol;//
-    //public final int screenHeight = tileSize * maxScreenRow;
 
-   // public final int maxWorldCol = 50;
+
+    public final int tileSize = originalTileSize * scale;//48
+    public final int maxScreenCol = 16;
+    public final int maxScreenRow = 12;
+    public final int screenWidth = tileSize * maxScreenCol;//
+    public final int screenHeight = tileSize * maxScreenRow;
+    public OBJ_Key[] obj;
+
+    // public final int maxWorldCol = 50;
 
     //public final int maxWorldRow = 50;
 
     //public  final int worldWidth = tileSize * maxWorldCol;//
 
-    public  final int worldHeight = tileSize * maxWorldRow;//576
+    // public  final int worldHeight = tileSize * maxWorldRow;//576
 
 
     int FPS = 60;
@@ -29,12 +34,31 @@ public class GamePanel extends JPanel implements Runnable {
 
     TileManager tileM = new TileManager(this);
     KeyHandler keyH = new KeyHandler();
+
+    Sound music = new Sound();
+    Sound se = new Sound();
+
     Thread gameThread;
-  public   Player player = new Player(this, keyH);
+
+    public CollisionChecker cChecker = new CollisionChecker(this);
+
+    public AssetSetter aSetter = new AssetSetter(this);
+
+
+    public UI ui = new UI(this);
+
+    public Player player = new Player(this, keyH);
+
+    public SuperOdject odj[] = new SuperOdject[10];
     int playerX = 100;
     int playerY = 100;
-
     int playerSpeed = 4;
+    public int gameState;
+
+    public final int titleState = 0;
+    public final int playState = 1;
+    public final int pauseState = 2;
+    public final int dialogueState = 3;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -42,6 +66,13 @@ public class GamePanel extends JPanel implements Runnable {
         this.setDoubleBuffered(true);
         this.addKeyListener(keyH);
         this.setFocusable(true);
+    }
+
+
+    public void setupGame() {
+        aSetter.setObject();
+        playMusic(1);
+      gameState = titleState;
 
     }
 
@@ -126,10 +157,34 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
-        tileM.draw(g2);
+        if (gameState == titleState){
 
-        player.draw(g2);
+        }else {
+            tileM.draw(g2);
 
+            player.draw(g2);
+        }
+
+
+
+
+    //    ui.draw(g2, messageOn, messageCounter, message);
         g2.dispose();
+    }
+
+
+    public void playMusic(int i) {
+        music.setFile(i);
+        music.play();
+        music.loop();
+    }
+
+    public void stopMusic() {
+        music.stop();
+    }
+
+    public void playSE(int i) {
+        se.setFile(i);
+        se.play();
     }
 }
