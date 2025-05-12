@@ -19,7 +19,7 @@ public class TileManager {
         this.gp = gp;// 初始化GamePanel
 
         tile = new Tile[10];
-        mapTileNum = new int[gp.maxWorldCol][gp.maxScreenRow];
+        mapTileNum = new int[gp.maxScreenCol][gp.maxScreenRow];
 
         getTileImage();
         loadMap("/maps/map01.txt");
@@ -62,11 +62,11 @@ public class TileManager {
             int col = 0;
             int row = 0;
 
-            while (col < gp.maxWorldCol && row < gp.maxWorldRow) {// 循环读取mapTileNum数组
+            while (col < gp.maxScreenCol && row < gp.maxScreenRow) {// 循环读取mapTileNum数组
 
                 String line = br.readLine();// 读取一行字符串
 
-                while (col < gp.maxWorldCol) {// 循环读取一行字符串
+                while (col < gp.maxScreenCol) {// 循环读取一行字符串
 
                     String numbers[] = line.split(" ");// 将字符串数组按照空格分割
 
@@ -76,7 +76,7 @@ public class TileManager {
 
                     col++;
                 }
-                if (col == gp.maxWorldCol) {//  判断是否读取完一行
+                if (col == gp.maxScreenCol) {//  判断是否读取完一行
 
                     col = 0;
                     row++;
@@ -95,38 +95,47 @@ public class TileManager {
 
     public void draw(Graphics2D g2) {//  绘制地图
 
-        int worldCol = 0;//  列
-        int worldRow = 0;//  行
+//        int worldCol = 0;//  列
+//        int worldRow = 0;//  行
 
-        while (worldCol < gp.maxWorldCol && worldRow < gp.maxWorldRow) {// 循环绘制地图
-
-            int tileNum = mapTileNum[worldCol][worldRow];// 获取当前位置的tile编号
-
-            int worldX = worldCol * gp.tileSize;// 计算当前位置的x坐标
-
-            int worldY = worldCol * gp.tileSize;// 计算当前位置的y坐标
-
-            int screenX = worldX - gp.player.worldX + gp.player.screenX;// 计算当前位置的x坐标
-
-            int screenY = worldY - gp.player.worldY + gp.player.screenY; // 计算当前位置的y坐标
+        int col = 0;
+        int row = 0;
+        int x = 0;
+        int y = 0;
 
 
-            if (worldX > gp.player.screenX - gp.player.screenX &&
-                    worldX < gp.player.worldX + gp.player.screenX &&
-                    worldY > gp.player.screenY - gp.player.screenY &&
-                    worldY < gp.player.worldY + gp.player.screenY
+        while (col < gp.maxScreenCol && row < gp.maxScreenRow) {// 循环绘制地图
 
-            ) {
-                g2.drawImage(tile[tileNum].image, screenX, screenY, gp.tileSize, gp.tileSize, null);//  绘制tile
+            int tileNum = mapTileNum[col][row];// 获取当前位置的tile编号
+//
+//            int worldX = worldCol * gp.tileSize;// 计算当前位置的x坐标
+//
+//            int worldY = worldCol * gp.tileSize;// 计算当前位置的y坐标
+//
+//            int screenX = worldX - gp.player.worldX + gp.player.screenX;// 计算当前位置的x坐标
+//
+//            int screenY = worldY - gp.player.worldY + gp.player.screenY; // 计算当前位置的y坐标
+//
 
-            }
-            worldCol++;//  列加1
+            g2.drawImage(tile[tileNum].image, x, y, gp.tileSize, gp.tileSize, null);//  绘制tile
 
-            if (worldCol == gp.maxWorldCol) {////  判断是否绘制完一行
-                worldCol = 0;//  列归零
+//
+//            if (worldX > gp.player.screenX - gp.player.screenX &&
+//                    worldX < gp.player.worldX + gp.player.screenX &&
+//                    worldY > gp.player.screenY - gp.player.screenY &&
+//                    worldY < gp.player.worldY + gp.player.screenY
+//
+//            ) {
+//
+//            }
+            col++;//  列加1
 
-                worldRow++;//  行加1
-
+            x += gp.tileSize;
+            if (col == gp.maxScreenCol) {////  判断是否绘制完一行
+                col = 0;//  列归零
+                x =  0;
+                row++;//  行加1
+      y += gp.tileSize;
             }
         }
     }
