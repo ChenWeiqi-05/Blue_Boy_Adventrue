@@ -17,11 +17,11 @@ public int spriteCounter = 0;
 
 public int spriteNum = 1;
 
-public Rectangle soildArea;
+/*public Rectangle soildArea;
 
 public int solidAreaDefaultX, solidAreaDefaultY;
 public  boolean collisoinOn = false;
 
 
-    public Object soliArea;
+    public Object soliArea;*/
 }

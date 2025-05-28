@@ -10,7 +10,7 @@ public class CollisionChecker {
     }
 
 
-    public void checkTile(Entity entity) {
+  /*  public void checkTile(Entity entity) {
 
         // 检查关键对象是否为空
         if (entity == null || entity.soildArea == null || gp == null) {
@@ -76,7 +76,7 @@ public class CollisionChecker {
 
 
     }
-
+*/
     public int checkObject(Entity entity, boolean player) {
       int index = 999;
      /*     for (int i = 0; i < gp.obj.length; i++) {

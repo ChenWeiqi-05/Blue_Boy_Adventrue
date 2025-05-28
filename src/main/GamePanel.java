@@ -18,6 +18,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int maxScreenRow = 12;
     public final int screenWidth = tileSize * maxScreenCol;//
     public final int screenHeight = tileSize * maxScreenRow;
+
     public OBJ_Key[] obj;
 
     // public final int maxWorldCol = 50;
@@ -45,7 +46,7 @@ public class GamePanel extends JPanel implements Runnable {
     public AssetSetter aSetter = new AssetSetter(this);
 
 
-    public UI ui = new UI(this);
+ //   public UI ui = new UI(this);
 
     public Player player = new Player(this, keyH);
 
@@ -53,7 +54,7 @@ public class GamePanel extends JPanel implements Runnable {
     int playerX = 100;
     int playerY = 100;
     int playerSpeed = 4;
-    public int gameState;
+   // public int gameState;
 
     public final int titleState = 0;
     public final int playState = 1;
@@ -67,12 +68,10 @@ public class GamePanel extends JPanel implements Runnable {
         this.addKeyListener(keyH);
         this.setFocusable(true);
     }
-
-
     public void setupGame() {
         aSetter.setObject();
-        playMusic(1);
-      gameState = titleState;
+      //  playMusic(1);
+   //   gameState = titleState;
 
     }
 
@@ -126,20 +125,33 @@ public class GamePanel extends JPanel implements Runnable {
         double delta = 0;
         long lastTime = System.nanoTime();
         long currentTime;
+
+        long timer = 0;
+        int drawCount = 0;
+
+
         while (gameThread != null) {
             currentTime = System.nanoTime();
             delta += (currentTime - lastTime) / drawInterval;
+            timer += currentTime - lastTime;
             lastTime = currentTime;
             if (delta >= 1) {
                 update();
                 repaint();
                 delta--;
+                drawCount++;
+
+            } if (timer >= 1000000000) {
+                System.out.println("FPS:" + drawCount);
+                drawCount = 0;
+                timer = 0;
             }
 
         }
     }
 
     public void update() {
+
 //        if (keyH.upPressed == true) {
 //            playerY -= playerSpeed;
 //        } else if (keyH.downPressed == true) {
@@ -151,24 +163,34 @@ public class GamePanel extends JPanel implements Runnable {
 //        }
 
         player.update();
+        if (keyH.upPressed == true) {
+            playerY -= playerSpeed;
+        } else if (keyH.downPressed == true) {
+            playerY += playerSpeed;
+        } else if (keyH.leftPressed == true) {
+            playerX -= playerSpeed;
+        } else if (keyH.rightPressed == true) {
+            playerX += playerSpeed;
+        }
     }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
-        if (gameState == titleState){
-
-        }else {
-            tileM.draw(g2);
-
-            player.draw(g2);
-        }
-
+//        if (gameState == titleState){
+//
+//           // ui.draw(g2);
+//        }else {
+//
+//       }
 
 
+        tileM.draw(g2);
 
-    //    ui.draw(g2, messageOn, messageCounter, message);
+        player.draw(g2);
+
+ //ui.draw(g2, messageOn, messageCounter, message);
         g2.dispose();
     }
 

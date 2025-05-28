@@ -13,10 +13,9 @@ import java.io.InputStream;
 public class Player extends Entity {
     public int hashKey = 0;
     //either
-
     GamePanel gp;
     KeyHandler keyH;
-    int hasKey = 0;
+   // int hasKey = 0;
 
     //  public final int screenX;
     //public final int screenY;
@@ -26,7 +25,7 @@ public class Player extends Entity {
         this.keyH = keyH;
         // screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         //screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
-        soildArea = new Rectangle();
+     /*   soildArea = new Rectangle();
         soildArea.x = 8;
         soildArea.y = 16;
 
@@ -35,11 +34,11 @@ public class Player extends Entity {
 
         soildArea.width = 32;
         soildArea.height = 32;
-
+*/
 
         setDaultValues();
         getPlayerImage();
-    }
+    }//
 
     public void setDaultValues() {
 //        worldX = gp.tileSize*23;
@@ -80,61 +79,27 @@ public class Player extends Entity {
 
     public void update() {
 
-
-
-        if (keyH.upPressed == true || keyH.downPressed == true || keyH.leftPressed == true || keyH.rightPressed == true) {
+        if (keyH.upPressed == true || keyH.downPressed == true ||
+                keyH.leftPressed == true || keyH.rightPressed == true) {
 
             if (keyH.upPressed == true) {
                 direction = "up";
+                System.out.println("向上");
 
+                y -= speed; // 添加向上移动的逻辑
             } else if (keyH.downPressed == true) {
                 direction = "down";
-
+                System.out.println("向下");
+                y += speed; // 添加向下移动的逻辑
             } else if (keyH.leftPressed == true) {
                 direction = "left";
-
+                System.out.println("向左");
+                x -= speed; // 添加向左移动的逻辑
             } else if (keyH.rightPressed == true) {
                 direction = "right";
+                System.out.println("向右");
                 x += speed;
             }
-            collisoinOn = false;
-            gp.cChecker.checkTile(this);
-            if(collisoinOn ==false){
-                switch(direction){
-                    case "up":
-                        y -= speed;
-                        break;
-                    case "down":
-                        y += speed;
-                        break;
-                    case "left":
-                        x -= speed;
-                        break;
-                    case "right":
-                        x += speed;
-                        break;
-                }
-            }
-
-
-            spriteCounter++;
-            if (collisoinOn == false){
-                switch (direction) {
-                    case "up":
-                        y -= speed;
-                        break;
-                    case "down":
-                        y += speed;
-                        break;
-                    case "left":
-                        x -= speed;
-                        break;
-                    case "right":
-                        x += speed;
-                        break;
-                }
-            }
-
 
             spriteCounter++;
             if (spriteCounter > 10) {
@@ -144,13 +109,10 @@ public class Player extends Entity {
                     spriteNum = 1;
                 }
                 spriteCounter = 0;
-
             }
-
         }
     }
-
-    public void pickupObject(int i) {
+/*    public void pickupObject(int i) {
 
         if (i != 999) {
         String objectName = gp.obj[i].name;
@@ -172,7 +134,7 @@ public class Player extends Entity {
                 break;
         }
         }
-    }
+    }*/
     public void draw(Graphics2D g2) {
 //            g2.setColor(Color.white);
 ////
