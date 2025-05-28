@@ -3,7 +3,7 @@ package main;
 import Entity.Player;
 import main.object.OBJ_Key;
 import main.object.SuperOdject;
-import main.tile.TileManager;
+import tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,6 +20,8 @@ public class GamePanel extends JPanel implements Runnable {
     public final int screenHeight = tileSize * maxScreenRow;
 
     public OBJ_Key[] obj;
+    public int maxWorldCol =50;
+    public int maxWorldRow = 50;
 
     // public final int maxWorldCol = 50;
 
@@ -41,6 +43,9 @@ public class GamePanel extends JPanel implements Runnable {
 
     Thread gameThread;
 
+    public Player player = new Player(this, keyH);
+
+
     public CollisionChecker cChecker = new CollisionChecker(this);
 
     public AssetSetter aSetter = new AssetSetter(this);
@@ -48,7 +53,6 @@ public class GamePanel extends JPanel implements Runnable {
 
  //   public UI ui = new UI(this);
 
-    public Player player = new Player(this, keyH);
 
     public SuperOdject odj[] = new SuperOdject[10];
     int playerX = 100;
@@ -56,10 +60,10 @@ public class GamePanel extends JPanel implements Runnable {
     int playerSpeed = 4;
    // public int gameState;
 
-    public final int titleState = 0;
+/*    public final int titleState = 0;
     public final int playState = 1;
     public final int pauseState = 2;
-    public final int dialogueState = 3;
+    public final int dialogueState = 3;*/
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -152,15 +156,15 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void update() {
 
-//        if (keyH.upPressed == true) {
-//            playerY -= playerSpeed;
-//        } else if (keyH.downPressed == true) {
-//            playerY += playerSpeed;
-//        } else if (keyH.leftPressed == true) {
-//            playerX -= playerSpeed;
-//        } else if (keyH.rightPressed == true) {
-//            playerX += playerSpeed;
-//        }
+      if (keyH.upPressed == true) {//移动
+            playerY -= playerSpeed;
+        } else if (keyH.downPressed == true) {
+            playerY += playerSpeed;
+        } else if (keyH.leftPressed == true) {
+            playerX -= playerSpeed;
+        } else if (keyH.rightPressed == true) {
+            playerX += playerSpeed;
+        }
 
         player.update();
         if (keyH.upPressed == true) {

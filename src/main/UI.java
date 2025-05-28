@@ -47,7 +47,7 @@ public class UI {
             drawTitleScreen(commandNum);
 
         }*/
-        g2.drawString("x= " + gp.player.hashKey, 74, 65);
+     //   g2.drawString("x= " + gp.pl, 74, 65);
 
         boolean messageOn = false;
         if (messageOn == true) {

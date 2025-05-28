@@ -18,8 +18,8 @@ public int solidAreaDefaultX = 0;
 public int solidAreaDefaultY = 0;
 public void draw(Graphics2D g2,  GamePanel gp)
 {
-	int screenX = worldX - gp.player.x + gp.player.x;
-	int screenY= worldY - gp.player.y + gp.player.y;
+	int screenX = worldX - gp.player.worldX + gp.player.worldX;
+	int screenY= worldY - gp.player.worldY + gp.player.worldY;
 
 
 
