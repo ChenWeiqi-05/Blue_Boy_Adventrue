@@ -1,7 +1,7 @@
 package tile;
 
 import main.GamePanel;
-import main.tile.Tile;
+
 
 import javax.imageio.ImageIO;
 import java.awt.*;

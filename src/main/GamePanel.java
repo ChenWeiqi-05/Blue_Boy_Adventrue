@@ -1,8 +1,7 @@
 package main;
 
 import Entity.Player;
-import main.object.OBJ_Key;
-import main.object.SuperOdject;
+import object.SuperObject;
 import tile.TileManager;
 
 import javax.swing.*;
@@ -19,8 +18,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int screenWidth = tileSize * maxScreenCol;//
     public final int screenHeight = tileSize * maxScreenRow;
 
-    public OBJ_Key[] obj;
-    public int maxWorldCol =50;
+    public int maxWorldCol = 50;
     public int maxWorldRow = 50;
 
     // public final int maxWorldCol = 50;
@@ -30,36 +28,27 @@ public class GamePanel extends JPanel implements Runnable {
     //public  final int worldWidth = tileSize * maxWorldCol;//
 
     // public  final int worldHeight = tileSize * maxWorldRow;//576
-
-
     int FPS = 60;
-
-
     TileManager tileM = new TileManager(this);
-    KeyHandler keyH = new KeyHandler();
+   KeyHandler keyH = new KeyHandler();
 
-    Sound music = new Sound();
-    Sound se = new Sound();
+//    Sound music = new Sound();
+//    Sound se = new Sound();
 
     Thread gameThread;
-
-    public Player player = new Player(this, keyH);
-
-
     public CollisionChecker cChecker = new CollisionChecker(this);
 
     public AssetSetter aSetter = new AssetSetter(this);
 
+    public Player player = new Player(this, keyH);
 
- //   public UI ui = new UI(this);
+    public SuperObject obj[] = new SuperObject[10];//
 
-
-    public SuperOdject odj[] = new SuperOdject[10];
+    //   public UI ui = new UI(this);
     int playerX = 100;
     int playerY = 100;
     int playerSpeed = 4;
-   // public int gameState;
-
+    // public int gameState;
 /*    public final int titleState = 0;
     public final int playState = 1;
     public final int pauseState = 2;
@@ -72,10 +61,11 @@ public class GamePanel extends JPanel implements Runnable {
         this.addKeyListener(keyH);
         this.setFocusable(true);
     }
+
     public void setupGame() {
         aSetter.setObject();
-      //  playMusic(1);
-   //   gameState = titleState;
+        // playMusic(1);
+        // gameState = titleState;
 
     }
 
@@ -145,7 +135,8 @@ public class GamePanel extends JPanel implements Runnable {
                 delta--;
                 drawCount++;
 
-            } if (timer >= 1000000000) {
+            }
+            if (timer >= 1000000000) {
                 System.out.println("FPS:" + drawCount);
                 drawCount = 0;
                 timer = 0;
@@ -156,7 +147,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void update() {
 
-      if (keyH.upPressed == true) {//移动
+        if (keyH.upPressed == true) {//移动
             playerY -= playerSpeed;
         } else if (keyH.downPressed == true) {
             playerY += playerSpeed;
@@ -181,36 +172,37 @@ public class GamePanel extends JPanel implements Runnable {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-
+        tileM.draw(g2);
 //        if (gameState == titleState){
 //
 //           // ui.draw(g2);
 //        }else {
 //
 //       }
-
-
-        tileM.draw(g2);
-
+        for (int i = 0; i < obj.length; i++) {
+            if (obj[i] != null) {
+                obj[i].draw(g2, this);
+            }
+        }
         player.draw(g2);
 
- //ui.draw(g2, messageOn, messageCounter, message);
+        //ui.draw(g2, messageOn, messageCounter, message);
         g2.dispose();
     }
 
 
     public void playMusic(int i) {
-        music.setFile(i);
+       /* music.setFile(i);
         music.play();
-        music.loop();
+        music.loop();*/
     }
 
-    public void stopMusic() {
-        music.stop();
+    /*public void stopMusic() {
+      music.stop();
     }
-
+*/
     public void playSE(int i) {
-        se.setFile(i);
-        se.play();
+      /*  se.setFile(i);
+        se.play();*/
     }
 }

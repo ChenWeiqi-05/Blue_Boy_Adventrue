@@ -9,9 +9,8 @@ public class OBJ_Key extends SuperObject{
     public OBJ_Key()
     {
         name = "Key";
-
-      /*  try {
-         image = ImageIO.read(getClass().getResourceAsStream("/object/key.png"));
+        try {
+         image = ImageIO.read(getClass().getResourceAsStream("/objects/key.png"));
 //            InputStream is = getClass().getResourceAsStream("/object/key.png");
 //            if (is == null) {
 //                throw new IllegalArgumentException("Resource not found: /object/key.png");
@@ -20,8 +19,8 @@ public class OBJ_Key extends SuperObject{
 
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
+        collision = true;
+
     }
-
-
 }
