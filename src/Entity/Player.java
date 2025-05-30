@@ -143,12 +143,12 @@ public class Player extends Entity {
             String objectName = gp.obj[i].name ;
 
             switch (objectName){
-                case "Key":
+                case "Key"://注意此处单词首字母要大写！！！
                     hasKey++;
                     gp.obj[i]=null;
                     System.out.println("key：" +hasKey);
                     break;
-                case "Door":
+                case "Door"://注意此处单词首字母要大写！！！
                     if (hasKey >0){
                         gp.obj[i] = null;
                         hasKey--;
