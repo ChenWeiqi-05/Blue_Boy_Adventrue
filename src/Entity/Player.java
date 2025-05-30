@@ -16,7 +16,7 @@ public class Player extends Entity {
 
     public final int screenX;
     public final int screenY;
-    int hasKey = 0;
+    public int hasKey = 0;
 
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -144,18 +144,36 @@ public class Player extends Entity {
 
             switch (objectName){
                 case "Key"://注意此处单词首字母要大写！！！
+                    gp.playSE(1);
                     hasKey++;
                     gp.obj[i]=null;
                     System.out.println("key：" +hasKey);
+                    gp.ui.showMessage("You got "+hasKey+" key!"+"also have "+ (3 - hasKey)+ " key,should be found");
                     break;
                 case "Door"://注意此处单词首字母要大写！！！
+                    gp.playSE(3);
                     if (hasKey >0){
                         gp.obj[i] = null;
                         hasKey--;
 
+                           gp.ui.showMessage("You open a door! ");
+
+                    }else {
+                        gp.ui.showMessage("You need a key!");
                     }
                     System.out.println("key：" +hasKey);
                     break;
+                case "Boots":
+                    gp.playSE(1);
+                    speed +=2;
+                    gp.obj[i] = null;
+                    gp.ui.showMessage("speed up！!GoGoGo！！");
+                    break;
+                    case "Chest":
+                        gp.ui.gameFinish = true;
+                        gp.stopMusic();
+                        gp.playSE(4);
+                        break;
             }
         }
         }
@@ -189,6 +207,7 @@ public class Player extends Entity {
 //            g2.setColor(Color.white);
 ////
 //  g2.fillRect(x, y, gp.tileSize, gp.tileSize);
+
         BufferedImage image = null;
         switch (direction) {
             case "up":
