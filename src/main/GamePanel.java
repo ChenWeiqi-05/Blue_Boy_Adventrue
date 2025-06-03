@@ -1,9 +1,12 @@
 package main;
+
 import Entity.Player;
 import object.SuperObject;
 import tile.TileManager;
+
 import javax.swing.*;
 import java.awt.*;
+
 public class GamePanel extends JPanel implements Runnable {
     final int originalTileSize = 16;
     final int scale = 3;
@@ -20,7 +23,7 @@ public class GamePanel extends JPanel implements Runnable {
     // public  final int worldHeight = tileSize * maxWorldRow;//576
     int FPS = 60;
     TileManager tileM = new TileManager(this);
-    KeyHandler keyH = new KeyHandler();
+    KeyHandler keyH = new KeyHandler(this);//这条代码用来设置键盘监听
     Sound music = new Sound();
     Sound se = new Sound();
     Thread gameThread;
@@ -32,11 +35,12 @@ public class GamePanel extends JPanel implements Runnable {
     int playerX = 100;
     int playerY = 100;
     int playerSpeed = 4;
-    // public int gameState;
-/*    public final int titleState = 0;
+    public int gameState;
+    //public final int titleState = 0;
     public final int playState = 1;
     public final int pauseState = 2;
-    public final int dialogueState = 3;*/
+
+    //   public final int dialogueState = 3;
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.black);
@@ -48,13 +52,14 @@ public class GamePanel extends JPanel implements Runnable {
     public void setupGame() {
         aSetter.setObject();
         playMusic(0);
-        // gameState = titleState;
+        gameState = playState;//游戏状态的设置
     }
 
     public void startGameThread() {
         gameThread = new Thread(this);
         gameThread.start();
     }
+
     /*  @Override
   public void run() {
 //GameLoop
@@ -94,7 +99,6 @@ public class GamePanel extends JPanel implements Runnable {
 
     }*/
     public void run() {
-
         double drawInterval = 1000000000 / FPS;
         double delta = 0;
         long lastTime = System.nanoTime();
@@ -102,8 +106,6 @@ public class GamePanel extends JPanel implements Runnable {
 
         long timer = 0;
         int drawCount = 0;
-
-
         while (gameThread != null) {
             currentTime = System.nanoTime();
             delta += (currentTime - lastTime) / drawInterval;
@@ -114,7 +116,6 @@ public class GamePanel extends JPanel implements Runnable {
                 repaint();
                 delta--;
                 drawCount++;
-
             }
             if (timer >= 1000000000) {
                 System.out.println("FPS:" + drawCount);
@@ -126,7 +127,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
-        if (keyH.upPressed == true) {//移动
+   /*     if (keyH.upPressed == true) {//移动
             playerY -= playerSpeed;
         } else if (keyH.downPressed == true) {
             playerY += playerSpeed;
@@ -135,7 +136,12 @@ public class GamePanel extends JPanel implements Runnable {
         } else if (keyH.rightPressed == true) {
             playerX += playerSpeed;
         }
-        player.update();
+        if (gameState == playState) {
+            player.update();
+        }
+        if (gameState == pauseState) {
+            player.update();
+        }
         if (keyH.upPressed == true) {
             playerY -= playerSpeed;
         } else if (keyH.downPressed == true) {
@@ -144,6 +150,12 @@ public class GamePanel extends JPanel implements Runnable {
             playerX -= playerSpeed;
         } else if (keyH.rightPressed == true) {
             playerX += playerSpeed;
+        }
+*/
+        if (gameState == playState) {//如果游戏状态为游戏状态，则执行下面的代码
+            player.update();
+        }
+        if (gameState == pauseState){//如果
         }
     }
 

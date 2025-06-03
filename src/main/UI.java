@@ -12,13 +12,13 @@ public class UI {
     BufferedImage keyImage;
     public GamePanel gp;
     Font arial_40;
-    private Graphics2D g2;
+    Graphics2D g2;
 
     public boolean messageOn = false;
 
-    double playTime ;
+    double playTime;
 
-    DecimalFormat  dFormat = new DecimalFormat("#0.00");
+    DecimalFormat dFormat = new DecimalFormat("#0.00");
 
     public String message = "";
     public int titleScreenState = 0;
@@ -42,7 +42,7 @@ public class UI {
     }
 
     public void draw(Graphics2D g2) {
-        if (gameFinish == true) {
+       /* if (gameFinish == true) {
             g2.setFont(arial_40);
             g2.setColor(Color.white);
             String text;
@@ -77,12 +77,12 @@ public class UI {
             // BufferedImage keyImage = null;
             g2.drawImage(keyImage, gp.tileSize / 2, gp.tileSize / 2, gp.tileSize, gp.tileSize, null);
             g2.drawString("x = " + gp.player.hasKey, 74, 65);
-        /*if (gp.gameState == gp.titleState) {
+        *//*if (gp.gameState == gp.titleState) {
 
             int commandNum = 0;
             drawTitleScreen(commandNum);
 
-        }*/
+        }*//*
 
             playTime += (double)1/60;
             g2.drawString("Time: " + dFormat.format(playTime), gp.tileSize*11, 64);
@@ -101,6 +101,16 @@ public class UI {
                 }
             }
 
+        }*/
+        this.g2 = g2;
+        g2.setFont(arial_40);
+        g2.setColor(Color.white);
+
+        if (gp.gameState == gp.playState) {
+
+        }
+        if (gp.gameState == gp.pauseState) {
+            drawPauseScreen();
         }
 
     }
@@ -196,9 +206,23 @@ public class UI {
         }
     }
 
-    private int getXforCenteredText(String text) {
 
-        return 0;
+    public void drawPauseScreen() {
 
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN,  80F));
+        String text = "PAUSED";
+        int x = getXforCenteredText(text);
+        int y = gp.screenHeight / 2;
+
+        g2.drawString(text, x, y);
+    }
+
+    public int getXforCenteredText(String text) {
+
+        int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
+        int x = gp.screenWidth / 2 - length / 2;
+
+        return x;
     }
 }

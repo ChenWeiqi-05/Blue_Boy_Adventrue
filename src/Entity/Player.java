@@ -10,14 +10,14 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class Player extends Entity {
-   // public int hashKey = 0;
+    // public int hashKey = 0;
     //either
     GamePanel gp;
     KeyHandler keyH;
 
     public final int screenX;
     public final int screenY;
-    public int hasKey = 0;
+   // public int hasKey = 0;
 
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -128,7 +128,7 @@ public class Player extends Entity {
                         worldX -= speed;
                         break;
                     case "right":
-                       // System.out.println("向右碰撞");
+                        // System.out.println("向右碰撞");
                         worldX += speed;
                         break;
                 }
@@ -150,7 +150,7 @@ public class Player extends Entity {
 
     public void pickUpObject(int i) {//这个方法可改变捡起道具后的数值属性
 
-        if (i != 999) {//999代表没有物体，并且0代表没有物体
+        if (i != 999) {/*//999代表没有物体，并且0代表没有物体
          //   gp.obj[i].name = null;
             String objectName = gp.obj[i].name ;
 
@@ -186,35 +186,34 @@ public class Player extends Entity {
                         gp.stopMusic();
                         gp.playSE(4);
                         break;
-            }
+            }*/
         }
-        }
+    }
 
 
+    /*    public void pickupObject(int i) {
 
-   /*    public void pickupObject(int i) {
+             if (i != 999) {
+             String objectName = gp.obj[i].name;
+             switch (objectName) {
+                 case "key":
+                     hasKey++;
+                     gp.obj[i] = null;
+                     System.out.println("You have " + hasKey + " key(s)");
+                     break;
+                     case "Chest":
+                         break;
+                 case "Door":
+                     if (hasKey > 0) {
+                         gp.obj[i] = null;
+                         hasKey--;
+                         System.out.println("You have " + hasKey + " key(s)");
 
-            if (i != 999) {
-            String objectName = gp.obj[i].name;
-            switch (objectName) {
-                case "key":
-                    hasKey++;
-                    gp.obj[i] = null;
-                    System.out.println("You have " + hasKey + " key(s)");
-                    break;
-                    case "Chest":
-                        break;
-                case "Door":
-                    if (hasKey > 0) {
-                        gp.obj[i] = null;
-                        hasKey--;
-                        System.out.println("You have " + hasKey + " key(s)");
-
-                    }
-                    break;
-            }
-            }
-        }*/
+                     }
+                     break;
+             }
+             }
+         }*/
     public void draw(Graphics2D g2) {
 //            g2.setColor(Color.white);
 ////
