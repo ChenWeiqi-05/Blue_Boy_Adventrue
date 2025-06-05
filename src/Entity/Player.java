@@ -12,22 +12,20 @@ import java.io.IOException;
 public class Player extends Entity {
     // public int hashKey = 0;
     //either
-    GamePanel gp;
-    KeyHandler keyH;
 
+    KeyHandler keyH;
     public final int screenX;
     public final int screenY;
-   // public int hasKey = 0;
+    // public int hasKey = 0;
 
     public Player(GamePanel gp, KeyHandler keyH) {
-        this.gp = gp;
+        super(gp);
         this.keyH = keyH;
         screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
         solidArea = new Rectangle();
         solidArea.x = 8;
         solidArea.y = 16;
-
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
 
@@ -49,14 +47,14 @@ public class Player extends Entity {
     }
 
     public void getPlayerImage() {
-        up1 = setup("boy_up_1");
-        up2 = setup("boy_up_2");
-        down1 = setup("boy_down_1");
-        down2 = setup("boy_down_2");
-        left1 = setup("boy_left_1");
-        left2 = setup("boy_left_2");
-        right1 = setup("boy_right_1");
-        right2 = setup("boy_right_2");
+        up1 = setup("/player/boy_up_1");
+        up2 = setup("/player/boy_up_2");
+        down1 = setup("/player/boy_down_1");
+        down2 = setup("/player/boy_down_2");
+        left1 = setup("/player/boy_left_1");
+        left2 = setup("/player/boy_left_2");
+        right1 = setup("/player/boy_right_1");
+        right2 = setup("/player/boy_right_2");
 
     }
 
@@ -75,7 +73,7 @@ public class Player extends Entity {
 
         try {
 
-            image = ImageIO.read(getClass().getResourceAsStream("/player/" + imageName + ".png"));
+            image = ImageIO.read(getClass().getResourceAsStream(imageName + ".png"));
             image = uTool.scaleImage(image, gp.tileSize, gp.tileSize);//这段代码是用来获取图片的，并且缩放到指定的大小。
 
         } catch (IOException e) {
@@ -106,12 +104,15 @@ public class Player extends Entity {
                 System.out.println("向右");
                 //worldX += speed;
             }
-
+            //这段代码用来检测obj是否发生碰撞
             collisionOn = false;
             gp.cChecker.checkTile(this);
+            //这段代码用于检测obj是否发生碰撞
             int objIndex = gp.cChecker.checkObject(this, true);
             pickUpObject(objIndex);
 
+            int npcIndex = gp.cChecker.checkEntity(this, gp.npc);
+            interactNPC(npcIndex);
 
             if (collisionOn == false) {
                 switch (direction) {
@@ -133,9 +134,7 @@ public class Player extends Entity {
                         break;
                 }
             }
-
-
-            gp.cChecker.checkTile(this);
+            //  gp.cChecker.checkTile(this);
             spriteCounter++;
             if (spriteCounter > 12) {
                 if (spriteNum == 1) {
@@ -148,9 +147,11 @@ public class Player extends Entity {
         }
     }
 
+
     public void pickUpObject(int i) {//这个方法可改变捡起道具后的数值属性
 
-        if (i != 999) {/*//999代表没有物体，并且0代表没有物体
+        if (i != 999) {//一下文本注释为寻宝小游戏的拾起逻辑的代码
+            /*//999代表没有物体，并且0代表没有物体
          //   gp.obj[i].name = null;
             String objectName = gp.obj[i].name ;
 
@@ -187,10 +188,21 @@ public class Player extends Entity {
                         gp.playSE(4);
                         break;
             }*/
+
         }
     }
 
-
+    public void interactNPC(int i) {
+        if (i != 999) {
+            //这段代码enter  键被按下时，会触发npc的speak方法，并进入对话状态。
+            if (gp.keyH.enterPressed == true){
+            System.out.println("you are hitting an npc");
+            gp.gameState = gp.dialogueState;
+            gp.npc[i].speak();
+            }
+        }
+        gp.keyH.enterPressed = false;//这段代码
+    }
     /*    public void pickupObject(int i) {
 
              if (i != 999) {

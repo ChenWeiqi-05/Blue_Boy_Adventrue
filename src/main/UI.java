@@ -1,9 +1,9 @@
 package main;
 
-import object.OBJ_Key;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 
 public class UI {
@@ -11,7 +11,7 @@ public class UI {
     public boolean gameFinish = false;
     BufferedImage keyImage;
     public GamePanel gp;
-    Font arial_40;
+    Font maruMonica, cambriaz;
     Graphics2D g2;
 
     public boolean messageOn = false;
@@ -19,22 +19,33 @@ public class UI {
     double playTime;
 
     DecimalFormat dFormat = new DecimalFormat("#0.00");
+   // 我们已经不再需要这个时间计算器了
+
 
     public String message = "";
+
+    public int messageCounter;
+    public String currentDialogue = "";
+
+    public int commandNum = 0;
+
     public int titleScreenState = 0;
-    private int messageCounter;
+
 
     public UI(GamePanel gp) {
         this.gp = gp;
+        // cambriaz = new Font("Cambria", Font.PLAIN, 40);
+        try {
+            InputStream is = getClass().getResourceAsStream("/font/x12y16pxZorque.ttf");
+            maruMonica = Font.createFont(Font.TRUETYPE_FONT, is);
+        } catch (FontFormatException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
 
-        arial_40 = new Font("Arial", Font.PLAIN, 40);
-
-        OBJ_Key key = new OBJ_Key(gp);
-
-        keyImage = key.image;
-
-
+        }
     }
+
 
     public void showMessage(String text) {
         message = text;
@@ -42,7 +53,9 @@ public class UI {
     }
 
     public void draw(Graphics2D g2) {
-       /* if (gameFinish == true) {
+       /*
+       //*******这里是寻宝游戏的界面*********
+       if (gameFinish == true) {
             g2.setFont(arial_40);
             g2.setColor(Color.white);
             String text;
@@ -100,51 +113,97 @@ public class UI {
                     messageOn = false;
                 }
             }
-
+//*******这里是寻宝游戏的界面*********
         }*/
         this.g2 = g2;
-        g2.setFont(arial_40);
+        g2.setFont(maruMonica);
+        //g2.setFont(cambriaz);//这里可以设置字体
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.setColor(Color.white);
 
+        if (gp.gameState == gp.titleState) {
+            //gp.playMusic(0);！！！把这个方法放在这里音乐会非常cool
+            drawTitleScreen();
+
+        }
         if (gp.gameState == gp.playState) {
 
         }
         if (gp.gameState == gp.pauseState) {
             drawPauseScreen();
+            System.out.println("draw pause screen");
+        }
+        if (gp.gameState == gp.dialogueState) {
+            drawDialogueScreen();
+            System.out.println("draw dialogue screen");
+        }
+    }
+
+    public void drawDialogueScreen() {
+        //  DIALOGUE WINDOW
+        System.out.println("call draw dialogue screen command");
+        int x = gp.tileSize / 2;
+        int y = gp.tileSize / 2;
+        int width = gp.screenWidth - (gp.tileSize * 2);
+        int height = gp.tileSize * 4;
+        drawSubWindow(x, y, width, height);//绘制对话框
+
+        //DRAW DIALOGUE TEXT
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        x += gp.tileSize;
+        y += gp.tileSize + 10;
+
+        for (String line : currentDialogue.split("\n")) {//遍历文本
+            g2.drawString(line, x, y);
+            y += 40;
+
         }
 
     }
 
-    public void drawTitleScreen(int commandNum) {
+    public void drawSubWindow(int x, int y, int width, int height) {//绘制
+
+        Color c = new Color(0, 0, 0, 210);
+        g2.setColor(c);
+        g2.fillRoundRect(x, y, width, height, 35, 35);//绘制对话框
+
+        //设置对话边框
+        c = new Color(255, 255, 255);
+        g2.setColor(c);
+        g2.setStroke(new BasicStroke(5));
+        g2.drawRoundRect(x + 5, y + 5, width - 10, height - 10, 25, 25);
+
+
+    }
+
+    public void drawTitleScreen() {
 
         if (titleScreenState == 0) {
+
             g2.setColor(new Color(0, 0, 0));
-
             g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 96F));
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 86F));
+            String text = "Weiqi Adventure";
 
-            String text = "Adventure Game";
 
             int x = getXforCenteredText(text);
             int y = gp.tileSize * 3;
 
             g2.setColor(Color.gray);
             g2.drawString(text, x + 5, y + 5);
-
-
+            //MAIN COLOR
             g2.setColor(Color.white);
             g2.drawString(text, x, y);
 
-            x = gp.screenWidth / 2;
+            x = gp.screenWidth / 2 - (gp.tileSize * 2) / 2;
             y += gp.tileSize * 2;
 
             g2.drawImage(gp.player.down1, x, y, gp.tileSize * 2, gp.tileSize * 2, null);
-            //menu
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
-
+//  COMMAND
             text = "NEW GAME";
             x = getXforCenteredText(text);
-            y += gp.tileSize * 3.5;
+            y += gp.tileSize * 3;
             g2.drawString(text, x, y);
             if (commandNum == 0) {
                 g2.drawString(">", x - gp.tileSize, y);
@@ -163,42 +222,40 @@ public class UI {
             if (commandNum == 2) {
                 g2.drawString(">", x - gp.tileSize, y);
             }
-            text = "NEW GAME";
-            x = getXforCenteredText(text);
-            y += gp.tileSize * 4;
-            g2.drawString(text, x, y);
-            if (commandNum == 3) {
-                g2.drawString(">", x - gp.tileSize, y);
-            }
         } else if (titleScreenState == 1) {
-
+//*************TITLE_SCREEN_2****************
             g2.setColor(Color.white);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
-            String text = "请选择你的角色!";
+            g2.setFont(g2.getFont().deriveFont(48F));
+
+            String text = "Select you job!!!";
             int x = getXforCenteredText(text);
             int y = gp.tileSize * 3;
             g2.drawString(text, x, y);
 
-            text = "近卫";
-            y += gp.tileSize;
-            g2.drawString(text, x, y);
-            if (commandNum == 0) {
-                g2.drawString(">", x - gp.tileSize, y);
-            }
-            text = "法师";
-            y += gp.tileSize * 3;
+            text = "Fighter";
+             x = getXforCenteredText(text);
+             y += gp.tileSize * 3;
+             g2.drawString(text, x, y);
+             if (commandNum == 0) {
+                 g2.drawString(">", x - gp.tileSize, y);
+             }
+            text = "Thief";
+            x = getXforCenteredText(text);
+            y += gp.tileSize ;
             g2.drawString(text, x, y);
             if (commandNum == 1) {
                 g2.drawString(">", x - gp.tileSize, y);
             }
-            text = "医疗";
+            text = "Sorcerer";
+            x = getXforCenteredText(text);
             y += gp.tileSize;
             g2.drawString(text, x, y);
             if (commandNum == 2) {
                 g2.drawString(">", x - gp.tileSize, y);
             }
-            text = "特种";
-            y += gp.tileSize * 2;
+            text = "Back";
+            x = getXforCenteredText(text);
+            y += gp.tileSize*2;
             g2.drawString(text, x, y);
             if (commandNum == 3) {
                 g2.drawString(">", x - gp.tileSize, y);
@@ -206,16 +263,16 @@ public class UI {
         }
     }
 
-
+    //*************TITLE_SCREEN_2****************
     public void drawPauseScreen() {
 
-
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN,  80F));
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 80F));
         String text = "PAUSED";
         int x = getXforCenteredText(text);
         int y = gp.screenHeight / 2;
-
+        g2.setColor(Color.white);
         g2.drawString(text, x, y);
+
     }
 
     public int getXforCenteredText(String text) {

@@ -1,6 +1,7 @@
 package main;
 
 
+import Entity.NPC_OldMan;
 import object.OBJ_Boots;
 import object.OBJ_Chest;
 import object.OBJ_Door;
@@ -41,5 +42,9 @@ public class AssetSetter {
         gp.obj[7].worldY = 42 * gp.tileSize;*/
 
     }
-
+public void setNPC() {
+    gp.npc[0] = new NPC_OldMan(gp);
+    gp.npc[0].worldX =  gp.tileSize*21 ;//npc的在世界的x位置
+    gp.npc[0].worldY =  gp.tileSize*21 ;//npc的在世界的y位置
+}
 }
