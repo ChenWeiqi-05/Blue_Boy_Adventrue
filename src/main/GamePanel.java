@@ -26,14 +26,17 @@ public class GamePanel extends JPanel implements Runnable {
     public KeyHandler keyH = new KeyHandler(this);//这条代码用来设置键盘监听
     Sound music = new Sound();
     Sound se = new Sound();
-    Thread gameThread;
     public CollisionChecker cChecker = new CollisionChecker(this);
     public AssetSetter aSetter = new AssetSetter(this);
+    public UI ui = new UI(this);
+
+    public EventHandler eHandler = new EventHandler(this);
+
+    Thread gameThread;
     public Player player = new Player(this, keyH);
     public SuperObject obj[] = new SuperObject[10];//
 
     public Entity npc[] = new Entity[10];
-    public UI ui = new UI(this);
     int playerX = 100;
     int playerY = 100;
     int playerSpeed = 4;
@@ -42,6 +45,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int playState = 1;
     public final int pauseState = 2;
     public final int dialogueState = 3;
+    public final int gameOverState = 4;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -138,7 +142,7 @@ public class GamePanel extends JPanel implements Runnable {
             }
             //绘制玩家
             player.draw(g2);
-            //ui.draw(g2);
+            ui.draw(g2);//注意，不要注释前面的代码
 
 
         } else if (gameState == dialogueState) {

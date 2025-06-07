@@ -33,7 +33,7 @@ public class Player extends Entity {
         solidArea.height = 32;
         setDaultValues();
         getPlayerImage();
-    }//
+    }
 
     public void setDaultValues() {
         worldX = gp.tileSize * 23;
@@ -44,6 +44,10 @@ public class Player extends Entity {
 //        y = gp.tileSize * 21;
         speed = 4;
         direction = "down";
+// PLAYER STATUS
+        maxLife = 6;
+        life = maxLife;
+
     }
 
     public void getPlayerImage() {
@@ -114,6 +118,11 @@ public class Player extends Entity {
             int npcIndex = gp.cChecker.checkEntity(this, gp.npc);
             interactNPC(npcIndex);
 
+            //  CHECK COLLISION
+
+            gp.eHandler.checkEvent();
+            gp.keyH.enterPressed = false;//这段代码
+
             if (collisionOn == false) {
                 switch (direction) {
                     case "up":
@@ -123,6 +132,7 @@ public class Player extends Entity {
                     case "down":
                         //System.out.println("向下碰撞");
                         worldY += speed;
+                        gp.player.life -= 2;
                         break;
                     case "left":
                         //System.out.println("向左碰撞");
@@ -146,7 +156,6 @@ public class Player extends Entity {
             }
         }
     }
-
 
     public void pickUpObject(int i) {//这个方法可改变捡起道具后的数值属性
 
@@ -192,17 +201,19 @@ public class Player extends Entity {
         }
     }
 
-    public void interactNPC(int i) {
+    public void interactNPC(int i) {//这个方法可改变与npc的交互逻辑
         if (i != 999) {
+
             //这段代码enter  键被按下时，会触发npc的speak方法，并进入对话状态。
-            if (gp.keyH.enterPressed == true){
-            System.out.println("you are hitting an npc");
-            gp.gameState = gp.dialogueState;
-            gp.npc[i].speak();
+            if (gp.keyH.enterPressed == true) {
+
+                System.out.println("you are hitting an npc");
+                gp.gameState = gp.dialogueState;
+                gp.npc[i].speak();
             }
         }
-        gp.keyH.enterPressed = false;//这段代码
     }
+
     /*    public void pickupObject(int i) {
 
              if (i != 999) {

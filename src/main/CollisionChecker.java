@@ -119,6 +119,8 @@ public class CollisionChecker {
 
         int tileNum1, tileNum2;
 
+        // 在获取数组值前先检查索引是否有效
+
         switch (entity.direction) {
             case "up":
                 entityTopRow = (entityTopWorldY - entity.speed) / gp.tileSize;
@@ -339,6 +341,7 @@ public class CollisionChecker {
         gp.player.solidArea.y = gp.player.solidAreaDefaultY;
 
     }
+
 
 }
 

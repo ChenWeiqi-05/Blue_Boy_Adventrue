@@ -226,6 +226,7 @@ public class KeyHandler implements KeyListener {
             if (code == KeyEvent.VK_ENTER) {
                 enterPressed = true;
 
+
                        }
             if (code == KeyEvent.VK_T) {
                 if (checkDrawTime == false) {

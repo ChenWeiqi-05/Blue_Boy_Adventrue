@@ -25,6 +25,8 @@ public class Entity {
     String dialogues[] = new String[20];
     int dialogueIndex = 0;
 
+    public int maxLife;
+    public int life;
 
     // public Object solidArea;
     public Entity(GamePanel gp) {
