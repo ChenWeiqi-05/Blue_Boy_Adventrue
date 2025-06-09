@@ -14,7 +14,7 @@ public class Entity {
     public int worldX, worldY;//这个是world01的绝对坐标
     public int speed;
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
-    public String direction;
+    public String direction = "down";
     public int spriteCounter = 0;
     public int spriteNum = 1;
     public Rectangle solidArea = new Rectangle(0, 0, 48, 48);//这是所有实体的默认矩形
@@ -22,8 +22,16 @@ public class Entity {
     public boolean collisionOn = false;
     public int actionLockCounter = 0; //  这个是实体动作计数器，用来控制实体的动作
 
+    public boolean invincible = false;
+
+    public  int invincibleCounter = 0;
     String dialogues[] = new String[20];
     int dialogueIndex = 0;
+
+    public BufferedImage image,image2,image3;
+
+    public String name;
+    public boolean collision = false;
 
     public int maxLife;
     public int life;
@@ -71,6 +79,8 @@ public class Entity {
         collisionOn = false;
         gp.cChecker.checkTile(this);
         gp.cChecker.checkObject(this, false);
+        gp.cChecker.checkEntity(this, gp.npc);
+        gp.cChecker.checkEntity(this, gp.monster);
         gp.cChecker.checkPlayer(this);
         if (collisionOn == false) {//检测实体是否发生碰撞
             switch (direction) {

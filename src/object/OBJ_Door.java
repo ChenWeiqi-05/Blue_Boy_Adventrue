@@ -1,30 +1,25 @@
 package object;
 
+import Entity.Entity;
 import main.GamePanel;
-import object.SuperObject;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
+public class OBJ_Door extends Entity {
 
-public class OBJ_Door extends SuperObject {
 
-    GamePanel gp;
-    public OBJ_Door(GamePanel gp){
-        this.gp = gp;
-
+    public OBJ_Door(GamePanel gp) {
+        super(gp);
         name = "Door";
-        try {
-
-            image = ImageIO.read(getClass().getResourceAsStream("/objects/door.png"));
-            uTool.scaleImage( image,gp.tileSize,gp.tileSize);
-
-        }catch (IOException e) {
-
-            throw new RuntimeException(e);
-
-        }
-
+        down1 = setup("/objects/door");
         collision = true;
+
+        //这段代码是设置门碰撞区域
+        solidArea.x = 0;
+        solidArea.y = 16;
+        solidArea.width = 48;
+        solidArea.height = 32;
+
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
+
     }
 }

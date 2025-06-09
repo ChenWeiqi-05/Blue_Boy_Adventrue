@@ -131,7 +131,7 @@ public class CollisionChecker {
                 }
 
                 break;
-            case "down":
+            case "down"://这段代码的意义
                 entityBottomRow = (entityBottomWorldY + entity.speed) / gp.tileSize;
                 tileNum1 = gp.tileM.mapTileNum[entityLeftCol][entityBottomRow];
                 tileNum2 = gp.tileM.mapTileNum[entityRightCol][entityBottomRow];
@@ -175,54 +175,30 @@ public class CollisionChecker {
                 switch (entity.direction) {
                     case "up":
                         entity.solidArea.y -= entity.speed;
-                        if (entity.solidArea.intersects(gp.obj[i].solidArea)) {
-                            System.out.println("up collision!");
-                            if (gp.obj[i].collision == true) {
-                                entity.collisionOn = true;
-                            }
-                            if (player == true) {
-                                index = i;
-                            }
-                        }
+
                         break;
                     case "down":
                         entity.solidArea.y += entity.speed;
-                        if (entity.solidArea.intersects(gp.obj[i].solidArea)) {
-                            System.out.println(" down collision!");
-                            if (gp.obj[i].collision == true) {
-                                entity.collisionOn = true;
-                            }
-                            if (player == true) {
-                                index = i;
-                            }
-                        }
+
                         break;
                     case "left":
                         entity.solidArea.x -= entity.speed;
-                        if (entity.solidArea.intersects(gp.obj[i].solidArea)) {
-                            System.out.println("left collision!");
-                            if (gp.obj[i].collision == true) {
-                                entity.collisionOn = true;
-                            }
-                            if (player == true) {
-                                index = i;
-                            }
-                        }
+
                         break;
                     case "right":
                         entity.solidArea.x += entity.speed;
-                        if (entity.solidArea.intersects(gp.obj[i].solidArea)) {
-                            System.out.println("right collision!");
-                            if (gp.obj[i].collision == true) {
-                                entity.collisionOn = true;
-                            }
-                            if (player == true) {
-                                index = i;
-                            }
-                        }
+
                         break;
                 }
-
+                if (entity.solidArea.intersects(gp.obj[i].solidArea)) {
+                    System.out.println("right collision!");
+                    if (gp.obj[i].collision == true) {
+                        entity.collisionOn = true;
+                    }
+                    if (player == true) {
+                        index = i;
+                    }
+                }
                 entity.solidArea.x = entity.solidAreaDefaultX;
                 entity.solidArea.y = entity.solidAreaDefaultY;
                 gp.obj[i].solidArea.x = gp.obj[i].solidAreaDefaultX;
@@ -249,46 +225,34 @@ public class CollisionChecker {
                 switch (entity.direction) {
                     case "up":
                         entity.solidArea.y -= entity.speed;
-                        if (entity.solidArea.intersects(target[i].solidArea)) {
-                            System.out.println("npc从你的上面碰到了你");
-                            entity.collisionOn = true;
-                            index = i;
 
-                        }
                         break;
                     case "down":
                         entity.solidArea.y += entity.speed;
-                        if (entity.solidArea.intersects(target[i].solidArea)) {
-                            System.out.println("npc从你的下面碰到了你");
 
-                            entity.collisionOn = true;
-                            index = i;
-
-                        }
                         break;
                     case "left":
                         entity.solidArea.x -= entity.speed;
-                        if (entity.solidArea.intersects(target[i].solidArea)) {
-                            System.out.println("npc从你的左侧碰到了你");
-                            entity.collisionOn = true;
-                            index = i;
-                        }
+
                         break;
                     case "right":
                         entity.solidArea.x += entity.speed;
-                        if (entity.solidArea.intersects(target[i].solidArea)) {
-                            System.out.println("npc从你的右侧碰到了你");
-                            entity.collisionOn = true;
-                            index = i;
-                        }
-                }
-                break;
-            }
 
-            entity.solidArea.x = entity.solidAreaDefaultX;
-            entity.solidArea.y = entity.solidAreaDefaultY;
-            target[i].solidArea.x = target[i].solidAreaDefaultX;
-            target[i].solidArea.y = target[i].solidAreaDefaultY;
+                        break;
+                }
+                if (entity.solidArea.intersects(target[i].solidArea)) {
+                   if (target[i]!= entity){
+                       System.out.println("npc从你的上面碰到了你");
+                       entity.collisionOn = true;
+                       index = i;
+                   }
+                }
+
+                entity.solidArea.x = entity.solidAreaDefaultX;
+                entity.solidArea.y = entity.solidAreaDefaultY;
+                target[i].solidArea.x = target[i].solidAreaDefaultX;
+                target[i].solidArea.y = target[i].solidAreaDefaultY;
+            }
         }
         return index;
     }
@@ -331,7 +295,6 @@ public class CollisionChecker {
                 if (entity.solidArea.intersects(gp.player.solidArea)) {
                     System.out.println("right collision!");
                     entity.collisionOn = true;
-
                     break;
                 }
         }
@@ -341,7 +304,5 @@ public class CollisionChecker {
         gp.player.solidArea.y = gp.player.solidAreaDefaultY;
 
     }
-
-
 }
 

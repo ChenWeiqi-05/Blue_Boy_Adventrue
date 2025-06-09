@@ -2,11 +2,13 @@ package main;
 
 import Entity.Entity;
 import Entity.Player;
-import object.SuperObject;
 import tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class GamePanel extends JPanel implements Runnable {
     final int originalTileSize = 16;
@@ -33,13 +35,17 @@ public class GamePanel extends JPanel implements Runnable {
     public EventHandler eHandler = new EventHandler(this);
 
     Thread gameThread;
-    public Player player = new Player(this, keyH);
-    public SuperObject obj[] = new SuperObject[10];//
 
-    public Entity npc[] = new Entity[10];
     int playerX = 100;
     int playerY = 100;
     int playerSpeed = 4;
+
+    public Player player = new Player(this, keyH);
+    public Entity obj[] = new Entity[10];
+    public Entity npc[] = new Entity[10];
+    public Entity monster[] = new Entity[20];
+    ArrayList<Entity> entityList = new ArrayList<>();//创建一个实体列表
+
     public int gameState;
     public final int titleState = 0;
     public final int playState = 1;
@@ -58,6 +64,7 @@ public class GamePanel extends JPanel implements Runnable {
     public void setupGame() {
         aSetter.setObject();
         aSetter.setNPC();
+        aSetter.setMonster();
         //playMusic(0);
         gameState = titleState;//游戏状态的设置
     }
@@ -103,6 +110,11 @@ public class GamePanel extends JPanel implements Runnable {
                     npc[i].update();
                 }
             }
+            for (int i = 0; i < monster.length; i++){
+                if  (monster[i] != null) {
+                    monster[i].update();
+                }
+            }
         }
         if (gameState == pauseState) {
 
@@ -117,56 +129,56 @@ public class GamePanel extends JPanel implements Runnable {
         if (keyH.checkDrawTime == true) {
             drawStart = System.nanoTime();
         }
-
         //绘制对象
         //TITLE SCREEN
         if (gameState == titleState) {
-
             ui.draw(g2);
         }
         //PLAY SCREEN
-        else if (gameState == playState) {
-
+        else {
             tileM.draw(g2);
-            for (int i = 0; i < obj.length; i++) {
+
+            entityList.add(player);
+            for (int i = 0; i < npc.length; i++) {//循环遍历npc数组,以此绘制npc
+                if (npc[i] != null) {
+                    entityList.add(npc[i]);
+                }
+            }
+            for (int i = 0; i < obj.length; i++) {//循环遍历obj数组，以此绘制obj
+
                 if (obj[i] != null) {
-                    obj[i].draw(g2, this);
+                    entityList.add(obj[i]);
                 }
             }
-            //绘制npc
-            for (int i = 0; i < npc.length; i++) {
-                if (npc[i] != null) {
-                    npc[i].draw(g2);
-
+            for (int i = 0; i < monster.length; i++) {//循环遍历monster数组，以此绘制monster
+                if (monster[i] != null) {
+                    entityList.add(monster[i]);
                 }
             }
-            //绘制玩家
-            player.draw(g2);
-            ui.draw(g2);//注意，不要注释前面的代码
+            Collections.sort(entityList, new Comparator<Entity>() {//  创建一个比较器,用来排序实体列表
+                @Override//  比较两个实体的绘制顺序
+                public int compare(Entity e1, Entity e2) {
 
-
-        } else if (gameState == dialogueState) {
-            tileM.draw(g2);
-            player.draw(g2);
-            for (int i = 0; i < npc.length; i++) {
-                if (npc[i] != null) {
-                    npc[i].draw(g2);
+                    int result = Integer.compare(e1.worldY, e2.worldY);//此段代码的作用是把e1.worldY
+                    // 和e2.worldY进行比较，并返回一个整数。如果e1.worldY小于e2.worldY，则返回负数。如果e1.worldY等于e2.worldY
+                    return result;
                 }
+            });
+            // 绘制实体列表
+            for (int i = 0; i < entityList.size(); i++) {//绘制实体列表
+                entityList.get(i).draw(g2);
+
             }
-            ui.draw(g2);
-        } else if (gameState == pauseState) {
-            stopMusic();
-            tileM.draw(g2);
-            player.draw(g2);
-            for (int i = 0; i < npc.length; i++) {
-                if (npc[i] != null) {
-                    npc[i].draw(g2);
-                }
+            for (int i = 0; i < entityList.size(); i++) {//这段代码的作用是删除实体列表中的实体，以便绘制下一个实体，从而绘制下一个实体。
+
+                entityList.remove(i);
+
             }
             ui.draw(g2);
             // 保持背景绘制
             // 确保UI绘制
         }
+
         if (keyH.checkDrawTime == true) {
             long drawEnd = System.nanoTime();
             long passed = drawEnd - drawStart;

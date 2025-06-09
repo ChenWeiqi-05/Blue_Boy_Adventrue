@@ -1,11 +1,7 @@
 package main;
 
-
 import Entity.NPC_OldMan;
-import object.OBJ_Boots;
-import object.OBJ_Chest;
-import object.OBJ_Door;
-import object.OBJ_Key;
+import monster.MON_GreenSlime;
 
 public class AssetSetter {
     GamePanel gp;
@@ -41,10 +37,38 @@ public class AssetSetter {
         gp.obj[7].worldX = 37 * gp.tileSize;
         gp.obj[7].worldY = 42 * gp.tileSize;*/
 
+
     }
-public void setNPC() {
-    gp.npc[0] = new NPC_OldMan(gp);
-    gp.npc[0].worldX =  gp.tileSize*21 ;//npc的在世界的x位置
-    gp.npc[0].worldY =  gp.tileSize*21 ;//npc的在世界的y位置
-}
+
+    public void setNPC() {
+
+        gp.npc[0] = new NPC_OldMan(gp);
+     gp.npc[0].worldX = gp.tileSize * 21;//npc的在世界的x位置
+        gp.npc[0].worldY = gp.tileSize * 21;//npc的在世界的y位置
+    /*  gp.npc[0] = new NPC_OldMan(gp);
+     gp.npc[0].worldX = gp.tileSize * 9;//npc的在世界的x位置
+       gp.npc[0].worldY = gp.tileSize * 10;//npc的在世界的y位置
+
+*/
+    }
+
+    public void setMonster() {
+
+      gp.monster[0] = new MON_GreenSlime(gp);
+        gp.monster[0].worldX = gp.tileSize * 23;
+        gp.monster[0].worldY = gp.tileSize * 36;
+
+        gp.monster[1] = new MON_GreenSlime(gp);
+        gp.monster[1].worldX = gp.tileSize * 23;
+        gp.monster[1].worldY = gp.tileSize * 37;
+
+
+       /* gp.monster[0] = new MON_GreenSlime(gp);
+        gp.monster[0].worldX = gp.tileSize * 11;
+        gp.monster[0].worldY = gp.tileSize * 9;
+
+        gp.monster[1] = new MON_GreenSlime(gp);
+        gp.monster[1].worldX = gp.tileSize * 11;
+        gp.monster[1].worldY = gp.tileSize * 10;*/
+    }
 }

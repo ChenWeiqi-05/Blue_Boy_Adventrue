@@ -8,6 +8,7 @@ public class KeyHandler implements KeyListener {
     public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed;
     boolean checkDrawTime = false;
 
+
     public KeyHandler(GamePanel gp) {
 
         this.gp = gp;

@@ -37,11 +37,12 @@ public class Player extends Entity {
 
     public void setDaultValues() {
         worldX = gp.tileSize * 23;
-        // x = 100;
         worldY = gp.tileSize * 21;
-        // y = 100;
-//        x = gp.tileSize * 23;
-//        y = gp.tileSize * 21;
+
+//        worldX = gp.tileSize * 10;
+//
+//        worldY = gp.tileSize * 13;
+
         speed = 4;
         direction = "down";
 // PLAYER STATUS
@@ -71,12 +72,9 @@ public class Player extends Entity {
     }*/
 
     public BufferedImage setup(String imageName) {
-
         UtilityTool uTool = new UtilityTool();
         BufferedImage image = null;
-
         try {
-
             image = ImageIO.read(getClass().getResourceAsStream(imageName + ".png"));
             image = uTool.scaleImage(image, gp.tileSize, gp.tileSize);//这段代码是用来获取图片的，并且缩放到指定的大小。
 
@@ -118,11 +116,13 @@ public class Player extends Entity {
             int npcIndex = gp.cChecker.checkEntity(this, gp.npc);
             interactNPC(npcIndex);
 
-            //  CHECK COLLISION
+            int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
+            interactMonster(monsterIndex);
 
+contactMonster(monsterIndex);
+            //  CHECK COLLISION
             gp.eHandler.checkEvent();
             gp.keyH.enterPressed = false;//这段代码
-
             if (collisionOn == false) {
                 switch (direction) {
                     case "up":
@@ -132,7 +132,7 @@ public class Player extends Entity {
                     case "down":
                         //System.out.println("向下碰撞");
                         worldY += speed;
-                        gp.player.life -= 2;
+
                         break;
                     case "left":
                         //System.out.println("向左碰撞");
@@ -155,6 +155,22 @@ public class Player extends Entity {
                 spriteCounter = 0;
             }
         }
+    }
+
+    public void contactMonster(int i) {//这段代码的意思是
+
+        if (i != 999) {
+
+            if (invincible == false){
+                life -= 1;
+                invincible = true;
+            }
+
+        }
+    }
+
+    public void interactMonster(int monsterIndex) {
+
     }
 
     public void pickUpObject(int i) {//这个方法可改变捡起道具后的数值属性

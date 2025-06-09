@@ -1,7 +1,7 @@
 package main;
 
+import Entity.Entity;
 import object.OBJ_Heart;
-import object.SuperObject;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -37,13 +37,11 @@ public class UI {
     public int commandNum = 0;
 
     public int titleScreenState = 0;
-
-
     public UI(GamePanel gp) {
         this.gp = gp;
         // cambriaz = new Font("Cambria", Font.PLAIN, 40);
         try {
-            InputStream is = getClass().getResourceAsStream("/font/x12y16pxZorque.ttf");
+            InputStream is = getClass().getResourceAsStream("/font/x12y16pxMaruMonica.ttf");
             maruMonica = Font.createFont(Font.TRUETYPE_FONT, is);
         } catch (FontFormatException e) {
             e.printStackTrace();
@@ -52,7 +50,7 @@ public class UI {
 
         }
         //CREATE HUB OBJECT 创建血槽（生命值）对象
-        SuperObject heart = new OBJ_Heart(gp);
+        Entity heart = new OBJ_Heart(gp);
         heart_full = heart.image;
         heart_half = heart.image2;
         heart_blank = heart.image3;
@@ -148,18 +146,15 @@ public class UI {
             drawPlayerLife();
           drawPauseScreen();
             System.out.println("draw pause screen");
-
         }
         if (gp.gameState == gp.dialogueState) {
             drawPlayerLife();
             drawDialogueScreen();
             System.out.println("draw dialogue screen");
-
         }
     }
 
     public void drawPlayerLife() {
-
         int x = gp.tileSize / 2;
         int y = gp.tileSize / 2;
         int i = 0;

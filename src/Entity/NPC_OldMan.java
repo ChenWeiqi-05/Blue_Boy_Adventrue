@@ -32,10 +32,10 @@ public class NPC_OldMan extends Entity {
         dialogues[3] = "Well,good luck on you,hope you father have \nany danger.";
 
     }
-    public void setAction() {
+    public void setAction() {//npc的ai移动
 
         actionLockCounter++;
-        if (actionLockCounter == 120) { //npc的ai移动
+        if (actionLockCounter == 120) {
             Random random = new Random();
             int i = random.nextInt(100) + 1;
 
