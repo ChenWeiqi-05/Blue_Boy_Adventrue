@@ -15,23 +15,25 @@ public class NPC_OldMan extends Entity {
     }
 
     public void getImage() {
-        up1 = setup("/npc/oldman_up_1");
-        up2 = setup("/npc/oldman_up_2");
-        down1 = setup("/npc/oldman_down_1");
-        down2 = setup("/npc/oldman_down_2");
-        left1 = setup("/npc/oldman_left_1");
-        left2 = setup("/npc/oldman_left_2");
-        right1 = setup("/npc/oldman_right_1");
-        right2 = setup("/npc/oldman_right_2");
+        up1 = setup("/npc/oldman_up_1",  gp.tileSize, gp.tileSize);
+        up2 = setup("/npc/oldman_up_2",  gp.tileSize, gp.tileSize);
+        down1 = setup("/npc/oldman_down_1",  gp.tileSize, gp.tileSize);
+        down2 = setup("/npc/oldman_down_2",  gp.tileSize, gp.tileSize);
+        left1 = setup("/npc/oldman_left_1",  gp.tileSize, gp.tileSize);
+        left2 = setup("/npc/oldman_left_2",  gp.tileSize, gp.tileSize);
+        right1 = setup("/npc/oldman_right_1",  gp.tileSize, gp.tileSize);
+        right2 = setup("/npc/oldman_right_2",  gp.tileSize, gp.tileSize);
     }
 
     public void setDialogue() {
-        dialogues[0] = "hello,lad.";
-        dialogues[1] = "So you've come to this island to find your father?";
-        dialogues[2] = "I used to be a great wizard but now.. \nI'm a bit to for taking an adventure.";
-        dialogues[3] = "Well,good luck on you,hope you father have \nany danger.";
+
+        dialogues[0] = "A mysterious older:   Boy, I've never met you, but I know \n you're looking for your father..";
+        dialogues[1] = "A mysterious older:   You're the 78 th teenager to come\n here looking for your father, and my gut tells me you are\none of them..";
+        dialogues[2] = "A mysterious older:   In the before time that begin your\n adventure please help me  kill the  dirty slime..";
+        dialogues[3] = "A mysterious older:   oh... I'm not your father, don't ask\n me I can't  provide any information about your mysterious \nfather..";
 
     }
+
     public void setAction() {//npc的ai移动
 
         actionLockCounter++;

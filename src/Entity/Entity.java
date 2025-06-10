@@ -11,36 +11,36 @@ import java.io.IOException;
 public class Entity {
     GamePanel gp;
     // public int worldX, worldY;
-    public int worldX, worldY;//这个是world01的绝对坐标
-    public int speed;
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
-    public String direction = "down";
-    public int spriteCounter = 0;
-    public int spriteNum = 1;
-    public Rectangle solidArea = new Rectangle(0, 0, 48, 48);//这是所有实体的默认矩形
-    public int solidAreaDefaultX, solidAreaDefaultY;
-    public boolean collisionOn = false;
-    public int actionLockCounter = 0; //  这个是实体动作计数器，用来控制实体的动作
-
-    public boolean invincible = false;
-
-    public  int invincibleCounter = 0;
-    String dialogues[] = new String[20];
-    int dialogueIndex = 0;
-
+    public BufferedImage attackUp1, attackUp2, attackDown1, attackDown2, attackLeft1, attackLeft2, attackRight1, attackRight2 ;
     public BufferedImage image,image2,image3;
+    public Rectangle solidArea = new Rectangle(0, 0, 48, 48);//这是所有实体的默认矩形
+    public Rectangle attackArea = new Rectangle(0, 0, 0, 0);
+    public int solidAreaDefaultX, solidAreaDefaultY;
+    public boolean collision = false;
+    String dialogues[] = new String[20];
+    public int worldX, worldY;//这个是world01的绝对坐标
+
+    public String direction = "down";
+    public int spriteNum = 1;
+    int dialogueIndex = 0;
+    public boolean collisionOn = false;
+    public boolean invincible = false;
+    boolean attacking = false;
+    public int spriteCounter = 0;
+    public int actionLockCounter = 0; //  这个是实体动作计数器，用来控制实体的动作
+    public  int invincibleCounter = 0;
+   //STATE
 
     public String name;
-    public boolean collision = false;
-
+    public  int type; // 0 是player 1 = npc
     public int maxLife;
     public int life;
-
+    public int speed;
     // public Object solidArea;
     public Entity(GamePanel gp) {
         this.gp = gp;
     }
-
     public void setAction() {
 
     }
@@ -69,7 +69,6 @@ public class Entity {
             case "right":
                 direction = "left";
                 break;
-
         }
     }
 
@@ -81,7 +80,16 @@ public class Entity {
         gp.cChecker.checkObject(this, false);
         gp.cChecker.checkEntity(this, gp.npc);
         gp.cChecker.checkEntity(this, gp.monster);
-        gp.cChecker.checkPlayer(this);
+          boolean   contactPlayer = gp.cChecker.checkPlayer(this);//这段代码的意思是
+        // 当实体与玩家发生碰撞时，如果玩家没有被保护，则玩家会损失生命值
+          if (this.type == 2 && contactPlayer == true){//这段代码的意思是当实体与玩家发生碰撞时
+              // ，如果玩家没有被保护，则玩家会损失生命值
+              if(gp.player.invincible == false){
+                  gp.player.life -= 1;
+                  gp.player.invincible = true;
+              }
+          }
+
         if (collisionOn == false) {//检测实体是否发生碰撞
             switch (direction) {
                 case "up":
@@ -111,6 +119,13 @@ public class Entity {
                 spriteNum = 1;
             }
             spriteCounter = 0;
+        }
+        if (invincible == true) {
+            invincibleCounter++;
+            if (invincibleCounter > 40) {
+                invincible = false;
+                invincibleCounter = 0;
+            }
         }
     }
 
@@ -164,19 +179,24 @@ public class Entity {
                     }
                     break;
             }
-            g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
-        }
+            if (invincible == true) {
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f));
+            }
 
+            g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+
+        }
     }
 
-    public BufferedImage setup(String imagePath) {//这个方法用来获取图片
+    public BufferedImage setup(String imagePath,int width,int height) {//这个方法用来获取图片
         UtilityTool uTool = new UtilityTool();
         BufferedImage image = null;
         try {
 
             image = ImageIO.read(getClass().getResourceAsStream(imagePath + ".png"));
-            image = uTool.scaleImage(image, gp.tileSize, gp.tileSize);//这段代码是用来获取图片的，并且缩放到指定的大小。
-
+            image = uTool.scaleImage(image, width, height);//这段代码是用来获取图片的，并且缩放到指定的大小。
         } catch (IOException e) {
             e.printStackTrace();
         }

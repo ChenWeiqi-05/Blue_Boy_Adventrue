@@ -10,9 +10,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class Player extends Entity {
-    // public int hashKey = 0;
-    //either
-
     KeyHandler keyH;
     public final int screenX;
     public final int screenY;
@@ -31,8 +28,13 @@ public class Player extends Entity {
 
         solidArea.width = 32;
         solidArea.height = 32;
+
+        attackArea.width = 36;
+        attackArea.height = 36;
+
         setDaultValues();
         getPlayerImage();
+        getPlayerAttackImage();
     }
 
     public void setDaultValues() {
@@ -42,35 +44,42 @@ public class Player extends Entity {
 //        worldX = gp.tileSize * 10;
 //
 //        worldY = gp.tileSize * 13;
-
         speed = 4;
         direction = "down";
 // PLAYER STATUS
         maxLife = 6;
         life = maxLife;
-
     }
 
     public void getPlayerImage() {
-        up1 = setup("/player/boy_up_1");
-        up2 = setup("/player/boy_up_2");
-        down1 = setup("/player/boy_down_1");
-        down2 = setup("/player/boy_down_2");
-        left1 = setup("/player/boy_left_1");
-        left2 = setup("/player/boy_left_2");
-        right1 = setup("/player/boy_right_1");
-        right2 = setup("/player/boy_right_2");
-
+        up1 = setup("/player/boy_up_1", gp.tileSize, gp.tileSize);
+        up2 = setup("/player/boy_up_2", gp.tileSize, gp.tileSize);
+        down1 = setup("/player/boy_down_1", gp.tileSize, gp.tileSize);
+        down2 = setup("/player/boy_down_2", gp.tileSize, gp.tileSize);
+        left1 = setup("/player/boy_left_1", gp.tileSize, gp.tileSize);
+        left2 = setup("/player/boy_left_2", gp.tileSize, gp.tileSize);
+        right1 = setup("/player/boy_right_1", gp.tileSize, gp.tileSize);
+        right2 = setup("/player/boy_right_2", gp.tileSize, gp.tileSize);
     }
 
-  /*  private BufferedImage loadImage(String path) throws IOException {
-        InputStream is = getClass().getResourceAsStream(path);
-        if (is == null) {
-            throw new IOException("无法找到资源文件: " + path);
-        }
-        return ImageIO.read(is);
-    }*/
+    public void getPlayerAttackImage() {
+        attackUp1 = setup("/player/boy_attack_up_1", gp.tileSize, gp.tileSize * 2);
+        attackUp2 = setup("/player/boy_attack_up_2", gp.tileSize, gp.tileSize * 2);
+        attackDown1 = setup("/player/boy_attack_down_1", gp.tileSize, gp.tileSize * 2);
+        attackDown2 = setup("/player/boy_attack_down_2", gp.tileSize, gp.tileSize * 2);
+        attackLeft1 = setup("/player/boy_attack_left_1", gp.tileSize * 2, gp.tileSize);
+        attackLeft2 = setup("/player/boy_attack_left_2", gp.tileSize * 2, gp.tileSize);
+        attackRight1 = setup("/player/boy_attack_right_1", gp.tileSize * 2, gp.tileSize);
+        attackRight2 = setup("/player/boy_attack_right_2", gp.tileSize * 2, gp.tileSize);
+    }
 
+    /*  private BufferedImage loadImage(String path) throws IOException {
+          InputStream is = getClass().getResourceAsStream(path);
+          if (is == null) {
+              throw new IOException("无法找到资源文件: " + path);
+          }
+          return ImageIO.read(is);
+      }*/
     public BufferedImage setup(String imageName) {
         UtilityTool uTool = new UtilityTool();
         BufferedImage image = null;
@@ -86,8 +95,10 @@ public class Player extends Entity {
 
     public void update() {
 
-        if (keyH.upPressed == true || keyH.downPressed == true ||
-                keyH.leftPressed == true || keyH.rightPressed == true) {
+        if (attacking == true) {
+            attacking();
+        } else if (keyH.upPressed == true || keyH.downPressed == true ||
+                keyH.leftPressed == true || keyH.rightPressed == true || keyH.enterPressed == true) {
 
             if (keyH.upPressed == true) {
                 direction = "up";
@@ -118,12 +129,10 @@ public class Player extends Entity {
 
             int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
             interactMonster(monsterIndex);
-
-contactMonster(monsterIndex);
+            contactMonster(monsterIndex);
             //  CHECK COLLISION
             gp.eHandler.checkEvent();
-            gp.keyH.enterPressed = false;//这段代码
-            if (collisionOn == false) {
+            if (collisionOn == false && keyH.enterPressed == false) {
                 switch (direction) {
                     case "up":
                         //  System.out.println("向上碰撞");
@@ -132,7 +141,6 @@ contactMonster(monsterIndex);
                     case "down":
                         //System.out.println("向下碰撞");
                         worldY += speed;
-
                         break;
                     case "left":
                         //System.out.println("向左碰撞");
@@ -144,6 +152,7 @@ contactMonster(monsterIndex);
                         break;
                 }
             }
+            gp.keyH.enterPressed = false;//
             //  gp.cChecker.checkTile(this);
             spriteCounter++;
             if (spriteCounter > 12) {
@@ -155,17 +164,90 @@ contactMonster(monsterIndex);
                 spriteCounter = 0;
             }
         }
+        //this needs to be outside of key if statement
+        //这段代码的玩家攻击后恢复
+        if (invincible == true) {
+            invincibleCounter++;
+            if (invincibleCounter > 60) {
+                invincible = false;
+                invincibleCounter = 0;
+            }
+        }
+    }
+
+    public void attacking() {
+        spriteCounter++;
+        if (spriteCounter <= 5) {
+            spriteNum = 1;
+        }
+        if (spriteCounter > 5 && spriteCounter <= 25) {
+            spriteNum = 2;
+
+            //保持当前人物实体位置，以便等一下的
+            int currentWorldX = worldX;
+            int currentWorldY = worldY;
+            int solidAreaWidth = solidArea.width;
+            int solidAreaHeight = solidArea.height;
+
+            //这段代码的作用是，将当前实体的位置和碰撞区域设置为
+            // 攻击区域，然后根据攻击方向将实体的位置移动到攻击区域。
+            switch (direction) {
+                case "up":
+                    worldY -= attackArea.height;
+                    break;
+                case "down":
+                    worldY += attackArea.height;
+                    break;
+                case "left":
+                    worldX -= attackArea.width;
+                    break;
+                case "right":
+                    worldX += attackArea.width;
+                    break;
+            }
+            //从攻击区域中恢复实体的位置和碰撞区域。
+            solidArea.width = attackArea.width;
+            solidArea.height = attackArea.height;
+
+            int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
+            //这段代码用来检测是否发生攻击
+
+            damageMonster(monsterIndex);
+
+            worldX = currentWorldX;
+            worldY = currentWorldY;
+
+            solidArea.width = solidAreaWidth;
+            solidArea.height = solidAreaHeight;
+
+        }
+        if (spriteCounter > 25) {
+            spriteNum = 1;
+            spriteCounter = 0;
+            attacking = false;
+        }
+    }
+
+    public void damageMonster(int i) {
+        if (i != 999) {
+           if (gp.monster[i].invincible == false){
+
+           gp.monster[i].life -=  1;
+           gp.monster[i].invincible = true;
+           if (gp.monster[i].life<=0){
+               gp.monster[i] =null;
+           }
+           }
+        }
+
     }
 
     public void contactMonster(int i) {//这段代码的意思是
-
         if (i != 999) {
-
-            if (invincible == false){
+            if (invincible == false) {
                 life -= 1;
-                invincible = true;
+                invincible = true;//
             }
-
         }
     }
 
@@ -174,12 +256,11 @@ contactMonster(monsterIndex);
     }
 
     public void pickUpObject(int i) {//这个方法可改变捡起道具后的数值属性
-
-        if (i != 999) {//一下文本注释为寻宝小游戏的拾起逻辑的代码
+        if (i != 999) {
+            //一下文本注释为寻宝小游戏的拾起逻辑的代码
             /*//999代表没有物体，并且0代表没有物体
          //   gp.obj[i].name = null;
             String objectName = gp.obj[i].name ;
-
             switch (objectName){
                 case "Key"://注意此处单词首字母要大写！！！
                     gp.playSE(1);
@@ -193,7 +274,6 @@ contactMonster(monsterIndex);
                     if (hasKey >0){
                         gp.obj[i] = null;
                         hasKey--;
-
                            gp.ui.showMessage("You open a door! ");
 
                     }else {
@@ -213,19 +293,19 @@ contactMonster(monsterIndex);
                         gp.playSE(4);
                         break;
             }*/
-
         }
     }
 
     public void interactNPC(int i) {//这个方法可改变与npc的交互逻辑
-        if (i != 999) {
 
-            //这段代码enter  键被按下时，会触发npc的speak方法，并进入对话状态。
-            if (gp.keyH.enterPressed == true) {
-
+        if (gp.keyH.enterPressed == true) {
+            if (i != 999) {
+                //这段代码enter  键被按下时，会触发npc的speak方法，并进入对话状态。
                 System.out.println("you are hitting an npc");
                 gp.gameState = gp.dialogueState;
                 gp.npc[i].speak();
+            } else {
+                attacking = true;
             }
         }
     }
@@ -259,47 +339,98 @@ contactMonster(monsterIndex);
 //  g2.fillRect(x, y, gp.tileSize, gp.tileSize);
 
         BufferedImage image = null;
+        int tempScreenX = screenX;
+        int tempScreenY = screenY;
         switch (direction) {
             case "up":
-                if (spriteNum == 1) {
-                    image = up1;
-
+                if (attacking == false) {
+                    if (spriteNum == 1) {
+                        image = up1;
+                    }
+                    if (spriteNum == 2) {
+                        image = up2;
+                    }
                 }
-                if (spriteNum == 2) {
-                    image = up2;
+                if (attacking == true) {
+                    tempScreenY = screenY - gp.tileSize;
+                    if (spriteNum == 1) {
+                        image = attackUp1;
+                    }
+                    if (spriteNum == 2) {
+                        image = attackUp2;
+                    }
                 }
-
                 break;
             case "down":
-                if (spriteNum == 1) {
-                    image = down1;
+                if (attacking == false) {
+                    if (spriteNum == 1) {
+                        image = down1;
+                    }
+                    if (spriteNum == 2) {
+                        image = down2;
+                    }
                 }
-                if (spriteNum == 2) {
-                    image = down2;
+                if (attacking == true) {
+                    if (spriteNum == 1) {
+                        image = attackDown1;
+                    }
+                    if (spriteNum == 2) {
+                        image = attackDown2;
+                    }
                 }
 
                 break;
             case "left":
-                if (spriteNum == 1) {
-
-                    image = left1;
+                if (attacking == false) {
+                    if (spriteNum == 1) {
+                        image = left1;
+                    }
+                    if (spriteNum == 2) {
+                        image = left2;
+                    }
                 }
-                if (spriteNum == 2) {
-
-                    image = left2;
+                if (attacking == true) {
+                    tempScreenX = screenX - gp.tileSize;//这段代码的
+                    // 意思是让玩家攻击时，图片向左移动一个tileSize。
+                    if (spriteNum == 1) {
+                        image = attackLeft1;
+                    }
+                    if (spriteNum == 2) {
+                        image = attackLeft2;
+                    }
                 }
 
                 break;
             case "right":
-                if (spriteNum == 1) {
-                    image = right1;
+                if (attacking == false) {
+                    if (spriteNum == 1) {
+                        image = right1;
+                    }
+                    if (spriteNum == 2) {
+                        image = right2;
+                    }
                 }
-                if (spriteNum == 2) {
-                    image = right2;
+                if (attacking == true) {
+                    //这段代码的意思是让玩家攻击时，
+                    // 图片向右移动一个tileSize。
+                    if (spriteNum == 1) {
+                        image = attackRight1;
+                    }
+                    if (spriteNum == 2) {
+                        image = attackRight2;
+                    }
                 }
                 break;
         }
+        if (invincible == true) {
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
+        }
         // g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
-        g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+        g2.drawImage(image, tempScreenX, tempScreenY, null);
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+        /*    g2.setFont(new Font("x12y16pxMaruMonica", Font.PLAIN, 26));
+        g2.setColor(Color.white);
+        g2.drawString("Invincible :"+invincibleCounter,10,400);
+  */
     }
 }

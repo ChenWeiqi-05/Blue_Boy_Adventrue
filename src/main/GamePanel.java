@@ -120,7 +120,6 @@ public class GamePanel extends JPanel implements Runnable {
 
         }
     }
-
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
@@ -170,10 +169,9 @@ public class GamePanel extends JPanel implements Runnable {
 
             }
             for (int i = 0; i < entityList.size(); i++) {//这段代码的作用是删除实体列表中的实体，以便绘制下一个实体，从而绘制下一个实体。
-
                 entityList.remove(i);
-
             }
+            entityList.clear();//清空实体列表
             ui.draw(g2);
             // 保持背景绘制
             // 确保UI绘制

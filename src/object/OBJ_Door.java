@@ -4,12 +4,10 @@ import Entity.Entity;
 import main.GamePanel;
 
 public class OBJ_Door extends Entity {
-
-
     public OBJ_Door(GamePanel gp) {
         super(gp);
         name = "Door";
-        down1 = setup("/objects/door");
+        down1 = setup("/objects/door",  gp.tileSize, gp.tileSize);
         collision = true;
 
         //这段代码是设置门碰撞区域

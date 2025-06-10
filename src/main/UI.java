@@ -19,23 +19,14 @@ public class UI {
     public GamePanel gp;
     Font maruMonica, cambriaz;
     Graphics2D g2;
-
-
     public boolean messageOn = false;
-
     double playTime;
-
     DecimalFormat dFormat = new DecimalFormat("#0.00");
     // 我们已经不再需要这个时间计算器了
-
-
     public String message = "";
-
     public int messageCounter;
     public String currentDialogue = "";
-
     public int commandNum = 0;
-
     public int titleScreenState = 0;
     public UI(GamePanel gp) {
         this.gp = gp;
@@ -47,22 +38,17 @@ public class UI {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-
         }
         //CREATE HUB OBJECT 创建血槽（生命值）对象
         Entity heart = new OBJ_Heart(gp);
         heart_full = heart.image;
         heart_half = heart.image2;
         heart_blank = heart.image3;
-
     }
-
-
     public void showMessage(String text) {
         message = text;
         messageOn = true;
     }
-
     public void draw(Graphics2D g2) {
        /*
        //*******这里是寻宝游戏的界面*********
@@ -131,16 +117,12 @@ public class UI {
         //g2.setFont(cambriaz);//这里可以设置字体
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.setColor(Color.white);
-
         if (gp.gameState == gp.titleState) {
             //gp.playMusic(0);！！！把这个方法放在这里音乐会非常cool
             drawTitleScreen();
-
         }
         if (gp.gameState == gp.playState) {
-
             drawPlayerLife();
-
         }
        if (gp.gameState == gp.pauseState) {
             drawPlayerLife();
@@ -153,19 +135,16 @@ public class UI {
             System.out.println("draw dialogue screen");
         }
     }
-
     public void drawPlayerLife() {
         int x = gp.tileSize / 2;
         int y = gp.tileSize / 2;
         int i = 0;
-
 //DRAW BLANK HEARTS
         while (i < gp.player.maxLife / 2) {//这个代码的逻辑是，如果生命值是偶数
             // ，就绘制一个完整的生命值，如果生命值是奇数，就绘制一个完整的生命值和半个生命值
             g2.drawImage(heart_blank, x, y, null);
             i++;
             x += gp.tileSize;
-
         }
         //reset
         x = gp.tileSize / 2;
@@ -174,7 +153,6 @@ public class UI {
         //DRAW CURRENT HEARTS
         while (i < gp.player.life) {//这段代码的逻辑是，
             // 如果生命值是偶数，就绘制一个完整的生命值，如果生命值是奇数，就绘制一个完整的生命值和半个生命值
-
             g2.drawImage(heart_half, x, y, null);
             i++;
             if (i < gp.player.life) {
@@ -183,13 +161,8 @@ public class UI {
             i++;
             x += gp.tileSize;
         }
-
     }
-
-
-
     public void drawTitleScreen() {
-
         if (titleScreenState == 0) {
 
             g2.setColor(new Color(0, 0, 0));

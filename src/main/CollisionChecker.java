@@ -210,9 +210,10 @@ public class CollisionChecker {
     }
 
     public int checkEntity(Entity entity, Entity[] target) {
+        //这段代码通过遍历数组来检查实体与目标之间的碰撞。
+        // 如果两个实体的碰撞区域相交，则返回目标数组中该实体的索引。
 
         int index = 999;
-
         for (int i = 0; i < target.length; i++) {
             if (target[i] != null) {
 
@@ -241,11 +242,11 @@ public class CollisionChecker {
                         break;
                 }
                 if (entity.solidArea.intersects(target[i].solidArea)) {
-                   if (target[i]!= entity){
-                       System.out.println("npc从你的上面碰到了你");
-                       entity.collisionOn = true;
-                       index = i;
-                   }
+                    if (target[i] != entity) {
+                        System.out.println("npc从你的上面碰到了你");
+                        entity.collisionOn = true;
+                        index = i;
+                    }
                 }
 
                 entity.solidArea.x = entity.solidAreaDefaultX;
@@ -257,7 +258,9 @@ public class CollisionChecker {
         return index;
     }
 
-    public void checkPlayer(Entity entity) {
+    public boolean checkPlayer(Entity entity) {
+
+        boolean contactPlayer = false;
         entity.solidArea.x = entity.worldX + entity.solidArea.x;
         entity.solidArea.y = entity.worldY + entity.solidArea.y;
 
@@ -267,42 +270,33 @@ public class CollisionChecker {
         switch (gp.player.direction) {
             case "up":
                 entity.solidArea.y -= entity.speed;
-                if (entity.solidArea.intersects(gp.player.solidArea)) {
-                    System.out.println("up collision!");
-                    entity.collisionOn = true;
 
-                }
                 break;
             case "down":
                 entity.solidArea.y += entity.speed;
-                if (entity.solidArea.intersects(gp.player.solidArea)) {
-                    System.out.println("down collision!");
 
-                    entity.collisionOn = true;
-
-                }
                 break;
             case "left":
                 entity.solidArea.x -= entity.speed;
-                if (entity.solidArea.intersects(gp.player.solidArea)) {
-                    System.out.println("left collision!");
-                    entity.collisionOn = true;
 
-                }
                 break;
             case "right":
                 entity.solidArea.x += entity.speed;
-                if (entity.solidArea.intersects(gp.player.solidArea)) {
-                    System.out.println("right collision!");
-                    entity.collisionOn = true;
-                    break;
-                }
+
+        }
+        if (entity.solidArea.intersects(gp.player.solidArea)) {
+
+            entity.collisionOn = true;
+            contactPlayer = true;
+
         }
         entity.solidArea.x = entity.solidAreaDefaultX;
         entity.solidArea.y = entity.solidAreaDefaultY;
         gp.player.solidArea.x = gp.player.solidAreaDefaultX;
         gp.player.solidArea.y = gp.player.solidAreaDefaultY;
 
+       return contactPlayer;
     }
+
 }
 
