@@ -28,6 +28,7 @@ public class UI {
     public String currentDialogue = "";
     public int commandNum = 0;
     public int titleScreenState = 0;
+
     public UI(GamePanel gp) {
         this.gp = gp;
         // cambriaz = new Font("Cambria", Font.PLAIN, 40);
@@ -45,10 +46,12 @@ public class UI {
         heart_half = heart.image2;
         heart_blank = heart.image3;
     }
+
     public void showMessage(String text) {
         message = text;
         messageOn = true;
     }
+
     public void draw(Graphics2D g2) {
        /*
        //*******这里是寻宝游戏的界面*********
@@ -124,9 +127,9 @@ public class UI {
         if (gp.gameState == gp.playState) {
             drawPlayerLife();
         }
-       if (gp.gameState == gp.pauseState) {
+        if (gp.gameState == gp.pauseState) {
             drawPlayerLife();
-          drawPauseScreen();
+            drawPauseScreen();
             System.out.println("draw pause screen");
         }
         if (gp.gameState == gp.dialogueState) {
@@ -134,7 +137,12 @@ public class UI {
             drawDialogueScreen();
             System.out.println("draw dialogue screen");
         }
+        if (gp.gameState == gp.characterState) {
+            drawPlayerLife();
+            drawCharacterScreen();
+        }
     }
+
     public void drawPlayerLife() {
         int x = gp.tileSize / 2;
         int y = gp.tileSize / 2;
@@ -162,6 +170,7 @@ public class UI {
             x += gp.tileSize;
         }
     }
+
     public void drawTitleScreen() {
         if (titleScreenState == 0) {
 
@@ -270,8 +279,102 @@ public class UI {
 
     }
 
-    public void drawSubWindow(int x, int y, int width, int height) {//绘制
+    public void drawCharacterScreen() {
 
+        //Create A Frame
+        final int frameX = gp.tileSize * 2;
+        final int frameY = gp.tileSize;
+        final int frameWidth = gp.tileSize * 5;
+        final int frameHeight = gp.tileSize * 10;
+        drawSubWindow(frameX, frameY, frameWidth, frameHeight);//绘制对话框
+        //TEXT
+        g2.setColor(Color.white);
+        g2.setFont(g2.getFont().deriveFont(32F));
+
+        int textX = frameX + 20;
+        int textY = frameY + gp.tileSize;
+        final int lineHeight = 35;
+        g2.drawString("Level", textX, textY);
+        textY += lineHeight;
+        g2.drawString("Life", textX, textY);
+        textY += lineHeight;
+        g2.drawString("Strength", textX, textY);
+        textY += lineHeight;
+        g2.drawString("Dexterity", textX, textY);
+        textY += lineHeight;
+        g2.drawString("Attack", textX, textY);
+        textY += lineHeight;
+        g2.drawString("Defense", textX, textY);
+        textY += lineHeight;
+        g2.drawString("Exp", textX, textY);
+        textY += lineHeight;
+        g2.drawString("Next Level", textX, textY);
+        textY += lineHeight;
+        g2.drawString("Coin", textX, textY);
+        textY += lineHeight + 20;
+        g2.drawString("Weapon", textX, textY);
+        textY += lineHeight + 15;
+        g2.drawString("Shield", textX, textY);
+
+
+        //VALUES
+        int tailX = (frameX + frameWidth) - 30;//绘制数值
+        textY = frameY + gp.tileSize;
+        String value;
+
+        value = String.valueOf(gp.player.level );
+        textX = getXforAlignToRightText(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+        value = String.valueOf(gp.player.life +"/"+ gp.player.maxLife);
+        textX = getXforAlignToRightText(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+        value = String.valueOf(gp.player.strength);
+        textX = getXforAlignToRightText(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+        value = String.valueOf(gp.player.dexterity);
+        textX = getXforAlignToRightText(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+        value = String.valueOf(gp.player.attack);
+        textX = getXforAlignToRightText(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+        value = String.valueOf(gp.player.defense);
+        textX = getXforAlignToRightText(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+        value = String.valueOf(gp.player.exp);
+        textX = getXforAlignToRightText(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+        value = String.valueOf(gp.player.nextLevelExp);
+        textX = getXforAlignToRightText(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+        value = String.valueOf(gp.player.coin);
+        textX = getXforAlignToRightText(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+       g2.drawImage(gp.player.currentWeapon.down1, tailX - gp.tileSize , textY-14 , null);
+      textY += lineHeight;
+       g2.drawImage(gp.player.currentShield.down1, tailX - gp.tileSize , textY-5 , null);
+
+    }
+    public int getXforAlignToRightText(String text, int tailX) {//获取文本的X坐标
+        int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
+        int x = tailX - length;
+
+
+        return x;
+    }
+
+    public void drawSubWindow(int x, int y, int width, int height) {
+        //绘制对话框的边框
         Color c = new Color(0, 0, 0, 210);
         g2.setColor(c);
         g2.fillRoundRect(x, y, width, height, 35, 35);//绘制对话框
@@ -281,10 +384,7 @@ public class UI {
         g2.setColor(c);
         g2.setStroke(new BasicStroke(5));
         g2.drawRoundRect(x + 5, y + 5, width - 10, height - 10, 25, 25);
-
-
     }
-
 
     //*************TITLE_SCREEN_2****************
     public void drawPauseScreen() {

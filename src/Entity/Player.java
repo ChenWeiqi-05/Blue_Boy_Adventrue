@@ -3,18 +3,21 @@ package Entity;
 import main.GamePanel;
 import main.KeyHandler;
 import main.UtilityTool;
+import object.OBJ_Shield_Wood;
+import object.OBJ_Sword_Normal;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.logging.Level;
 
 public class Player extends Entity {
     KeyHandler keyH;
     public final int screenX;
     public final int screenY;
     // public int hasKey = 0;
-
+    public boolean attackCanceled = false;
     int standTime = 0;
 
     public Player(GamePanel gp, KeyHandler keyH) {
@@ -51,6 +54,25 @@ public class Player extends Entity {
 // PLAYER STATUS
         maxLife = 6;
         life = maxLife;
+level = 1;
+        strength = 1;
+        dexterity = 1;
+        exp = 0;
+        nextLevelExp = 5;
+        coin = 0;
+        currentWeapon = new OBJ_Sword_Normal(gp);
+        currentShield = new OBJ_Shield_Wood(gp);
+
+        attack = getAttack();
+        defense = getDefense();
+    }
+
+    public int getAttack() {
+        return attack = strength * currentWeapon.attackValue;
+    }
+
+    public int getDefense() {
+        return defense = dexterity * currentShield.attackValue;
     }
 
     public void getPlayerImage() {
@@ -154,6 +176,14 @@ public class Player extends Entity {
                         break;
                 }
             }
+            if (keyH.enterPressed == true && attackCanceled == false) {
+                //这段代码的意思是，如果玩家按下enter键，并且没有取消攻击，那么就执行攻击逻辑。
+                gp.playSE(7);
+
+                attacking = true;
+                spriteCounter = 0;
+            }
+            attackCanceled = false;
             gp.keyH.enterPressed = false;//
             //  gp.cChecker.checkTile(this);
             spriteCounter++;
@@ -308,12 +338,13 @@ public class Player extends Entity {
             if (i != 999) {
                 //这段代码enter  键被按下时，会触发npc的speak方法，并进入对话状态。
                 System.out.println("you are hitting an npc");
+                attackCanceled = true;
                 gp.gameState = gp.dialogueState;
                 gp.npc[i].speak();
-            } else {
+            }/* else {
                 gp.playSE(7);
                 attacking = true;
-            }
+            }*/
         }
     }
 

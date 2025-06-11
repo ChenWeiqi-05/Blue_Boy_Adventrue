@@ -40,14 +40,26 @@ public class Entity {
 
     int hpBarOnCounter = 0;//这个是hp条的开关
 
-
     public String name;
     public int type; // 0 是player 1 = npc 2 = monster
     public int maxLife;
+    public int level;
     public int life;
     public int speed;
     public int hpBarCounter;
+    public int strength;//这个是实体的攻击力
+    public int dexterity;//这个是实体的敏捷
+    public int attack ;//这个是实体的攻击力
+    public int defense ;//这个是实体的防御力
+    public int exp;//这个是实体的经验值
+    public int nextLevelExp;
+    public int coin;//这个是实体的金币数
+    public Entity currentWeapon;//这个是实体的武器
+    public Entity currentShield;//这个是实体的盾牌
 
+    public int attackValue ;
+
+    public int defenseValue ;
     // public Object solidArea;
     public Entity(GamePanel gp) {
         this.gp = gp;
