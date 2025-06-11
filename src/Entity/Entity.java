@@ -12,8 +12,8 @@ public class Entity {
     GamePanel gp;
     // public int worldX, worldY;
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
-    public BufferedImage attackUp1, attackUp2, attackDown1, attackDown2, attackLeft1, attackLeft2, attackRight1, attackRight2 ;
-    public BufferedImage image,image2,image3;
+    public BufferedImage attackUp1, attackUp2, attackDown1, attackDown2, attackLeft1, attackLeft2, attackRight1, attackRight2;
+    public BufferedImage image, image2, image3;
     public Rectangle solidArea = new Rectangle(0, 0, 48, 48);//这是所有实体的默认矩形
     public Rectangle attackArea = new Rectangle(0, 0, 0, 0);
     public int solidAreaDefaultX, solidAreaDefaultY;
@@ -27,24 +27,38 @@ public class Entity {
     public boolean collisionOn = false;
     public boolean invincible = false;
     boolean attacking = false;
+
+    public boolean alive = true;
+    public boolean dying = false;
+    boolean hpBarOn = false;//这个是hp条的开关
+
     public int spriteCounter = 0;
     public int actionLockCounter = 0; //  这个是实体动作计数器，用来控制实体的动作
-    public  int invincibleCounter = 0;
-   //STATE
+    public int invincibleCounter = 0;
+    //STATE
+    int dyingCounter = 0;
+
+    int hpBarOnCounter = 0;//这个是hp条的开关
+
 
     public String name;
-    public  int type; // 0 是player 1 = npc
+    public int type; // 0 是player 1 = npc 2 = monster
     public int maxLife;
     public int life;
     public int speed;
+    public int hpBarCounter;
+
     // public Object solidArea;
     public Entity(GamePanel gp) {
         this.gp = gp;
     }
+
     public void setAction() {
 
     }
+public void damageReaction() {
 
+    }
     public void speak() {
         if (dialogues[dialogueIndex] == null) {//防止dialogues数组的空指针异常
             dialogueIndex = 0;
@@ -80,15 +94,16 @@ public class Entity {
         gp.cChecker.checkObject(this, false);
         gp.cChecker.checkEntity(this, gp.npc);
         gp.cChecker.checkEntity(this, gp.monster);
-          boolean   contactPlayer = gp.cChecker.checkPlayer(this);//这段代码的意思是
+        boolean contactPlayer = gp.cChecker.checkPlayer(this);//这段代码的意思是
         // 当实体与玩家发生碰撞时，如果玩家没有被保护，则玩家会损失生命值
-          if (this.type == 2 && contactPlayer == true){//这段代码的意思是当实体与玩家发生碰撞时
-              // ，如果玩家没有被保护，则玩家会损失生命值
-              if(gp.player.invincible == false){
-                  gp.player.life -= 1;
-                  gp.player.invincible = true;
-              }
-          }
+        if (this.type == 2 && contactPlayer == true) {//这段代码的意思是当实体与玩家发生碰撞时
+            // ，如果玩家没有被保护，则玩家会损失生命值
+            if (gp.player.invincible == false) {
+                gp.playSE(6);
+                gp.player.life -= 1;
+                gp.player.invincible = true;
+            }
+        }
 
         if (collisionOn == false) {//检测实体是否发生碰撞
             switch (direction) {
@@ -179,22 +194,83 @@ public class Entity {
                     }
                     break;
             }
-            if (invincible == true) {
-                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f));
+            //Monster HP bar
+            if (type == 2  && hpBarOn == true){//绘制Monster HP bar,当type等于2时才绘制
+
+                double oneScale = (double) gp.tileSize / maxLife;//计算一个比例
+                double hpBarValue = oneScale * life;//计算Monster HP bar的值
+
+                g2.setColor(new Color(35,35,35));
+                g2.fillRect(screenX, screenY - 16, gp.tileSize+2, 12);
+                g2.setColor(new Color(255,0,30));
+                g2.fillRect(screenX, screenY - 15, (int) hpBarValue, 10);
+                //这段代码是绘制Monster HP bar的代码
+
+                hpBarCounter++;
+                if (hpBarCounter > 600){
+                    hpBarCounter =0;
+                    hpBarOn = false;
+                }
+            }
+            if (invincible == true) {//如果玩家处于被保护状态，则绘制Monster HP bar
+                hpBarOn = true;
+                hpBarCounter = 0;
+                    changeAlpha(g2,0.4F);
+                   }
+            if (dying == true) {
+                dyingAnimation(g2);
             }
 
             g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
 
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+             changeAlpha(g2,1F);
 
         }
     }
 
-    public BufferedImage setup(String imagePath,int width,int height) {//这个方法用来获取图片
+    public void dyingAnimation(Graphics2D g2) {
+        dyingCounter++;
+        int i = 5;
+        if (dyingCounter <= i) {
+            changeAlpha(g2, 0f);
+        }
+        if (dyingCounter > i && dyingCounter <= i * 2) {
+            changeAlpha(g2, 1f);
+        }
+        if (dyingCounter > i * 2 && dyingCounter <= i * 3) {
+            changeAlpha(g2, 0f);
+        }
+        if (dyingCounter > i * 3 && dyingCounter <= i * 4) {
+            changeAlpha(g2, 1f);
+        }
+        if (dyingCounter > i * 4 && dyingCounter <= i * 5) {
+            changeAlpha(g2, 0f);
+        }
+        if (dyingCounter > i * 5 && dyingCounter <= i * 6) {
+            changeAlpha(g2, 1f);
+        }
+        if (dyingCounter > i * 6 && dyingCounter <= i * 7) {
+            changeAlpha(g2, 0f);
+        }
+        if (dyingCounter > i * 7 && dyingCounter <= i * 8) {
+            changeAlpha(g2, 1f);
+        }
+        if (dyingCounter > i * 8) {
+
+            dying = false;
+            alive = false;
+
+        }
+    }
+
+    public void changeAlpha(Graphics2D g2, float alphaValue) {
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alphaValue));
+    }
+
+    public BufferedImage setup(String imagePath, int width, int height) {//这个方法用来获取图片
         UtilityTool uTool = new UtilityTool();
         BufferedImage image = null;
         try {
-
             image = ImageIO.read(getClass().getResourceAsStream(imagePath + ".png"));
             image = uTool.scaleImage(image, width, height);//这段代码是用来获取图片的，并且缩放到指定的大小。
         } catch (IOException e) {

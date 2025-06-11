@@ -63,5 +63,8 @@ public class MON_GreenSlime extends Entity {
             actionLockCounter = 0;
         }
     }
-
+    public void damageReaction() {//史莱姆受到攻击后的退后ai
+        actionLockCounter = 0;
+        direction = gp.player.direction;
+    }
 }

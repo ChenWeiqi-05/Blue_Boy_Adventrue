@@ -33,7 +33,6 @@ public class NPC_OldMan extends Entity {
         dialogues[3] = "A mysterious older:   oh... I'm not your father, don't ask\n me I can't  provide any information about your mysterious \nfather..";
 
     }
-
     public void setAction() {//npc的ai移动
 
         actionLockCounter++;
@@ -57,9 +56,9 @@ public class NPC_OldMan extends Entity {
             actionLockCounter = 0;
         }
     }
-
     public void speak() {
       super.speak();
+
 
     }
 }
