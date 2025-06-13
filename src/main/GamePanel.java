@@ -43,7 +43,7 @@ public class GamePanel extends JPanel implements Runnable {
     public Player player = new Player(this, keyH);
     public Entity obj[] = new Entity[10];
     public Entity npc[] = new Entity[10];
-    public Entity monster[] = new Entity[20];
+    public Entity monster[] = new Entity[100];
     ArrayList<Entity> entityList = new ArrayList<>();//创建一个实体列表
 
     public int gameState;
@@ -103,7 +103,6 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
-
         if (gameState == playState) {//如果游戏状态为游戏状态，则执行下面的代码
             player.update();
             for (int i = 0; i < npc.length; i++) {//循环遍历npc数组
@@ -111,12 +110,13 @@ public class GamePanel extends JPanel implements Runnable {
                     npc[i].update();
                 }
             }
-            for (int i = 0; i < monster.length; i++){
-                if  (monster[i] != null) {
-                    if (monster[i].alive == true && monster[i].dying == false){
+            for (int i = 0; i < monster.length; i++) {
+                if (monster[i] != null) {
+                    if (monster[i].alive == true && monster[i].dying == false) {
                         monster[i].update();
 
-                    }if (monster[i].alive == false){
+                    }
+                    if (monster[i].alive == false) {
                         monster[i] = null;
 
                     }
@@ -128,12 +128,13 @@ public class GamePanel extends JPanel implements Runnable {
 
         }
     }
+
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
         long drawStart = 0;
-        if (keyH.checkDrawTime == true) {
+        if (keyH.showDebugText == true) {
             drawStart = System.nanoTime();
         }
         //绘制对象
@@ -185,13 +186,22 @@ public class GamePanel extends JPanel implements Runnable {
             // 确保UI绘制
         }
 
-        if (keyH.checkDrawTime == true) {
+        if (keyH.showDebugText == true) {
             long drawEnd = System.nanoTime();
             long passed = drawEnd - drawStart;
-            g2.setColor(Color.white);
 
-            g2.drawString("Draw :" + passed, 10, 400);
-            System.out.println(passed);
+            g2.setFont(new Font("Arial", Font.PLAIN, 20));
+            g2.setColor(Color.white);
+            int x = 10;
+            int y = 400;
+            int lineHeight = 20;
+
+            g2.drawString("WordX" + player.worldX, x, y);y+=lineHeight;
+            g2.drawString("WordY" + player.worldY, x, y);y+=lineHeight;
+            g2.drawString("Col" + (player.worldX +player.solidArea.x)/tileSize, x, y);y+=lineHeight;
+            g2.drawString("Row" + (player.worldY +player.solidArea.y)/tileSize, x, y);y+=lineHeight;
+
+            g2.drawString("Draw :" + passed, x, y);
         }
         g2.dispose();
     }

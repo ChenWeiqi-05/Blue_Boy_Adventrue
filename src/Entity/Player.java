@@ -3,6 +3,7 @@ package Entity;
 import main.GamePanel;
 import main.KeyHandler;
 import main.UtilityTool;
+import object.OBJ_Key;
 import object.OBJ_Shield_Wood;
 import object.OBJ_Sword_Normal;
 
@@ -10,7 +11,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.logging.Level;
+import java.util.ArrayList;
 
 public class Player extends Entity {
     KeyHandler keyH;
@@ -19,7 +20,8 @@ public class Player extends Entity {
     // public int hasKey = 0;
     public boolean attackCanceled = false;
     int standTime = 0;
-
+    public ArrayList<Entity> inventory = new ArrayList<>();
+    public final int maxInventorySize = 20;
     public Player(GamePanel gp, KeyHandler keyH) {
         super(gp);
         this.keyH = keyH;
@@ -37,11 +39,18 @@ public class Player extends Entity {
         attackArea.width = 36;
         attackArea.height = 36;
 
-        setDaultValues();
-        getPlayerImage();
-        getPlayerAttackImage();
+        setDaultValues();//设置默认值
+        getPlayerImage();//获取玩家图片
+        getPlayerAttackImage();//获取玩家攻击图片
+        setItems();//设置物品
     }
+    public void setItems() {
+        inventory.add(currentWeapon);//添加物品
+        inventory.add(currentShield);//添加物品
+        inventory.add(new OBJ_Key(gp));//添加物品
+        inventory.add(new OBJ_Key(gp));
 
+    }
     public void setDaultValues() {
         worldX = gp.tileSize * 23;
         worldY = gp.tileSize * 21;
@@ -54,7 +63,7 @@ public class Player extends Entity {
 // PLAYER STATUS
         maxLife = 6;
         life = maxLife;
-level = 1;
+        level = 1;
         strength = 1;
         dexterity = 1;
         exp = 0;
@@ -264,24 +273,55 @@ level = 1;
         if (i != 999) {
             if (gp.monster[i].invincible == false) {
                 gp.playSE(5);
-                gp.monster[i].life -= 1;
+
+                int damage = attack - gp.monster[i].defense;//攻击力减去防御力
+                if (damage < 0) {
+                    damage = 0;
+                }
+                gp.monster[i].life -= damage;
+                gp.ui.addMessage(damage + " damage!");
+                gp.player.life += 2;
                 gp.monster[i].invincible = true;
                 gp.monster[i].damageReaction();//当玩家攻击史莱姆后，史莱姆会触发退后方法
-                if (gp.monster[i].life <= 0) {
-                    gp.monster[i].dying = true;
+                if (gp.monster[i].life <= 0) {//当史莱姆的血量小于等于0时，会触发死亡方法
+                    gp.monster[i].dying = true;//死亡
 
+                    gp.ui.addMessage("Killed the " + gp.monster[i].name + "!");
+                    gp.ui.addMessage("Exp + " + gp.monster[i].exp + "!");
+                    exp += gp.monster[i].exp;
+                    CheckLevelUp();
                 }
             }
         }
+    }
 
+    public void CheckLevelUp() {
+        if (exp >= nextLevelExp) {//当经验值大于等于下一级经验值时，触发升级
+            level++;
+            nextLevelExp = nextLevelExp * 2;
+            maxLife += 2;
+
+            strength++;
+            dexterity++;
+            attack = getAttack();
+            defense = getDefense();
+
+            gp.playSE(8);
+            gp.gameState = gp.dialogueState;
+            gp.ui.currentDialogue = "You are level " + level + "now!\n" + "You feel stronger!";
+
+        }
     }
 
     public void contactMonster(int i) {//这段代码的意思是
         if (i != 999) {
             if (invincible == false) {
-
                 gp.playSE(6);
-                life -= 1;
+                int damage = gp.monster[i].attack - defense;//攻击力减去防御力
+                if (damage < 0) {
+                    damage = 0;
+                }
+                life -= damage;
                 invincible = true;//
             }
         }
@@ -471,4 +511,6 @@ level = 1;
         g2.drawString("Invincible :"+invincibleCounter,10,400);
   */
     }
+
+
 }

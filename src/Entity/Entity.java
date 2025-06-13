@@ -22,6 +22,7 @@ public class Entity {
     public int worldX, worldY;//这个是world01的绝对坐标
 
     public String direction = "down";
+    public String direction1 = "up";
     public int spriteNum = 1;
     int dialogueIndex = 0;
     public boolean collisionOn = false;
@@ -49,7 +50,7 @@ public class Entity {
     public int hpBarCounter;
     public int strength;//这个是实体的攻击力
     public int dexterity;//这个是实体的敏捷
-    public int attack ;//这个是实体的攻击力
+    public int attack;//这个是实体的攻击力
     public int defense ;//这个是实体的防御力
     public int exp;//这个是实体的经验值
     public int nextLevelExp;
@@ -60,6 +61,8 @@ public class Entity {
     public int attackValue ;
 
     public int defenseValue ;
+
+    public String description = "";//这个是实体的描述
     // public Object solidArea;
     public Entity(GamePanel gp) {
         this.gp = gp;
@@ -112,11 +115,14 @@ public void damageReaction() {
             // ，如果玩家没有被保护，则玩家会损失生命值
             if (gp.player.invincible == false) {
                 gp.playSE(6);
-                gp.player.life -= 1;
+                int damage = attack - gp.player.defense;//攻击力减去防御力
+                if (damage < 0){
+                    damage = 0;
+                }
+                gp.player.life -= damage;
                 gp.player.invincible = true;
             }
         }
-
         if (collisionOn == false) {//检测实体是否发生碰撞
             switch (direction) {
                 case "up":

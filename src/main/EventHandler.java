@@ -50,7 +50,8 @@ public class EventHandler {
                 damagePit(27, 16, gp.dialogueState);
 
                 System.out.println("call checkEvent");
-            }if (hit(23,19,"any")== true){
+            }
+            if (hit(23, 19, "any") == true) {
                 damagePit(27, 16, gp.dialogueState);
             }
             if (hit(23, 12, "up") == true) {
@@ -100,7 +101,7 @@ public class EventHandler {
 
        gp.player.life -= 1;*/
         //   eventRect[col][row].eventDone = true;
-        gp.ui.currentDialogue = "I fall into a pit ! " ;
+        gp.ui.currentDialogue = "I fall into a pit ! ";
         canTouchEvent = false;
     }
 
@@ -110,6 +111,8 @@ public class EventHandler {
             gp.player.attackCanceled = true;
             gp.ui.currentDialogue = "You drink the water .\nYour life has been recovered !\n oh yeah! ";
             gp.player.life = gp.player.maxLife;
+            gp.aSetter.setMonster();
+
         }
 
     }

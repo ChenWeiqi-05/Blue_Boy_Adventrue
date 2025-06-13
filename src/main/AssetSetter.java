@@ -2,6 +2,9 @@ package main;
 
 import Entity.NPC_OldMan;
 import monster.MON_GreenSlime;
+import object.OBJ_Key;
+
+import java.util.Random;
 
 public class AssetSetter {
     GamePanel gp;
@@ -36,11 +39,16 @@ public class AssetSetter {
         gp.obj[7] = new OBJ_Boots(gp);
         gp.obj[7].worldX = 37 * gp.tileSize;
         gp.obj[7].worldY = 42 * gp.tileSize;*/
+        gp.obj[0] = new OBJ_Key(gp);
+        gp.obj[0].worldX = gp.tileSize*25;
+        gp.obj[0].worldY =  gp.tileSize*19;
+
     }
+
     public void setNPC() {
 
         gp.npc[0] = new NPC_OldMan(gp);
-     gp.npc[0].worldX = gp.tileSize * 21;//npc的在世界的x位置
+        gp.npc[0].worldX = gp.tileSize * 21;//npc的在世界的x位置
         gp.npc[0].worldY = gp.tileSize * 21;//npc的在世界的y位置
     /*  gp.npc[0] = new NPC_OldMan(gp);
      gp.npc[0].worldX = gp.tileSize * 9;//npc的在世界的x位置
@@ -51,13 +59,35 @@ public class AssetSetter {
 
     public void setMonster() {
 
-      gp.monster[0] = new MON_GreenSlime(gp);
-        gp.monster[0].worldX = gp.tileSize * 23;
-        gp.monster[0].worldY = gp.tileSize * 36;
+     /*   int i = 0;
+        gp.monster[i] = new MON_GreenSlime(gp);
+        gp.monster[i].worldX = gp.tileSize * 23;
+        gp.monster[i].worldY = gp.tileSize * 36;
+        i++;
+        gp.monster[i] = new MON_GreenSlime(gp);
+        gp.monster[i].worldX = gp.tileSize * 23;
+        gp.monster[i].worldY = gp.tileSize * 42;
+        i++;
+        gp.monster[i] = new MON_GreenSlime(gp);
+        gp.monster[i].worldX = gp.tileSize * 24;
+        gp.monster[i].worldY = gp.tileSize * 37;
+        i++;
+        gp.monster[i] = new MON_GreenSlime(gp);
+        gp.monster[i].worldX = gp.tileSize * 34;
+        gp.monster[i].worldY = gp.tileSize * 42;
+        i++;
+        gp.monster[i] = new MON_GreenSlime(gp);
+        gp.monster[i].worldX = gp.tileSize * 38;
+        gp.monster[i].worldY = gp.tileSize * 42;*/
 
-        gp.monster[1] = new MON_GreenSlime(gp);
-        gp.monster[1].worldX = gp.tileSize * 23;
-        gp.monster[1].worldY = gp.tileSize * 37;
+        Random random = new Random();
+        // 仅初始化部分史莱姆(例如10个)，保留空间用于后续生成
+        int initialCount = 1000;
+        for (int i = 0; i < initialCount && i < gp.monster.length; i++) {
+            gp.monster[i] = new MON_GreenSlime(gp);
+            gp.monster[i].worldX = gp.tileSize * (1 + random.nextInt(gp.maxWorldCol - 1));
+            gp.monster[i].worldY = gp.tileSize * (1 + random.nextInt(gp.maxWorldRow - 1));
+        }
         /*gp.monster[0] = new MON_GreenSlime(gp);
         gp.monster[0].worldX = gp.tileSize * 11;
         gp.monster[0].worldY = gp.tileSize * 9;

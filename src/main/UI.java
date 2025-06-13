@@ -7,7 +7,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.PublicKey;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 public class UI {
     BufferedImage heart_full, heart_half, heart_blank;
@@ -23,11 +25,17 @@ public class UI {
     double playTime;
     DecimalFormat dFormat = new DecimalFormat("#0.00");
     // 我们已经不再需要这个时间计算器了
-    public String message = "";
-    public int messageCounter;
+/*    public String message = "";
+    public int messageCounter = 0;*/
+    ArrayList<String> message = new ArrayList<>();
+    ArrayList<Integer> messageCounter = new ArrayList<>();
     public String currentDialogue = "";
     public int commandNum = 0;
     public int titleScreenState = 0;
+
+    public int slotCol = 0;//鼠标点击的格子列数
+    public int slotRow = 0;//鼠标点击的格子行数
+
 
     public UI(GamePanel gp) {
         this.gp = gp;
@@ -47,9 +55,12 @@ public class UI {
         heart_blank = heart.image3;
     }
 
-    public void showMessage(String text) {
-        message = text;
-        messageOn = true;
+    public void addMessage(String text) {//这个方法用来添加消息
+      /*  message = text;
+        messageOn = true;*/
+        message.add(text);
+        messageCounter.add(0);
+
     }
 
     public void draw(Graphics2D g2) {
@@ -126,6 +137,7 @@ public class UI {
         }
         if (gp.gameState == gp.playState) {
             drawPlayerLife();
+            drawMessage();
         }
         if (gp.gameState == gp.pauseState) {
             drawPlayerLife();
@@ -140,7 +152,77 @@ public class UI {
         if (gp.gameState == gp.characterState) {
             drawPlayerLife();
             drawCharacterScreen();
+            drawInventory();
         }
+    }
+
+    public void drawInventory() {
+        //绘制玩家库存
+        int frameX = gp.tileSize * 9;
+        int frameY = gp.tileSize;
+        int frameWidth = gp.tileSize * 6;
+        int frameHeight = gp.tileSize * 5;
+        drawSubWindow(frameX, frameY, frameWidth, frameHeight);
+
+        final int slotXstart = frameX + 20;
+        final int slotYstart = frameY + 20;
+//SLOT这段代码是绘制库存
+        int slotX = slotXstart;
+        int slotY = slotYstart;
+
+        int slotSize = gp.tileSize + 3;
+
+//DRAW  PLAYER INVENTORY ITEM
+        for (int i = 0; i < gp.player.inventory.size(); i++) {//绘制库存
+            g2.drawImage(gp.player.inventory.get(i).down1, slotX, slotY, null);
+            slotX += gp.tileSize;//换列
+            if (i == 4 || i == 9 || i == 14) {//每行有5个物品
+                slotX = slotXstart;//换列
+                slotY += slotSize;//换行
+            }
+        }
+        //CURSOR这段代码是绘制库存游标
+        int cursorX = slotXstart + (slotSize * slotCol);
+        int cursorY = slotYstart + (slotSize * slotRow);
+//SLOT这段代码是绘制库存游标
+        int cursorWidth = gp.tileSize;
+        int cursorHeight = gp.tileSize;
+
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(3));//绘制库存游标的边框
+        g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
+//这段代码是绘制库存游标
+
+        //绘制库存中游标所对应的物品的描述对话框
+        int dFrameX = frameX;
+        int dFrameY = frameY + frameHeight;
+        int dFrameWidth = frameWidth;
+        int dFrameHeight = gp.tileSize * 3;
+        drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight);
+//DRAW DESCRIPTION TEXT
+
+        int textX = frameX + 20;
+        int textY = dFrameY + gp.tileSize;
+        g2.setFont(g2.getFont().deriveFont(28F));
+
+        int itemIndex = getItemIndexOnSlot();//获取库存物品的索引
+
+        if (itemIndex < gp.player.inventory.size()) {
+            //如果索引小于库存物品的数量，则绘制库存物品的描述
+            for (String line : gp.player.inventory.get(itemIndex).description.split("\n")) {
+                //通过循环绘制库存物品的描述，已达到换行
+                g2.drawString(line, textX, textY);
+                textY += 32;//换行
+            }
+        }
+
+    }
+
+    public int getItemIndexOnSlot() {//获取库存物品的索引,以实现库存物品的描述
+
+        int itemIndex = slotCol + (slotRow * 5);//获取库存物品的索引
+        return itemIndex;//返回库存物品的索引
+
     }
 
     public void drawPlayerLife() {
@@ -171,14 +253,42 @@ public class UI {
         }
     }
 
+    public void drawMessage() {//绘制攻击消息
+        int messageX = gp.tileSize;
+        int messageY = gp.tileSize * 4;
+
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32F));
+
+        for (int i = 0; i < message.size(); i++) {//绘制消息
+            if (message.get(i) != null) {//这段代码的逻辑是，
+                // 如果消息不为空，就绘制消息
+
+                g2.setColor(Color.black);
+                g2.drawString(message.get(i), messageX + 2, messageY + 2);
+
+                g2.setColor(Color.white);
+                g2.drawString(message.get(i), messageX, messageY);
+
+                int counter = messageCounter.get(i) + 1;
+                messageCounter.set(i, counter);//set the counter to the arrages
+                messageY += 50;
+                if (messageCounter.get(i) > 180) {
+                    message.remove(i);//这样做的原因是，当消息显示的时间超过180秒时，
+                    // 就删除该消息，以保证消息不会占用太多空间，出而实现屏幕空间
+                    messageCounter.remove(i);
+                }
+            }
+        }
+    }
+
     public void drawTitleScreen() {
         if (titleScreenState == 0) {
 
             g2.setColor(new Color(0, 0, 0));
             g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 86F));
-            String text = "Weiqi Adventure";
 
+            String text = "Weiqi Adventure";
 
             int x = getXforCenteredText(text);
             int y = gp.tileSize * 3;
@@ -194,6 +304,7 @@ public class UI {
 
             g2.drawImage(gp.player.down1, x, y, gp.tileSize * 2, gp.tileSize * 2, null);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
+
 //  COMMAND
             text = "NEW GAME";
             x = getXforCenteredText(text);
@@ -216,6 +327,12 @@ public class UI {
             if (commandNum == 2) {
                 g2.drawString(">", x - gp.tileSize, y);
             }
+
+            text = "Power by java";
+            x = getXforCenteredText(text);
+            y += gp.tileSize;
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 28F));
+            g2.drawString(text, x, y);
         } else if (titleScreenState == 1) {
 //*************TITLE_SCREEN_2****************
             g2.setColor(Color.white);
@@ -322,11 +439,11 @@ public class UI {
         textY = frameY + gp.tileSize;
         String value;
 
-        value = String.valueOf(gp.player.level );
+        value = String.valueOf(gp.player.level);
         textX = getXforAlignToRightText(value, tailX);
         g2.drawString(value, textX, textY);
         textY += lineHeight;
-        value = String.valueOf(gp.player.life +"/"+ gp.player.maxLife);
+        value = String.valueOf(gp.player.life + "/" + gp.player.maxLife);
         textX = getXforAlignToRightText(value, tailX);
         g2.drawString(value, textX, textY);
         textY += lineHeight;
@@ -360,15 +477,15 @@ public class UI {
         g2.drawString(value, textX, textY);
         textY += lineHeight;
 
-       g2.drawImage(gp.player.currentWeapon.down1, tailX - gp.tileSize , textY-14 , null);
-      textY += lineHeight;
-       g2.drawImage(gp.player.currentShield.down1, tailX - gp.tileSize , textY-5 , null);
+        g2.drawImage(gp.player.currentWeapon.down1, tailX - gp.tileSize, textY - 14, null);
+        textY += lineHeight;
+        g2.drawImage(gp.player.currentShield.down1, tailX - gp.tileSize, textY - 8, null);
 
     }
+
     public int getXforAlignToRightText(String text, int tailX) {//获取文本的X坐标
         int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
         int x = tailX - length;
-
 
         return x;
     }
