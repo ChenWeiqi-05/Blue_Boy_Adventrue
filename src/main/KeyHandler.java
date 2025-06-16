@@ -5,7 +5,7 @@ import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener {
     GamePanel gp;
-    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed;
+    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed,shotKeyPressed;
     boolean showDebugText = false;
 
 
@@ -243,6 +243,9 @@ public class KeyHandler implements KeyListener {
                 gp.playMusic(0);  // 退出暂停状态时重新播放音乐
             }
         }
+        if (code == KeyEvent.VK_F) {
+            shotKeyPressed = true;
+        }
         if (code == KeyEvent.VK_ENTER) {
             enterPressed = true;
         }
@@ -256,8 +259,10 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_T) {
             if (showDebugText == false) {
                 showDebugText = true;
+
             } else if (showDebugText == true) {
                 showDebugText = false;
+
             }
         }
     }
@@ -290,6 +295,7 @@ public class KeyHandler implements KeyListener {
                 gp.ui.slotCol--;
                 gp.playSE(9);
             }
+
         }
         if (code == KeyEvent.VK_S) {
             if (gp.ui.slotRow != 3) {
@@ -303,7 +309,9 @@ public class KeyHandler implements KeyListener {
                 gp.playSE(9);
             }
         }
-
+        if (code == KeyEvent.VK_ENTER){//选择物品
+            gp.player.selectItem();
+        }
     }
 
     @Override
@@ -320,6 +328,8 @@ public class KeyHandler implements KeyListener {
         }
         if (code == KeyEvent.VK_D) {
             rightPressed = false;
+        }if (code == KeyEvent.VK_F) {
+            shotKeyPressed = false;
         }
     }
 

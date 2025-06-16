@@ -164,8 +164,8 @@ public class UI {
         int frameHeight = gp.tileSize * 5;
         drawSubWindow(frameX, frameY, frameWidth, frameHeight);
 
-        final int slotXstart = frameX + 20;
-        final int slotYstart = frameY + 20;
+        final int slotXstart = frameX + 20;//绘制库存的X坐标
+        final int slotYstart = frameY + 20;//绘制库存的Y坐标
 //SLOT这段代码是绘制库存
         int slotX = slotXstart;
         int slotY = slotYstart;
@@ -174,6 +174,13 @@ public class UI {
 
 //DRAW  PLAYER INVENTORY ITEM
         for (int i = 0; i < gp.player.inventory.size(); i++) {//绘制库存
+
+            if (gp.player.inventory.get(i)==gp.player.currentWeapon//当前武器或者当前盾牌
+                    || gp.player.inventory.get(i)==gp.player.currentShield//当前盾牌
+            ){
+                g2.setColor(new Color(240, 190,90 ));
+                g2.fillRoundRect(slotX , slotY , gp.tileSize , gp.tileSize , 10, 10);
+            }
             g2.drawImage(gp.player.inventory.get(i).down1, slotX, slotY, null);
             slotX += gp.tileSize;//换列
             if (i == 4 || i == 9 || i == 14) {//每行有5个物品
@@ -198,7 +205,7 @@ public class UI {
         int dFrameY = frameY + frameHeight;
         int dFrameWidth = frameWidth;
         int dFrameHeight = gp.tileSize * 3;
-        drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight);
+
 //DRAW DESCRIPTION TEXT
 
         int textX = frameX + 20;
@@ -208,6 +215,7 @@ public class UI {
         int itemIndex = getItemIndexOnSlot();//获取库存物品的索引
 
         if (itemIndex < gp.player.inventory.size()) {
+            drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight);
             //如果索引小于库存物品的数量，则绘制库存物品的描述
             for (String line : gp.player.inventory.get(itemIndex).description.split("\n")) {
                 //通过循环绘制库存物品的描述，已达到换行

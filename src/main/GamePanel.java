@@ -44,7 +44,8 @@ public class GamePanel extends JPanel implements Runnable {
     public Entity obj[] = new Entity[10];
     public Entity npc[] = new Entity[10];
     public Entity monster[] = new Entity[100];
-    ArrayList<Entity> entityList = new ArrayList<>();//创建一个实体列表
+    ArrayList<Entity> projectileList = new ArrayList<>();
+    ArrayList<Entity> entityList = new ArrayList<>();//创建a一个实体列表
 
     public int gameState;
     public final int titleState = 0;

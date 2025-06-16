@@ -12,7 +12,7 @@ public class MON_GreenSlime extends Entity {
     public MON_GreenSlime(GamePanel gp) {
         super(gp);
         this.gp = gp;
-        type = 2;
+      type = type_monster;
         name = "Green Slime";
         speed = 1;
         maxLife = 4;
@@ -50,10 +50,8 @@ public class MON_GreenSlime extends Entity {
         if (actionLockCounter == 120) {
             Random random = new Random();
             int i = random.nextInt(100) + 1;
-
             if (i < 25) {
                 direction = "up";
-
             }
             if (i > 25 && i <= 50) {
                 direction = "down";

@@ -81,7 +81,6 @@ public class EventHandler {
         if (gp.player.solidArea.intersects(eventRect[col][row]) && eventRect[col][row].eventDone == false) {//这段代码是用来判断玩家是否与事件发生碰撞的
             if (gp.player.direction.contentEquals(reqDirection) || reqDirection.contentEquals("any")) {
                 hit = true;
-
                 previousEventX = gp.player.worldX;
                 previousEventY = gp.player.worldY;
 
@@ -92,13 +91,11 @@ public class EventHandler {
         eventRect[col][row].x = eventRect[col][row].eventRectDefaultX;
         eventRect[col][row].y = eventRect[col][row].eventRectDefaultY;
         return hit;
+
     }
 
     public void damagePit(int col, int row, int gameState) {//掉落事件
-
-
    /*  gp.gameState = gameState;
-
        gp.player.life -= 1;*/
         //   eventRect[col][row].eventDone = true;
         gp.ui.currentDialogue = "I fall into a pit ! ";

@@ -3,7 +3,7 @@ package Entity;
 import main.GamePanel;
 import main.KeyHandler;
 import main.UtilityTool;
-import object.OBJ_Key;
+import object.OBJ_Fireball;
 import object.OBJ_Shield_Wood;
 import object.OBJ_Sword_Normal;
 
@@ -22,6 +22,8 @@ public class Player extends Entity {
     int standTime = 0;
     public ArrayList<Entity> inventory = new ArrayList<>();
     public final int maxInventorySize = 20;
+
+
     public Player(GamePanel gp, KeyHandler keyH) {
         super(gp);
         this.keyH = keyH;
@@ -36,21 +38,22 @@ public class Player extends Entity {
         solidArea.width = 32;
         solidArea.height = 32;
 
-        attackArea.width = 36;
-        attackArea.height = 36;
+       /* attackArea.width = 36;
+        attackArea.height = 36;*/
 
-        setDaultValues();//设置默认值
-        getPlayerImage();//获取玩家图片
-        getPlayerAttackImage();//获取玩家攻击图片
-        setItems();//设置物品
+        setDaultValues();
+        getPlayerImage();
+        getPlayerAttackImage();
+        setItems();
     }
+
     public void setItems() {
-        inventory.add(currentWeapon);//添加物品
-        inventory.add(currentShield);//添加物品
-        inventory.add(new OBJ_Key(gp));//添加物品
-        inventory.add(new OBJ_Key(gp));
-
+        inventory.add(currentWeapon);
+        inventory.add(currentShield);
+        inventory.add(new OBJ_Shield_Wood(gp));
+        inventory.add(new OBJ_Sword_Normal(gp));
     }
+
     public void setDaultValues() {
         worldX = gp.tileSize * 23;
         worldY = gp.tileSize * 21;
@@ -70,13 +73,15 @@ public class Player extends Entity {
         nextLevelExp = 5;
         coin = 0;
         currentWeapon = new OBJ_Sword_Normal(gp);
-        currentShield = new OBJ_Shield_Wood(gp);
-
+        currentShield = new OBJ_Shield_Wood(gp);//添加盾牌
+        projectile = new OBJ_Fireball(gp);//添加火球
         attack = getAttack();
         defense = getDefense();
     }
 
     public int getAttack() {
+
+        attackArea = currentWeapon.attackArea;
         return attack = strength * currentWeapon.attackValue;
     }
 
@@ -96,14 +101,28 @@ public class Player extends Entity {
     }
 
     public void getPlayerAttackImage() {
-        attackUp1 = setup("/player/boy_attack_up_1", gp.tileSize, gp.tileSize * 2);
-        attackUp2 = setup("/player/boy_attack_up_2", gp.tileSize, gp.tileSize * 2);
-        attackDown1 = setup("/player/boy_attack_down_1", gp.tileSize, gp.tileSize * 2);
-        attackDown2 = setup("/player/boy_attack_down_2", gp.tileSize, gp.tileSize * 2);
-        attackLeft1 = setup("/player/boy_attack_left_1", gp.tileSize * 2, gp.tileSize);
-        attackLeft2 = setup("/player/boy_attack_left_2", gp.tileSize * 2, gp.tileSize);
-        attackRight1 = setup("/player/boy_attack_right_1", gp.tileSize * 2, gp.tileSize);
-        attackRight2 = setup("/player/boy_attack_right_2", gp.tileSize * 2, gp.tileSize);
+        if (currentWeapon.type == type_sword) {
+            attackUp1 = setup("/player/boy_attack_up_1", gp.tileSize, gp.tileSize * 2);
+            attackUp2 = setup("/player/boy_attack_up_2", gp.tileSize, gp.tileSize * 2);
+            attackDown1 = setup("/player/boy_attack_down_1", gp.tileSize, gp.tileSize * 2);
+            attackDown2 = setup("/player/boy_attack_down_2", gp.tileSize, gp.tileSize * 2);
+            attackLeft1 = setup("/player/boy_attack_left_1", gp.tileSize * 2, gp.tileSize);
+            attackLeft2 = setup("/player/boy_attack_left_2", gp.tileSize * 2, gp.tileSize);
+            attackRight1 = setup("/player/boy_attack_right_1", gp.tileSize * 2, gp.tileSize);
+            attackRight2 = setup("/player/boy_attack_right_2", gp.tileSize * 2, gp.tileSize);
+        }
+        if (currentWeapon.type == type_axe) {
+            attackUp1 = setup("/player/boy_axe_up_1", gp.tileSize, gp.tileSize * 2);
+            attackUp2 = setup("/player/boy_axe_up_2", gp.tileSize, gp.tileSize * 2);
+            attackDown1 = setup("/player/boy_axe_down_1", gp.tileSize, gp.tileSize * 2);
+            attackDown2 = setup("/player/boy_axe_down_2", gp.tileSize, gp.tileSize * 2);
+            attackLeft1 = setup("/player/boy_axe_left_1", gp.tileSize * 2, gp.tileSize);
+            attackLeft2 = setup("/player/boy_axe_left_2", gp.tileSize * 2, gp.tileSize);
+            attackRight1 = setup("/player/boy_axe_right_1", gp.tileSize * 2, gp.tileSize);
+            attackRight2 = setup("/player/boy_axe_right_2", gp.tileSize * 2, gp.tileSize);
+        }
+
+
     }
 
     /*  private BufferedImage loadImage(String path) throws IOException {
@@ -205,6 +224,10 @@ public class Player extends Entity {
                 spriteCounter = 0;
             }
         }
+        if (gp.keyH.shotKeyPressed ==true && projectile.alive == false ){//这个代码的意思是，如果玩家按下f键，并且没有取消攻击，那么就执行攻击逻辑。
+
+        }
+
         //this needs to be outside of key if statement
         //这段代码的玩家攻击后恢复
         if (invincible == true) {
@@ -315,7 +338,7 @@ public class Player extends Entity {
 
     public void contactMonster(int i) {//这段代码的意思是
         if (i != 999) {
-            if (invincible == false) {
+            if (invincible == false && gp.monster[i].dying == false) {
                 gp.playSE(6);
                 int damage = gp.monster[i].attack - defense;//攻击力减去防御力
                 if (damage < 0) {
@@ -369,6 +392,19 @@ public class Player extends Entity {
                         gp.playSE(4);
                         break;
             }*/
+            String text;
+            if (inventory.size() != maxInventorySize) {
+
+                inventory.add(gp.obj[i]);
+
+                gp.playSE(1);
+                text = "You got " + gp.obj[i].name + "!";
+            } else {
+                text = "You cannot carry anymore!";
+            }
+            gp.ui.addMessage(text);
+            gp.obj[i] = null;
+
         }
     }
 
@@ -385,6 +421,31 @@ public class Player extends Entity {
                 gp.playSE(7);
                 attacking = true;
             }*/
+        }
+    }
+
+    public void selectItem() {
+        int itemIndex = gp.ui.getItemIndexOnSlot();
+
+        if (itemIndex < inventory.size()) {
+            Entity selectedItem = inventory.get(itemIndex);
+            if (selectedItem.type == type_sword || selectedItem.type == type_axe) {
+
+                currentWeapon = selectedItem;
+                attack = getAttack();
+                getPlayerAttackImage();
+            }
+            if (selectedItem.type == type_shield) {
+                currentShield = selectedItem;
+                defense = getDefense();
+            }
+            if (selectedItem.type == type_consumable) {
+
+                selectedItem.use(this);
+                inventory.remove(itemIndex);
+                //这段代码的作用是删除物品列表中的物品，以便
+                // 绘制下一个物品，从而绘制下一个物品，以达到。
+            }
         }
     }
 
@@ -511,6 +572,4 @@ public class Player extends Entity {
         g2.drawString("Invincible :"+invincibleCounter,10,400);
   */
     }
-
-
 }

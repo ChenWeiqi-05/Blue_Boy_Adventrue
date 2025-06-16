@@ -42,27 +42,45 @@ public class Entity {
     int hpBarOnCounter = 0;//这个是hp条的开关
 
     public String name;
-    public int type; // 0 是player 1 = npc 2 = monster
+
     public int maxLife;
     public int level;
     public int life;
+
+    public int maxMana;//这个是实体的魔力值
+    public int mana;//这个是实体的魔力值
+
     public int speed;
     public int hpBarCounter;
     public int strength;//这个是实体的攻击力
     public int dexterity;//这个是实体的敏捷
     public int attack;//这个是实体的攻击力
-    public int defense ;//这个是实体的防御力
+    public int defense;//这个是实体的防御力
     public int exp;//这个是实体的经验值
     public int nextLevelExp;
     public int coin;//这个是实体的金币数
     public Entity currentWeapon;//这个是实体的武器
     public Entity currentShield;//这个是实体的盾牌
 
-    public int attackValue ;
+    public Projectile projectile;
 
-    public int defenseValue ;
+    public int attackValue;
 
-    public String description = "";//这个是实体的描述
+    public int defenseValue;
+
+    public String description = "";
+    public int useCost;
+
+    public int type; // 0 是player 1 = npc 2 = monster
+    public final int type_player = 0;
+    public final int type_npc = 1;
+    public final int type_monster = 2;
+
+    public final int type_sword = 3;
+    public final int type_axe = 4;
+    public final int type_shield = 5;
+    public final int type_consumable = 6;
+
     // public Object solidArea;
     public Entity(GamePanel gp) {
         this.gp = gp;
@@ -71,9 +89,11 @@ public class Entity {
     public void setAction() {
 
     }
-public void damageReaction() {
+
+    public void damageReaction() {
 
     }
+
     public void speak() {
         if (dialogues[dialogueIndex] == null) {//防止dialogues数组的空指针异常
             dialogueIndex = 0;
@@ -116,7 +136,7 @@ public void damageReaction() {
             if (gp.player.invincible == false) {
                 gp.playSE(6);
                 int damage = attack - gp.player.defense;//攻击力减去防御力
-                if (damage < 0){
+                if (damage < 0) {
                     damage = 0;
                 }
                 gp.player.life -= damage;
@@ -213,35 +233,35 @@ public void damageReaction() {
                     break;
             }
             //Monster HP bar
-            if (type == 2  && hpBarOn == true){//绘制Monster HP bar,当type等于2时才绘制
+            if (type == 2 && hpBarOn == true) {//绘制Monster HP bar,当type等于2时才绘制
 
                 double oneScale = (double) gp.tileSize / maxLife;//计算一个比例
                 double hpBarValue = oneScale * life;//计算Monster HP bar的值
 
-                g2.setColor(new Color(35,35,35));
-                g2.fillRect(screenX, screenY - 16, gp.tileSize+2, 12);
-                g2.setColor(new Color(255,0,30));
+                g2.setColor(new Color(35, 35, 35));
+                g2.fillRect(screenX, screenY - 16, gp.tileSize + 2, 12);
+                g2.setColor(new Color(255, 0, 30));
                 g2.fillRect(screenX, screenY - 15, (int) hpBarValue, 10);
                 //这段代码是绘制Monster HP bar的代码
 
                 hpBarCounter++;
-                if (hpBarCounter > 600){
-                    hpBarCounter =0;
+                if (hpBarCounter > 600) {
+                    hpBarCounter = 0;
                     hpBarOn = false;
                 }
             }
             if (invincible == true) {//如果玩家处于被保护状态，则绘制Monster HP bar
                 hpBarOn = true;
                 hpBarCounter = 0;
-                    changeAlpha(g2,0.4F);
-                   }
+                changeAlpha(g2, 0.4F);
+            }
             if (dying == true) {
                 dyingAnimation(g2);
             }
 
             g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
 
-             changeAlpha(g2,1F);
+            changeAlpha(g2, 1F);
 
         }
     }
@@ -275,7 +295,7 @@ public void damageReaction() {
         }
         if (dyingCounter > i * 8) {
 
-            dying = false;
+
             alive = false;
 
         }
@@ -283,6 +303,10 @@ public void damageReaction() {
 
     public void changeAlpha(Graphics2D g2, float alphaValue) {
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alphaValue));
+    }
+
+    public void use(Entity entity) {
+
     }
 
     public BufferedImage setup(String imagePath, int width, int height) {//这个方法用来获取图片
