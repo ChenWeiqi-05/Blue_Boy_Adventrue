@@ -224,10 +224,16 @@ public class Player extends Entity {
                 spriteCounter = 0;
             }
         }
-        if (gp.keyH.shotKeyPressed ==true && projectile.alive == false ){//这个代码的意思是，如果玩家按下f键，并且没有取消攻击，那么就执行攻击逻辑。
+        if (gp.keyH.shotKeyPressed == true && projectile.alive == false && shotAvailCounter == 30) {//这个代码的意思是，如果玩家按下f键，并且没有取消攻击，那么就执行攻击逻辑。
+// 这段代码的意思是，设置投掷物的属性。
+            projectile.set(worldX, worldY, direction, true, this);
 
+            gp.projectileList.add(projectile);
+
+            shotAvailCounter = 0;//这段代码是用来确保玩家可以连续攻击
+
+            gp.playSE(10);
         }
-
         //this needs to be outside of key if statement
         //这段代码的玩家攻击后恢复
         if (invincible == true) {
@@ -236,6 +242,9 @@ public class Player extends Entity {
                 invincible = false;
                 invincibleCounter = 0;
             }
+        }
+        if (shotAvailCounter < 30){//确保玩家可以连续攻击
+            shotAvailCounter++;
         }
     }
 
@@ -276,7 +285,7 @@ public class Player extends Entity {
             int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
             //这段代码用来检测是否发生攻击
 
-            damageMonster(monsterIndex);
+            damageMonster(monsterIndex, attack);
 
             worldX = currentWorldX;
             worldY = currentWorldY;
@@ -292,7 +301,7 @@ public class Player extends Entity {
         }
     }
 
-    public void damageMonster(int i) {
+    public void damageMonster(int i,int  attack) {//攻击方法
         if (i != 999) {
             if (gp.monster[i].invincible == false) {
                 gp.playSE(5);
@@ -331,7 +340,7 @@ public class Player extends Entity {
 
             gp.playSE(8);
             gp.gameState = gp.dialogueState;
-            gp.ui.currentDialogue = "You are level " + level + "now!\n" + "You feel stronger!";
+            gp.ui.currentDialogue = "You are level " + level + " now!\n" + "You feel stronger!";
 
         }
     }

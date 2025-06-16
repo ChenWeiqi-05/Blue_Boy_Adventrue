@@ -36,6 +36,8 @@ public class Entity {
     public int spriteCounter = 0;
     public int actionLockCounter = 0; //  这个是实体动作计数器，用来控制实体的动作
     public int invincibleCounter = 0;
+
+    public int shotAvailCounter= 0;
     //STATE
     int dyingCounter = 0;
 

@@ -44,7 +44,7 @@ public class GamePanel extends JPanel implements Runnable {
     public Entity obj[] = new Entity[10];
     public Entity npc[] = new Entity[10];
     public Entity monster[] = new Entity[100];
-    ArrayList<Entity> projectileList = new ArrayList<>();
+    public ArrayList<Entity> projectileList = new ArrayList<>();
     ArrayList<Entity> entityList = new ArrayList<>();//创建a一个实体列表
 
     public int gameState;
@@ -115,15 +115,23 @@ public class GamePanel extends JPanel implements Runnable {
                 if (monster[i] != null) {
                     if (monster[i].alive == true && monster[i].dying == false) {
                         monster[i].update();
-
                     }
                     if (monster[i].alive == false) {
                         monster[i] = null;
-
                     }
-
                 }
             }
+            for (int i = 0; i < projectileList.size(); i++) {//循环遍历projectileList数组，以此绘制projectileList
+                if (projectileList.get(i) != null) {
+                    if (projectileList.get(i).alive == true) {
+                        projectileList.get(i).update();//绘制projectileList
+                    }
+                    if (projectileList.get(i).alive == false) {
+                        projectileList.remove(i);
+                    }
+                }
+            }
+
         }
         if (gameState == pauseState) {
 
@@ -164,6 +172,11 @@ public class GamePanel extends JPanel implements Runnable {
                     entityList.add(monster[i]);
                 }
             }
+            for (int i = 0; i < projectileList.size(); i++) {//循环遍历projectileList数组，以此绘制projectileList
+                if (projectileList.get(i) != null) {
+                    entityList.add(projectileList.get(i));
+                }
+            }
             Collections.sort(entityList, new Comparator<Entity>() {//  创建一个比较器,用来排序实体列表
                 @Override//  比较两个实体的绘制顺序
                 public int compare(Entity e1, Entity e2) {
@@ -197,10 +210,14 @@ public class GamePanel extends JPanel implements Runnable {
             int y = 400;
             int lineHeight = 20;
 
-            g2.drawString("WordX" + player.worldX, x, y);y+=lineHeight;
-            g2.drawString("WordY" + player.worldY, x, y);y+=lineHeight;
-            g2.drawString("Col" + (player.worldX +player.solidArea.x)/tileSize, x, y);y+=lineHeight;
-            g2.drawString("Row" + (player.worldY +player.solidArea.y)/tileSize, x, y);y+=lineHeight;
+            g2.drawString("WordX" + player.worldX, x, y);
+            y += lineHeight;
+            g2.drawString("WordY" + player.worldY, x, y);
+            y += lineHeight;
+            g2.drawString("Col" + (player.worldX + player.solidArea.x) / tileSize, x, y);
+            y += lineHeight;
+            g2.drawString("Row" + (player.worldY + player.solidArea.y) / tileSize, x, y);
+            y += lineHeight;
 
             g2.drawString("Draw :" + passed, x, y);
         }
