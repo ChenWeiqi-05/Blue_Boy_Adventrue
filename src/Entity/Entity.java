@@ -133,17 +133,8 @@ public class Entity {
         gp.cChecker.checkEntity(this, gp.monster);
         boolean contactPlayer = gp.cChecker.checkPlayer(this);//这段代码的意思是
         // 当实体与玩家发生碰撞时，如果玩家没有被保护，则玩家会损失生命值
-        if (this.type == 2 && contactPlayer == true) {//这段代码的意思是当实体与玩家发生碰撞时
-            // ，如果玩家没有被保护，则玩家会损失生命值
-            if (gp.player.invincible == false) {
-                gp.playSE(6);
-                int damage = attack - gp.player.defense;//攻击力减去防御力
-                if (damage < 0) {
-                    damage = 0;
-                }
-                gp.player.life -= damage;
-                gp.player.invincible = true;
-            }
+        if (this.type == type_monster && contactPlayer == true) {//这段代码的意思是当实体与玩家发生碰撞时
+            damagePlayer(attack);//玩家损失生命值
         }
         if (collisionOn == false) {//检测实体是否发生碰撞
             switch (direction) {
@@ -182,8 +173,24 @@ public class Entity {
                 invincibleCounter = 0;
             }
         }
+        if (shotAvailCounter < 30){//确保玩家可以连续攻击
+            shotAvailCounter++;
+        }
     }
 
+   public void damagePlayer(int attack) {
+       // ，如果玩家没有被保护，则玩家会损失生命值
+       if (gp.player.invincible == false) {
+           gp.playSE(6);
+           int damage = attack - gp.player.defense;//攻击力减去防御力
+           if (damage < 0) {
+               damage = 0;
+           }
+           gp.player.life -= damage;
+           gp.player.invincible = true;
+       }
+
+    }
     public void draw(Graphics2D g2) {
 
         BufferedImage image = null;

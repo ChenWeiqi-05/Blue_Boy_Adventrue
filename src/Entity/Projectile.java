@@ -25,13 +25,17 @@ public class Projectile extends Entity {
             int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
             //检测是否打中怪物
             if (monsterIndex != 999) {//投掷物是否击中了怪物
-                gp.player.damageMonster(monsterIndex,attack);//击中怪物
+                gp.player.damageMonster(monsterIndex, attack);//击中怪物
                 alive = false;
             }
 
         }
-        if (user != gp.player) {
-
+        if (user != gp.player) {//怪物攻击
+            boolean contactPlayer = gp.cChecker.checkPlayer(this);
+            if (gp.player.invincible == false && contactPlayer == true) {
+            damagePlayer(attack);
+            alive = false;
+            }
         }
 
         switch (direction) {

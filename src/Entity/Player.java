@@ -253,10 +253,10 @@ public class Player extends Entity {
         if (spriteCounter <= 5) {
             spriteNum = 1;
         }
-        if (spriteCounter > 5 && spriteCounter <= 25) {
+        if (spriteCounter > 5 && spriteCounter <= 25) {//攻击动画
             spriteNum = 2;
 
-            //保持当前人物实体位置，以便等一下的
+            //保持当前人物实体位置，以便于攻击
             int currentWorldX = worldX;
             int currentWorldY = worldY;
             int solidAreaWidth = solidArea.width;
@@ -285,16 +285,17 @@ public class Player extends Entity {
             int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
             //这段代码用来检测是否发生攻击
 
-            damageMonster(monsterIndex, attack);
+            damageMonster(monsterIndex, attack);//攻击怪物
 
-            worldX = currentWorldX;
+            worldX = currentWorldX;//恢复实体的位置和碰撞区域。
             worldY = currentWorldY;
 
             solidArea.width = solidAreaWidth;
             solidArea.height = solidAreaHeight;
 
         }
-        if (spriteCounter > 25) {
+        if (spriteCounter > 25) {//攻击结束
+            spriteNum = 1;
             spriteNum = 1;
             spriteCounter = 0;
             attacking = false;
