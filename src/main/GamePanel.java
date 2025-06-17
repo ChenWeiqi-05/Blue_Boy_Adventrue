@@ -41,7 +41,7 @@ public class GamePanel extends JPanel implements Runnable {
     int playerSpeed = 4;
 
     public Player player = new Player(this, keyH);
-    public Entity obj[] = new Entity[10];
+    public Entity obj[] = new Entity[20];
     public Entity npc[] = new Entity[10];
     public Entity monster[] = new Entity[100];
     public ArrayList<Entity> projectileList = new ArrayList<>();
@@ -111,12 +111,14 @@ public class GamePanel extends JPanel implements Runnable {
                     npc[i].update();
                 }
             }
-            for (int i = 0; i < monster.length; i++) {
-                if (monster[i] != null) {
-                    if (monster[i].alive == true && monster[i].dying == false) {
-                        monster[i].update();
+            for (int i = 0; i < monster.length; i++) {//循环遍历monster数组
+                if (monster[i] != null) {//如果怪物不为空，则执行下面的代码
+                    if (monster[i].alive == true && monster[i].dying == false) {//如果怪物存活且没有死亡，则执行下面的代码
+                        monster[i].update();//绘制怪物
                     }
-                    if (monster[i].alive == false) {
+                    if (monster[i].alive == false) {//如果怪物死亡，则将其从数组中删除
+
+                        monster[i].checkDrop();//掉落物
                         monster[i] = null;
                     }
                 }

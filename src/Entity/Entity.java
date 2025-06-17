@@ -66,6 +66,7 @@ public class Entity {
 
     public Projectile projectile;
 
+    public int value;
     public int attackValue;
 
     public int defenseValue;
@@ -82,6 +83,7 @@ public class Entity {
     public final int type_axe = 4;
     public final int type_shield = 5;
     public final int type_consumable = 6;
+    public final int type_pickupOnly = 7;
 
     // public Object solidArea;
     public Entity(GamePanel gp) {
@@ -193,7 +195,6 @@ public class Entity {
     }
 
     public void draw(Graphics2D g2) {
-
         BufferedImage image = null;
         int screenX = worldX - gp.player.worldX + gp.player.screenX;
         int screenY = worldY - gp.player.worldY + gp.player.screenY;
@@ -269,7 +270,7 @@ public class Entity {
                 dyingAnimation(g2);
             }
 
-            g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+            g2.drawImage(image, screenX, screenY, null);//绘制玩家
 
             changeAlpha(g2, 1F);
 
@@ -304,10 +305,7 @@ public class Entity {
             changeAlpha(g2, 1f);
         }
         if (dyingCounter > i * 8) {
-
-
             alive = false;
-
         }
     }
 
@@ -317,6 +315,21 @@ public class Entity {
 
     public void use(Entity entity) {
 
+    }
+
+    public void checkDrop() {//掉落物
+
+    }
+
+    public void dropItem(Entity droppedItem) {//这段代码用来处理道具的掉落逻辑
+        for (int i = 0; i < gp.obj.length; i++) {//遍历所有物体
+            if (gp.obj[i] == null) {//如果物体为空，则将掉落物放入物体中
+                gp.obj[i] = droppedItem;//将掉落物放入物体中
+                gp.obj[i].worldX = worldX;//死去怪物的世界位置
+                gp.obj[i].worldY = worldY;//死去怪物的世界位置
+                break;
+            }
+        }
     }
 
     public BufferedImage setup(String imagePath, int width, int height) {//这个方法用来获取图片

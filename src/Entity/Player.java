@@ -4,7 +4,6 @@ import main.GamePanel;
 import main.KeyHandler;
 import main.UtilityTool;
 import object.OBJ_Fireball;
-import object.OBJ_Rock;
 import object.OBJ_Shield_Wood;
 import object.OBJ_Sword_Normal;
 
@@ -78,7 +77,7 @@ public class Player extends Entity {
         coin = 0;
         currentWeapon = new OBJ_Sword_Normal(gp);
         currentShield = new OBJ_Shield_Wood(gp);//添加盾牌
-       projectile = new OBJ_Fireball(gp);//添加火球投掷物
+        projectile = new OBJ_Fireball(gp);//添加火球投掷物
         //projectile = new OBJ_Rock(gp);//添加石头投掷物
 
         attack = getAttack();
@@ -234,8 +233,8 @@ public class Player extends Entity {
                 projectile.alive == false &&
                 shotAvailCounter == 30 &&
                 projectile.haveResource(this) == true) {
-                    //这个代码的意思是，如果玩家按下f键，并且没有取消攻击，那么就执行攻击逻辑。
-                    // 这段代码的意思是，设置投掷物的属性。
+            //这个代码的意思是，如果玩家按下f键，并且没有取消攻击，那么就执行攻击逻辑。
+            // 这段代码的意思是，设置投掷物的属性。
             projectile.set(worldX, worldY, direction, true, this);
 
             //减少玩家的魔法值
@@ -258,6 +257,12 @@ public class Player extends Entity {
         }
         if (shotAvailCounter < 30) {//确保玩家可以连续攻击
             shotAvailCounter++;
+        }
+        if (life >maxLife){//确保玩家生命值不能超过最大生命值
+            life = maxLife;
+        }
+        if (mana >maxMana ){//确保玩家生命值不能超过最大生命值
+            mana= maxMana;
         }
     }
 
@@ -415,20 +420,28 @@ public class Player extends Entity {
                         gp.playSE(4);
                         break;
             }*/
-            String text;
-            if (inventory.size() != maxInventorySize) {
+            if (gp.obj[i].type == type_pickupOnly) {//拾取物品
+                gp.obj[i].use(this);
+                gp.obj[i] = null;
 
-                inventory.add(gp.obj[i]);
 
-                gp.playSE(1);
-                text = "You got " + gp.obj[i].name + "!";
-            } else {
-                text = "You cannot carry anymore!";
+            } else {//使用物品
+                String text;
+                if (inventory.size() != maxInventorySize) {
+
+                    inventory.add(gp.obj[i]);
+
+                    gp.playSE(1);
+                    text = "You got " + gp.obj[i].name + "!";
+                } else {
+                    text = "You cannot carry anymore!";
+                }
+                gp.ui.addMessage(text);
+                gp.obj[i] = null;
+
             }
-            gp.ui.addMessage(text);
-            gp.obj[i] = null;
-
         }
+
     }
 
     public void interactNPC(int i) {//这个方法可改变与npc的交互逻辑
@@ -595,4 +608,5 @@ public class Player extends Entity {
         g2.drawString("Invincible :"+invincibleCounter,10,400);
   */
     }
+
 }

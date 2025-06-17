@@ -2,7 +2,9 @@ package monster;
 
 import Entity.Entity;
 import main.GamePanel;
-import object.OBJ_Fireball;
+import object.OBJ_Coin_Bronze;
+import object.OBJ_Heart;
+import object.OBJ_ManaCrystal;
 import object.OBJ_Rock;
 
 import java.util.Random;
@@ -14,7 +16,7 @@ public class MON_GreenSlime extends Entity {
     public MON_GreenSlime(GamePanel gp) {
         super(gp);
         this.gp = gp;
-      type = type_monster;
+        type = type_monster;
         name = "Green Slime";
         speed = 1;
         maxLife = 4;
@@ -67,19 +69,34 @@ public class MON_GreenSlime extends Entity {
             actionLockCounter = 0;
         }
 
-        int i = new Random().nextInt(100)+1;
-        if (i > 99 && projectile.alive == false && shotAvailCounter == 30){//如果技能可用，则释放技能
+        int i = new Random().nextInt(100) + 1;
+        if (i > 99 && projectile.alive == false && shotAvailCounter == 30) {//如果技能可用，则释放技能
 
             projectile.set(worldX, worldY, direction, true, this);//创建技能
             gp.projectileList.add(projectile);//添加技能
 
             shotAvailCounter = 0;//技能可用
-
         }
     }
 
     public void damageReaction() {//史莱姆受到攻击后的退后ai
         actionLockCounter = 0;
         direction = gp.player.direction1;
+    }
+
+    public void checkDrop() {//这段代码控制物品的随机掉落物品
+
+        int i = new Random().nextInt(100) + 1;
+
+        if (i < 50) {//当随机数字在0到50之间时，掉落金币
+            dropItem(new OBJ_Coin_Bronze(gp));
+        }
+        if (i >= 50 && i < 75) {//当随机数字在50到75之间时，掉落生命
+            dropItem(new OBJ_Heart(gp));
+        }
+        if (i >= 75 && i < 100) {//当随机数字在75到100之间时，掉落魔法水晶
+            dropItem(new OBJ_ManaCrystal(gp));
+        }
+
     }
 }
