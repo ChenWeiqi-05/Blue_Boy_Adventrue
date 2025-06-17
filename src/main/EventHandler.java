@@ -25,9 +25,7 @@ public class EventHandler {
             eventRect[col][row].height = 2;
             eventRect[col][row].eventRectDefaultX = eventRect[col][row].x;
             eventRect[col][row].eventRectDefaultY = eventRect[col][row].y;
-
             col++;
-
             if (col == gp.maxWorldCol) {
                 col = 0;
                 row++;
@@ -106,11 +104,11 @@ public class EventHandler {
         if (gp.keyH.enterPressed == true) {
             gp.gameState = gameState;
             gp.player.attackCanceled = true;
-            gp.ui.currentDialogue = "You drink the water .\nYour life has been recovered !\n oh yeah! ";
+            gp.ui.currentDialogue = "You drink the water .\nYour life and mana have been recovered !\n oh yeah! ";
             gp.player.life = gp.player.maxLife;
+            gp.player.mana = gp.player.maxMana;
+
             gp.aSetter.setMonster();
-
         }
-
     }
 }

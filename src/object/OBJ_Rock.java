@@ -1,5 +1,6 @@
 package object;
 
+import Entity.Entity;
 import Entity.Projectile;
 import main.GamePanel;
 
@@ -30,6 +31,18 @@ public class OBJ_Rock extends Projectile {
         left2 = setup("/projectile/rock_down_1", gp.tileSize, gp.tileSize);
         right1 = setup("/projectile/rock_down_1", gp.tileSize, gp.tileSize);
         right2 = setup("/projectile/rock_down_1", gp.tileSize, gp.tileSize);
+    }
+    public boolean haveResource(Entity user) {//判断是否满足释放火球的条件
+        boolean haveResource = false;
+        if (user.ammo >= useCost) {
+            haveResource = true;
+        }
+        return haveResource;
+    }
+
+    public void subtractResource(Entity user) {//减去消耗的魔法值
+        user.ammo -= useCost;
 
     }
+
 }

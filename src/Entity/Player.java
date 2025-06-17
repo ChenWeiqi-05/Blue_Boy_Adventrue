@@ -4,6 +4,7 @@ import main.GamePanel;
 import main.KeyHandler;
 import main.UtilityTool;
 import object.OBJ_Fireball;
+import object.OBJ_Rock;
 import object.OBJ_Shield_Wood;
 import object.OBJ_Sword_Normal;
 
@@ -66,6 +67,9 @@ public class Player extends Entity {
 // PLAYER STATUS
         maxLife = 6;
         life = maxLife;
+        maxMana = 4;
+        mana = maxMana;
+        ammo = 10;//玩家石头的弹容量
         level = 1;
         strength = 1;
         dexterity = 1;
@@ -74,7 +78,9 @@ public class Player extends Entity {
         coin = 0;
         currentWeapon = new OBJ_Sword_Normal(gp);
         currentShield = new OBJ_Shield_Wood(gp);//添加盾牌
-        projectile = new OBJ_Fireball(gp);//添加火球
+       projectile = new OBJ_Fireball(gp);//添加火球投掷物
+        //projectile = new OBJ_Rock(gp);//添加石头投掷物
+
         attack = getAttack();
         defense = getDefense();
     }
@@ -224,9 +230,16 @@ public class Player extends Entity {
                 spriteCounter = 0;
             }
         }
-        if (gp.keyH.shotKeyPressed == true && projectile.alive == false && shotAvailCounter == 30) {//这个代码的意思是，如果玩家按下f键，并且没有取消攻击，那么就执行攻击逻辑。
-// 这段代码的意思是，设置投掷物的属性。
+        if (gp.keyH.shotKeyPressed == true &&
+                projectile.alive == false &&
+                shotAvailCounter == 30 &&
+                projectile.haveResource(this) == true) {
+                    //这个代码的意思是，如果玩家按下f键，并且没有取消攻击，那么就执行攻击逻辑。
+                    // 这段代码的意思是，设置投掷物的属性。
             projectile.set(worldX, worldY, direction, true, this);
+
+            //减少玩家的魔法值
+            projectile.subtractResource(this);
 
             gp.projectileList.add(projectile);
 
@@ -243,7 +256,7 @@ public class Player extends Entity {
                 invincibleCounter = 0;
             }
         }
-        if (shotAvailCounter < 30){//确保玩家可以连续攻击
+        if (shotAvailCounter < 30) {//确保玩家可以连续攻击
             shotAvailCounter++;
         }
     }
@@ -302,7 +315,7 @@ public class Player extends Entity {
         }
     }
 
-    public void damageMonster(int i,int  attack) {//攻击方法
+    public void damageMonster(int i, int attack) {//攻击方法
         if (i != 999) {
             if (gp.monster[i].invincible == false) {
                 gp.playSE(5);

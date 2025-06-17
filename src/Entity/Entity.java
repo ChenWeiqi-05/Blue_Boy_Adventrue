@@ -37,7 +37,7 @@ public class Entity {
     public int actionLockCounter = 0; //  这个是实体动作计数器，用来控制实体的动作
     public int invincibleCounter = 0;
 
-    public int shotAvailCounter= 0;
+    public int shotAvailCounter = 0;
     //STATE
     int dyingCounter = 0;
 
@@ -51,7 +51,7 @@ public class Entity {
 
     public int maxMana;//这个是实体的魔力值
     public int mana;//这个是实体的魔力值
-
+    public int ammo;
     public int speed;
     public int hpBarCounter;
     public int strength;//这个是实体的攻击力
@@ -173,24 +173,25 @@ public class Entity {
                 invincibleCounter = 0;
             }
         }
-        if (shotAvailCounter < 30){//确保玩家可以连续攻击
+        if (shotAvailCounter < 30) {//确保玩家可以连续攻击
             shotAvailCounter++;
         }
     }
 
-   public void damagePlayer(int attack) {
-       // ，如果玩家没有被保护，则玩家会损失生命值
-       if (gp.player.invincible == false) {
-           gp.playSE(6);
-           int damage = attack - gp.player.defense;//攻击力减去防御力
-           if (damage < 0) {
-               damage = 0;
-           }
-           gp.player.life -= damage;
-           gp.player.invincible = true;
-       }
+    public void damagePlayer(int attack) {
+        // ，如果玩家没有被保护，则玩家会损失生命值
+        if (gp.player.invincible == false) {
+            gp.playSE(6);
+            int damage = attack - gp.player.defense;//攻击力减去防御力
+            if (damage < 0) {
+                damage = 0;
+            }
+            gp.player.life -= damage;
+            gp.player.invincible = true;
+        }
 
     }
+
     public void draw(Graphics2D g2) {
 
         BufferedImage image = null;

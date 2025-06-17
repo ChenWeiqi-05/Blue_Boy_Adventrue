@@ -2,17 +2,17 @@ package main;
 
 import Entity.Entity;
 import object.OBJ_Heart;
+import object.OBJ_ManaCrystal;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.PublicKey;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class UI {
-    BufferedImage heart_full, heart_half, heart_blank;
+    BufferedImage heart_full, heart_half, heart_blank, crystal_full, crystal_blank;//创建血槽（生命值）对象
 
     public int commamdNum;
     public boolean gameFinish = false;
@@ -53,6 +53,12 @@ public class UI {
         heart_full = heart.image;
         heart_half = heart.image2;
         heart_blank = heart.image3;
+
+        Entity crystal = new OBJ_ManaCrystal(gp);
+        crystal_full = crystal.image;//创建魔力水晶对象
+        crystal_blank = crystal.image2;//创建魔力水晶对象
+
+
     }
 
     public void addMessage(String text) {//这个方法用来添加消息
@@ -175,11 +181,11 @@ public class UI {
 //DRAW  PLAYER INVENTORY ITEM
         for (int i = 0; i < gp.player.inventory.size(); i++) {//绘制库存
 
-            if (gp.player.inventory.get(i)==gp.player.currentWeapon//当前武器或者当前盾牌
-                    || gp.player.inventory.get(i)==gp.player.currentShield//当前盾牌
-            ){
-                g2.setColor(new Color(240, 190,90 ));
-                g2.fillRoundRect(slotX , slotY , gp.tileSize , gp.tileSize , 10, 10);
+            if (gp.player.inventory.get(i) == gp.player.currentWeapon//当前武器或者当前盾牌
+                    || gp.player.inventory.get(i) == gp.player.currentShield//当前盾牌
+            ) {
+                g2.setColor(new Color(240, 190, 90));
+                g2.fillRoundRect(slotX, slotY, gp.tileSize, gp.tileSize, 10, 10);
             }
             g2.drawImage(gp.player.inventory.get(i).down1, slotX, slotY, null);
             slotX += gp.tileSize;//换列
@@ -248,7 +254,7 @@ public class UI {
         x = gp.tileSize / 2;
         y = gp.tileSize / 2;
         i = 0;
-        //DRAW CURRENT HEARTS
+        //DRAW CURRENT HEARTS 绘制玩家的生命值
         while (i < gp.player.life) {//这段代码的逻辑是，
             // 如果生命值是偶数，就绘制一个完整的生命值，如果生命值是奇数，就绘制一个完整的生命值和半个生命值
             g2.drawImage(heart_half, x, y, null);
@@ -258,6 +264,23 @@ public class UI {
             }
             i++;
             x += gp.tileSize;
+        }
+        //绘制玩家的魔法值
+        x = (gp.tileSize / 2)-5;
+        y = (int) (gp.tileSize * 2);
+        i = 0;
+        while (i < gp.player.maxMana){
+            g2.drawImage(crystal_blank, x, y, null);
+            i++;
+            x +=35;//绘制
+        }
+        x = (gp.tileSize / 2)-5;
+        y = (int) (gp.tileSize * 2);
+        i = 0;
+        while (i < gp.player.mana){
+            g2.drawImage(crystal_full, x, y, null);
+            i++;
+            x +=35;//绘制
         }
     }
 
@@ -423,6 +446,8 @@ public class UI {
         textY += lineHeight;
         g2.drawString("Life", textX, textY);
         textY += lineHeight;
+        g2.drawString("Mana", textX, textY);
+        textY += lineHeight;
         g2.drawString("Strength", textX, textY);
         textY += lineHeight;
         g2.drawString("Dexterity", textX, textY);
@@ -436,7 +461,7 @@ public class UI {
         g2.drawString("Next Level", textX, textY);
         textY += lineHeight;
         g2.drawString("Coin", textX, textY);
-        textY += lineHeight + 20;
+        textY += lineHeight + 10;
         g2.drawString("Weapon", textX, textY);
         textY += lineHeight + 15;
         g2.drawString("Shield", textX, textY);
@@ -452,6 +477,10 @@ public class UI {
         g2.drawString(value, textX, textY);
         textY += lineHeight;
         value = String.valueOf(gp.player.life + "/" + gp.player.maxLife);
+        textX = getXforAlignToRightText(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+        value = String.valueOf(gp.player.mana + "/" + gp.player.maxMana);
         textX = getXforAlignToRightText(value, tailX);
         g2.drawString(value, textX, textY);
         textY += lineHeight;
@@ -485,9 +514,9 @@ public class UI {
         g2.drawString(value, textX, textY);
         textY += lineHeight;
 
-        g2.drawImage(gp.player.currentWeapon.down1, tailX - gp.tileSize, textY - 14, null);
+        g2.drawImage(gp.player.currentWeapon.down1, tailX - gp.tileSize, textY - 24, null);
         textY += lineHeight;
-        g2.drawImage(gp.player.currentShield.down1, tailX - gp.tileSize, textY - 8, null);
+        g2.drawImage(gp.player.currentShield.down1, tailX - gp.tileSize, textY - 24, null);
 
     }
 

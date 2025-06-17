@@ -68,7 +68,11 @@ public class Projectile extends Entity {
             spriteCounter = 0;
 
         }
-
-
     }
+    public boolean haveResource(Entity  user) {//它的子类OBJ_Fireball会重写此方法
+        boolean haveResource = false;
+        return haveResource;
+    }
+    public void subtractResource(Entity user) {//减去消耗的魔法值
+       }
 }

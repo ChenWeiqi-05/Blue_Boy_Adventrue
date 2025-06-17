@@ -7,8 +7,6 @@ import object.OBJ_Key;
 import object.OBJ_Potion_Red;
 import object.OBJ_Shield_Blue;
 
-import java.util.Random;
-
 public class AssetSetter {
     GamePanel gp;
 
@@ -43,7 +41,7 @@ public class AssetSetter {
         gp.obj[7].worldX = 37 * gp.tileSize;
         gp.obj[7].worldY = 42 * gp.tileSize;*/
 
-       int i = 0;
+        int i = 0;
         gp.obj[i] = new OBJ_Key(gp);
         gp.obj[i].worldX = gp.tileSize * 25;
         gp.obj[i].worldY = gp.tileSize * 23;
@@ -60,7 +58,7 @@ public class AssetSetter {
         gp.obj[i].worldX = gp.tileSize * 25;
         gp.obj[i].worldY = gp.tileSize * 21;
 
-       i++;
+        i++;
         gp.obj[i] = new OBJ_Shield_Blue(gp);
         gp.obj[i].worldX = gp.tileSize * 35;
         gp.obj[i].worldY = gp.tileSize * 21;
@@ -109,20 +107,38 @@ public class AssetSetter {
         gp.monster[i].worldX = gp.tileSize * 38;
         gp.monster[i].worldY = gp.tileSize * 42;*/
 
-        Random random = new Random();
+       /* Random random = new Random();
         // 仅初始化部分史莱姆(例如10个)，保留空间用于后续生成
         int initialCount = 1000;
         for (int i = 0; i < initialCount && i < gp.monster.length; i++) {
             gp.monster[i] = new MON_GreenSlime(gp);
             gp.monster[i].worldX = gp.tileSize * (1 + random.nextInt(gp.maxWorldCol - 1));
             gp.monster[i].worldY = gp.tileSize * (1 + random.nextInt(gp.maxWorldRow - 1));
-        }
-        /*gp.monster[0] = new MON_GreenSlime(gp);
-        gp.monster[0].worldX = gp.tileSize * 11;
-        gp.monster[0].worldY = gp.tileSize * 9;
+        }*/
+        int i = 0;
+        gp.monster[i] = new MON_GreenSlime(gp);
+        gp.monster[i].worldX = gp.tileSize * 11;
+        gp.monster[i].worldY = gp.tileSize * 9;
+        i++;
+        gp.monster[i] = new MON_GreenSlime(gp);
+        gp.monster[i].worldX = gp.tileSize * 11;
+        gp.monster[i].worldY = gp.tileSize * 10;
+        i++;
+        gp.monster[i] = new MON_GreenSlime(gp);
+        gp.monster[i].worldX = gp.tileSize * 23;
+        gp.monster[i].worldY = gp.tileSize * 40;
+        i++;
+        gp.monster[i] = new MON_GreenSlime(gp);
+        gp.monster[i].worldX = gp.tileSize * 22;
+        gp.monster[i].worldY = gp.tileSize * 41;
+        i++;
+        gp.monster[i] = new MON_GreenSlime(gp);
+        gp.monster[i].worldX = gp.tileSize * 23;
+        gp.monster[i].worldY = gp.tileSize * 35;
+        i++;
+        gp.monster[i] = new MON_GreenSlime(gp);
+        gp.monster[i].worldX = gp.tileSize * 11;
+        gp.monster[i].worldY = gp.tileSize * 10;
 
-        gp.monster[1] = new MON_GreenSlime(gp);
-        gp.monster[1].worldX = gp.tileSize * 11;
-        gp.monster[1].worldY = gp.tileSize * 10;*/
     }
 }
