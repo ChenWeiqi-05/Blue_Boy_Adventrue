@@ -187,6 +187,10 @@ public class Player extends Entity {
             int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
             interactMonster(monsterIndex);
             contactMonster(monsterIndex);
+
+            int iTileIndex = gp.cChecker.checkEntity(this, gp.iTile);
+            // 这段代码的目的是检查实体是否与 interactiveTile 发生碰撞
+
             //  CHECK COLLISION
             gp.eHandler.checkEvent();
             if (collisionOn == false && keyH.enterPressed == false) {
@@ -258,11 +262,11 @@ public class Player extends Entity {
         if (shotAvailCounter < 30) {//确保玩家可以连续攻击
             shotAvailCounter++;
         }
-        if (life >maxLife){//确保玩家生命值不能超过最大生命值
+        if (life > maxLife) {//确保玩家生命值不能超过最大生命值
             life = maxLife;
         }
-        if (mana >maxMana ){//确保玩家生命值不能超过最大生命值
-            mana= maxMana;
+        if (mana > maxMana) {//确保玩家生命值不能超过最大生命值
+            mana = maxMana;
         }
     }
 
@@ -305,6 +309,9 @@ public class Player extends Entity {
 
             damageMonster(monsterIndex, attack);//攻击怪物
 
+            int iTileIndex = gp.cChecker.checkEntity(this, gp.iTile);//检测是否打中 interactiveTile
+            damageInteractiveTile(iTileIndex);//攻击 interactiveTile
+
             worldX = currentWorldX;//恢复实体的位置和碰撞区域。
             worldY = currentWorldY;
 
@@ -317,6 +324,25 @@ public class Player extends Entity {
             spriteNum = 1;
             spriteCounter = 0;
             attacking = false;
+        }
+    }
+
+    public void damageInteractiveTile(int i) {//碰撞检测
+        if (i != 999 && gp.iTile[i].destructible == true && gp.iTile[i].isCorrectItem(this) == true
+        && gp.iTile[i].invincible == false
+        ) {//检测是否可破坏
+
+            gp.iTile[i].playSE();
+
+            gp.iTile[i].life--;//枯树的生命值
+
+            gp.iTile[i].invincible  = true;
+            //树被攻击后，树将不再可破坏,防止玩家单次攻击造成多次伤害，让游戏更加真实可行
+
+            if (gp.iTile[i].life == 0){
+                gp.iTile[i] = gp.iTile[i].getDestroyedForm();//获取被破坏的方块
+            }
+
         }
     }
 
@@ -360,7 +386,6 @@ public class Player extends Entity {
             gp.playSE(8);
             gp.gameState = gp.dialogueState;
             gp.ui.currentDialogue = "You are level " + level + " now!\n" + "You feel stronger!";
-
         }
     }
 

@@ -95,7 +95,6 @@ public class Entity {
     }
 
     public void damageReaction() {
-
     }
 
     public void speak() {
@@ -128,11 +127,12 @@ public class Entity {
     ///这个是更新实体的代码，用来控制实体的移动
     public void update() {
         setAction();//这个是设置实体的动作的代码，用来控制实体的移动
-        collisionOn = false;
-        gp.cChecker.checkTile(this);
-        gp.cChecker.checkObject(this, false);
-        gp.cChecker.checkEntity(this, gp.npc);
-        gp.cChecker.checkEntity(this, gp.monster);
+        collisionOn = false;//这个是检查地图块是否与实体发生碰触的代码
+        gp.cChecker.checkTile(this);// 这个是检查地图块是否与实体发生碰
+        gp.cChecker.checkObject(this, false);//这个是检查物体是否与实体发生碰撞
+        gp.cChecker.checkEntity(this, gp.npc);//这个是检查npc是否与实体发生碰撞
+        gp.cChecker.checkEntity(this, gp.monster);//这个是检查npc是否与实体发生碰撞
+        gp.cChecker.checkEntity(this, gp.iTile);//这个是检查npc是否与实体发生碰撞的代码
         boolean contactPlayer = gp.cChecker.checkPlayer(this);//这段代码的意思是
         // 当实体与玩家发生碰撞时，如果玩家没有被保护，则玩家会损失生命值
         if (this.type == type_monster && contactPlayer == true) {//这段代码的意思是当实体与玩家发生碰撞时
@@ -168,7 +168,11 @@ public class Entity {
             }
             spriteCounter = 0;
         }
-        if (invincible == true) {
+        if (invincible == true) {//这段代码的意思就是，如果玩家处于无敌状态，
+            // 那么就会让invincibleCounter加1，
+            // 然后判断invincibleCounter的值是否大于40，如果大于40，
+            // 那么就会让invincibleCounter归零，然后让invincible的值变为false，
+            // 这样玩家就可以再次被攻击了。
             invincibleCounter++;
             if (invincibleCounter > 40) {
                 invincible = false;
@@ -320,7 +324,6 @@ public class Entity {
     public void checkDrop() {//掉落物
 
     }
-
     public void dropItem(Entity droppedItem) {//这段代码用来处理道具的掉落逻辑
         for (int i = 0; i < gp.obj.length; i++) {//遍历所有物体
             if (gp.obj[i] == null) {//如果物体为空，则将掉落物放入物体中

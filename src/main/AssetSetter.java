@@ -1,6 +1,7 @@
 package main;
 
 import Entity.NPC_OldMan;
+import InteractiveTile.IT_DryTree;
 import monster.MON_GreenSlime;
 import object.*;
 
@@ -151,6 +152,24 @@ public class AssetSetter {
         gp.monster[i] = new MON_GreenSlime(gp);
         gp.monster[i].worldX = gp.tileSize * 11;
         gp.monster[i].worldY = gp.tileSize * 10;
+
+    }
+
+    public void setInteractiveTile() {
+        int i = 0;
+        gp.iTile[i] = new IT_DryTree(gp,27,12);
+       i++;
+        gp.iTile[i] = new IT_DryTree(gp,28,12);
+         i++;
+        gp.iTile[i] = new IT_DryTree(gp,29,12);
+         i++;
+        gp.iTile[i] = new IT_DryTree(gp,30,12);
+         i++;
+        gp.iTile[i] = new IT_DryTree(gp,31,12);
+         i++;
+        gp.iTile[i] = new IT_DryTree(gp,32,12);
+        i++;
+        gp.iTile[i] = new IT_DryTree(gp,33,12);
 
     }
 }

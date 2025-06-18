@@ -2,6 +2,7 @@ package main;
 
 import Entity.Entity;
 import Entity.Player;
+import InteractiveTile.InteractiveTile;
 import tile.TileManager;
 
 import javax.swing.*;
@@ -44,7 +45,11 @@ public class GamePanel extends JPanel implements Runnable {
     public Entity obj[] = new Entity[20];
     public Entity npc[] = new Entity[10];
     public Entity monster[] = new Entity[100];
+
+    public InteractiveTile iTile[] = new InteractiveTile[50];//创建一个 interactiveTile 数组
     public ArrayList<Entity> projectileList = new ArrayList<>();
+
+    public ArrayList<Entity> particleList= new ArrayList<>();
     ArrayList<Entity> entityList = new ArrayList<>();//创建a一个实体列表
 
     public int gameState;
@@ -67,6 +72,9 @@ public class GamePanel extends JPanel implements Runnable {
         aSetter.setObject();
         aSetter.setNPC();
         aSetter.setMonster();
+
+        aSetter.setInteractiveTile();
+
         //playMusic(0);
         gameState = titleState;//游戏状态的设置
     }
@@ -134,6 +142,12 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
+            for (int i = 0; i < iTile.length; i++){
+                if (iTile[i]!= null){
+
+                    iTile[i].update();//更新 interactiveTile
+                }
+            }
         }
         if (gameState == pauseState) {
 
@@ -156,6 +170,13 @@ public class GamePanel extends JPanel implements Runnable {
         //PLAY SCREEN
         else {
             tileM.draw(g2);
+
+            for (int i = 0; i < iTile.length; i++){//循环遍历 interactiveTile 数组，以此绘制 interactiveTile
+
+                if (iTile[i]!= null){//如果 interactiveTile 不为空，则执行下面的代码
+                    iTile[i].draw(g2);
+                }
+            }
 
             entityList.add(player);
             for (int i = 0; i < npc.length; i++) {//循环遍历npc数组,以此绘制npc
