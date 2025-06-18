@@ -339,6 +339,7 @@ public class Player extends Entity {
             gp.iTile[i].invincible  = true;
             //树被攻击后，树将不再可破坏,防止玩家单次攻击造成多次伤害，让游戏更加真实可行
 
+            generateParticle(gp.iTile[i],gp.iTile[i]);//树被攻击后，生成树碎片
             if (gp.iTile[i].life == 0){
                 gp.iTile[i] = gp.iTile[i].getDestroyedForm();//获取被破坏的方块
             }

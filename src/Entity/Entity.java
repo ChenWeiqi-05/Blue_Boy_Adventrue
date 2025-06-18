@@ -324,6 +324,7 @@ public class Entity {
     public void checkDrop() {//掉落物
 
     }
+
     public void dropItem(Entity droppedItem) {//这段代码用来处理道具的掉落逻辑
         for (int i = 0; i < gp.obj.length; i++) {//遍历所有物体
             if (gp.obj[i] == null) {//如果物体为空，则将掉落物放入物体中
@@ -345,5 +346,43 @@ public class Entity {
             e.printStackTrace();
         }
         return image;
+    }
+
+    public Color getParticleColor() {
+
+        Color color = null;
+        return color;
+    }
+
+    public int getParticleSize() {
+        int size = 0;
+        return size;
+    }
+
+    public int getParticleSpeed() {
+        int speed = 0;
+        return speed;
+    }
+
+    public int getParticleMaxLife() {
+        int maxLife = 0;
+        return maxLife;
+    }
+
+    public void generateParticle(Entity generator, Entity target) {//这段代码的含义为所有的实体生成粒子效果
+        Color color = generator.getParticleColor();//获取粒子颜色
+        int size = generator.getParticleSize();//获取粒子大小
+        int speed = generator.getParticleSpeed();//获取粒子速度
+        int maxLife = generator.getParticleMaxLife();//获取粒子最大生命值
+
+        Particle p1 = new Particle(gp, target, color, size, speed, maxLife, -2, -1);//创建粒子对象
+        Particle p2 = new Particle(gp, target, color, size, speed, maxLife, 2, -1);//
+        Particle p3 = new Particle(gp, target, color, size, speed, maxLife, -2, 1);//
+        Particle p4 = new Particle(gp, target, color, size, speed, maxLife, 2, 1);//
+
+        gp.particleList.add(p1);
+        gp.particleList.add(p2);
+        gp.particleList.add(p3);
+        gp.particleList.add(p4);
     }
 }

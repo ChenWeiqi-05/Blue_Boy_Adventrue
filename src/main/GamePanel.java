@@ -141,6 +141,17 @@ public class GamePanel extends JPanel implements Runnable {
                     }
                 }
             }
+            for (int i = 0; i < particleList.size(); i++) {//循环遍历 particleList数组，以此绘制particleList中的元素
+                if ( particleList.get(i) != null) {
+                    if ( particleList.get(i).alive == true) {
+                        particleList.get(i).update();//绘制 particleList
+                    }
+                    if ( particleList.get(i).alive == false) {
+                        particleList.remove(i);
+                    }
+                }
+            }
+
 
             for (int i = 0; i < iTile.length; i++){
                 if (iTile[i]!= null){
@@ -200,6 +211,12 @@ public class GamePanel extends JPanel implements Runnable {
                     entityList.add(projectileList.get(i));
                 }
             }
+            for (int i = 0; i < particleList.size(); i++) {//循环遍历 particleList数组，以此绘制 particleList
+                if (particleList.get(i) != null) {
+                    entityList.add(particleList.get(i));
+                }
+            }
+
             Collections.sort(entityList, new Comparator<Entity>() {//  创建一个比较器,用来排序实体列表
                 @Override//  比较两个实体的绘制顺序
                 public int compare(Entity e1, Entity e2) {

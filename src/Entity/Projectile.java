@@ -21,20 +21,25 @@ public class Projectile extends Entity {
 
     public void update() {
 
-        if (user == gp.player) {
+        if (user == gp.player) {//如果使用投射物的对象是玩家，那么投掷物
             int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
             //检测是否打中怪物
             if (monsterIndex != 999) {//投掷物是否击中了怪物
                 gp.player.damageMonster(monsterIndex, attack);//击中怪物
-                alive = false;
+
+              generateParticle(user.projectile,gp.monster[monsterIndex]);//玩家攻击后，在怪物身上创建粒子特效。
+
+                alive = false;//投掷物消亡
             }
 
         }
-        if (user != gp.player) {//怪物攻击
+        if (user != gp.player) {//如果使用投射物的对象不是玩家是怪物，那么创建粒子
             boolean contactPlayer = gp.cChecker.checkPlayer(this);
             if (gp.player.invincible == false && contactPlayer == true) {
-            damagePlayer(attack);
-            alive = false;
+                damagePlayer(attack);
+                generateParticle(user.projectile, gp.player);
+
+                alive = false;
             }
         }
 

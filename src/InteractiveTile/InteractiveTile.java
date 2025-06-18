@@ -3,6 +3,8 @@ package InteractiveTile;
 import Entity.Entity;
 import main.GamePanel;
 
+import java.awt.*;
+
 public class InteractiveTile extends Entity {
 
     GamePanel gp;
@@ -23,7 +25,7 @@ public class InteractiveTile extends Entity {
 
     }
 
-    public InteractiveTile getDestroyedForm() {
+    public InteractiveTile getDestroyedForm() {// 这个方法用来获取被破坏的tile
         InteractiveTile tile = null;
 
         return tile;
@@ -43,4 +45,16 @@ public class InteractiveTile extends Entity {
             }
         }
     }
+    public void draw(Graphics2D g2) {//这段代码防止玩家被攻击时，交互方块想怪物一样闪烁
+        int screenX = worldX - gp.player.worldX + gp.player.screenX;
+        int screenY = worldY - gp.player.worldY + gp.player.screenY;
+        if (worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&//这是一段优化代码，用来判断屏幕是否在屏幕范围内
+                worldX - gp.tileSize < gp.player.worldX + gp.player.screenX &&//
+                worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
+                worldY - gp.tileSize < gp.player.worldY + gp.player.screenY
+        ) {
+            g2.drawImage(down1, screenX, screenY,  null);
+        }
+    }
+
 }
