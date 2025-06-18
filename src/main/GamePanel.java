@@ -7,6 +7,7 @@ import tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,14 +16,19 @@ public class GamePanel extends JPanel implements Runnable {
     final int originalTileSize = 16;
     final int scale = 3;
     public final int tileSize = originalTileSize * scale;//48
-    public final int maxScreenCol = 16;
+    public final int maxScreenCol = 20;
     public final int maxScreenRow = 12;
-    public final int screenWidth = tileSize * maxScreenCol;//
-    public final int screenHeight = tileSize * maxScreenRow;
+    public final int screenWidth = tileSize * maxScreenCol;//768
+    public final int screenHeight = tileSize * maxScreenRow;//576
     public int maxWorldCol = 50;
     public int maxWorldRow = 50;
 
     public int currentMusic = 0;  // 当前播放的音乐编号
+
+    int screenWidth2 = screenWidth;
+    int screenHeight2 = screenHeight;
+    BufferedImage tempScreen;//
+    Graphics2D g2;//画笔
 
     int FPS = 60;
     TileManager tileM = new TileManager(this);
@@ -49,7 +55,7 @@ public class GamePanel extends JPanel implements Runnable {
     public InteractiveTile iTile[] = new InteractiveTile[50];//创建一个 interactiveTile 数组
     public ArrayList<Entity> projectileList = new ArrayList<>();
 
-    public ArrayList<Entity> particleList= new ArrayList<>();
+    public ArrayList<Entity> particleList = new ArrayList<>();
     ArrayList<Entity> entityList = new ArrayList<>();//创建a一个实体列表
 
     public int gameState;
@@ -59,6 +65,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int dialogueState = 3;
     public final int characterState = 4;
 
+    public final int optionState = 5;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -77,6 +84,24 @@ public class GamePanel extends JPanel implements Runnable {
 
         //playMusic(0);
         gameState = titleState;//游戏状态的设置
+
+        tempScreen = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB);//创建一个临时屏幕
+
+        g2 = (Graphics2D) tempScreen.getGraphics();//创建一个Graphics2D对象
+        // setFullScreen();
+
+    }
+
+    public void setFullScreen() {
+        //GET LOCAL SCREEN DEVICE
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice gd = ge.getDefaultScreenDevice();
+        gd.setFullScreenWindow(Main.window);
+
+        //get Full screen width and height
+        screenWidth2 = Main.window.getWidth();
+        screenHeight2 = Main.window.getHeight();
+
     }
 
     public void startGameThread() {
@@ -99,7 +124,9 @@ public class GamePanel extends JPanel implements Runnable {
             lastTime = currentTime;
             if (delta >= 1) {
                 update();
-                repaint();
+                /* repaint();*/
+                drawToTempScreen();//draw every thing to buffered image
+                drawToScreen(); //draw the buffered image to screen
                 delta--;
                 drawCount++;
             }
@@ -142,19 +169,19 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
             for (int i = 0; i < particleList.size(); i++) {//循环遍历 particleList数组，以此绘制particleList中的元素
-                if ( particleList.get(i) != null) {
-                    if ( particleList.get(i).alive == true) {
+                if (particleList.get(i) != null) {
+                    if (particleList.get(i).alive == true) {
                         particleList.get(i).update();//绘制 particleList
                     }
-                    if ( particleList.get(i).alive == false) {
+                    if (particleList.get(i).alive == false) {
                         particleList.remove(i);
                     }
                 }
             }
 
 
-            for (int i = 0; i < iTile.length; i++){
-                if (iTile[i]!= null){
+            for (int i = 0; i < iTile.length; i++) {
+                if (iTile[i] != null) {
 
                     iTile[i].update();//更新 interactiveTile
                 }
@@ -165,9 +192,7 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
+    public void drawToTempScreen() {
 
         long drawStart = 0;
         if (keyH.showDebugText == true) {
@@ -182,9 +207,9 @@ public class GamePanel extends JPanel implements Runnable {
         else {
             tileM.draw(g2);
 
-            for (int i = 0; i < iTile.length; i++){//循环遍历 interactiveTile 数组，以此绘制 interactiveTile
+            for (int i = 0; i < iTile.length; i++) {//循环遍历 interactiveTile 数组，以此绘制 interactiveTile
 
-                if (iTile[i]!= null){//如果 interactiveTile 不为空，则执行下面的代码
+                if (iTile[i] != null) {//如果 interactiveTile 不为空，则执行下面的代码
                     iTile[i].draw(g2);
                 }
             }
@@ -261,7 +286,14 @@ public class GamePanel extends JPanel implements Runnable {
 
             g2.drawString("Draw :" + passed, x, y);
         }
-        g2.dispose();
+
+    }
+
+    public void drawToScreen() {
+
+        Graphics g = getGraphics();
+        g.drawImage(tempScreen, 0, 0, screenWidth2, screenHeight2, null);
+        g.dispose();
     }
 
     public void playMusic(int i) {

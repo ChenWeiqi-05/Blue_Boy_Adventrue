@@ -1,11 +1,12 @@
 package main;
 
+import javax.swing.text.html.Option;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener {
     GamePanel gp;
-    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed,shotKeyPressed;
+    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, shotKeyPressed;
     boolean showDebugText = false;
 
 
@@ -149,7 +150,15 @@ public class KeyHandler implements KeyListener {
 //CHARACTER STATE
         else if (gp.gameState == gp.characterState) {
             characterState(code);
+        } else if (gp.gameState == gp.characterState) {
+            optionsState(code);
         }
+
+    }
+
+    public void optionsState( int  code) {
+
+
     }
 
     public void titleState(int code) {
@@ -243,6 +252,9 @@ public class KeyHandler implements KeyListener {
                 gp.playMusic(0);  // 退出暂停状态时重新播放音乐
             }
         }
+        if (code == KeyEvent.VK_ESCAPE) {
+            gp.gameState = gp.optionState;
+        }
         if (code == KeyEvent.VK_F) {
             shotKeyPressed = true;
         }
@@ -309,7 +321,7 @@ public class KeyHandler implements KeyListener {
                 gp.playSE(9);
             }
         }
-        if (code == KeyEvent.VK_ENTER){//选择物品
+        if (code == KeyEvent.VK_ENTER) {//选择物品
             gp.player.selectItem();
         }
     }
@@ -328,7 +340,8 @@ public class KeyHandler implements KeyListener {
         }
         if (code == KeyEvent.VK_D) {
             rightPressed = false;
-        }if (code == KeyEvent.VK_F) {
+        }
+        if (code == KeyEvent.VK_F) {
             shotKeyPressed = false;
         }
     }
