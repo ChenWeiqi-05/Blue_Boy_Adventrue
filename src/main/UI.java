@@ -35,6 +35,7 @@ public class UI {
 
     public int slotCol = 0;//鼠标点击的格子列数
     public int slotRow = 0;//鼠标点击的格子行数
+    int subState = 0;
 
 
     public UI(GamePanel gp) {
@@ -160,6 +161,126 @@ public class UI {
             drawCharacterScreen();
             drawInventory();
         }
+        if (gp.gameState == gp.optionState) {
+
+            drawOptionsScreen();
+        }
+    }
+
+    public void drawOptionsScreen() {
+
+        g2.setColor(Color.white);//画出白色
+        g2.setFont(g2.getFont().deriveFont(32F));//改变字体大小
+
+        int frameX = gp.tileSize * 6;
+        int frameY = gp.tileSize;
+        int frameWidth = gp.tileSize * 8;
+        int frameHeight = gp.tileSize * 10;
+
+        drawSubWindow(frameX, frameY, frameWidth, frameHeight);
+        switch (subState) {
+            case 0:
+                options_top(frameX, frameY);
+                break;
+            case 1:
+                option_fullScreenNotification(frameX, frameY);
+                break;
+            case 2:
+                break;
+
+        }
+        gp.keyH.enterPressed = false;//这段代码的作用是防止在options_top()方法中，
+        // 点击enter键后，subState的值被重置为0，导致options_top()方法中的代码不执行。
+    }
+
+    public void options_top(int frameX, int frameY) {
+
+        int textX;
+        int textY;
+
+        String text = "Options";
+
+        textX = getXforCenteredText(text);
+        textY = frameY + gp.tileSize;
+        g2.drawString(text, textX, textY);
+
+
+        textX = frameX + gp.tileSize;
+        textY += gp.tileSize * 2;
+        g2.drawString("Full Screen", textX, textY);
+        if (commandNum == 0) {
+            g2.drawString(">", textX - 25, textY);
+
+            if (gp.keyH.enterPressed == true) {
+                if (gp.fullScreenOn == false) {
+                    gp.fullScreenOn = true;
+                } else if (gp.fullScreenOn == true) {
+                    gp.fullScreenOn = false;
+                }
+                subState = 1;//这段代码的逻辑是：如果当前子状态为0，则绘制一个">"符号，
+                // 并检查用户是否按下了回车键。如果按下了回车键，则切换全屏模式并进入下一个子状态。
+            }
+
+        }
+
+        //music
+        textY += gp.tileSize;
+        g2.drawString("Music", textX, textY);
+        if (commandNum == 1) {
+
+            g2.drawString(">", textX - 25, textY);
+        }
+
+        textY += gp.tileSize;
+        g2.drawString("SE", textX, textY);
+        if (commandNum == 2) {
+
+            g2.drawString(">", textX - 25, textY);
+        }
+
+        textY += gp.tileSize;
+        g2.drawString("Control", textX, textY);
+        if (commandNum == 3) {
+
+            g2.drawString(">", textX - 25, textY);
+        }
+
+        textY += gp.tileSize;
+        g2.drawString("End Game", textX, textY);
+        if (commandNum == 4) {
+
+            g2.drawString(">", textX - 25, textY);
+        }
+
+        textY += gp.tileSize * 2;
+        g2.drawString("Back", textX, textY);
+        if (commandNum == 5) {
+
+            g2.drawString(">", textX - 25, textY);
+        }
+
+        textX = (int) (frameX + gp.tileSize * 4.5);
+        textY = frameY + gp.tileSize * 2 + 24;
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRect(textX, textY, 24, 24);
+
+        if (gp.fullScreenOn == true) {
+            g2.fillRect(textX, textY, 24, 24);
+        }
+
+//MUSIC VOLUME
+        textY += gp.tileSize;
+        g2.drawRect(textX, textY, 120, 24);
+        int volumeWidth = 24 * gp.music.volumeScale;
+        g2.fillRect(textX, textY, volumeWidth, 24);
+
+
+//SE VOLUME
+        textY += gp.tileSize;
+        g2.drawRect(textX, textY, 120, 24);
+         volumeWidth = 24 * gp.se.volumeScale;
+        g2.fillRect(textX, textY, volumeWidth, 24);
+
     }
 
     public void drawInventory() {
@@ -266,21 +387,21 @@ public class UI {
             x += gp.tileSize;
         }
         //绘制玩家的魔法值
-        x = (gp.tileSize / 2)-5;
+        x = (gp.tileSize / 2) - 5;
         y = (int) (gp.tileSize * 2);
         i = 0;
-        while (i < gp.player.maxMana){
+        while (i < gp.player.maxMana) {
             g2.drawImage(crystal_blank, x, y, null);
             i++;
-            x +=35;//绘制
+            x += 35;//绘制
         }
-        x = (gp.tileSize / 2)-5;
+        x = (gp.tileSize / 2) - 5;
         y = (int) (gp.tileSize * 2);
         i = 0;
-        while (i < gp.player.mana){
+        while (i < gp.player.mana) {
             g2.drawImage(crystal_full, x, y, null);
             i++;
-            x +=35;//绘制
+            x += 35;//绘制
         }
     }
 
@@ -559,4 +680,29 @@ public class UI {
 
         return x;
     }
+
+    public void option_fullScreenNotification(int frameX, int frameY) {
+
+        int textX = frameX + gp.tileSize;
+        int textY = frameY + gp.tileSize * 3;
+
+
+        currentDialogue = "The change will take \neffect after restarting \nthe game.";
+        for (String line : currentDialogue.split("\n")) {//遍历文本,以达到换行的效果
+            g2.drawString(line, textX, textY);
+            textY += 40;
+        }
+
+        textY = frameY + gp.tileSize * 9;
+        g2.drawString("Back", textX, textY);
+        if (commandNum == 0) {//绘制选择
+            g2.drawString(">", textX - 25, textY);
+            if (gp.keyH.enterPressed == true) {//确认选择
+                subState = 0;
+            }
+        }
+
+    }
+
+
 }

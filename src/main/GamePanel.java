@@ -30,6 +30,7 @@ public class GamePanel extends JPanel implements Runnable {
     BufferedImage tempScreen;//
     Graphics2D g2;//画笔
 
+    public boolean fullScreenOn = false;
     int FPS = 60;
     TileManager tileM = new TileManager(this);
     public KeyHandler keyH = new KeyHandler(this);//这条代码用来设置键盘监听

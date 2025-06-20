@@ -1,6 +1,5 @@
 package main;
 
-import javax.swing.text.html.Option;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -150,13 +149,72 @@ public class KeyHandler implements KeyListener {
 //CHARACTER STATE
         else if (gp.gameState == gp.characterState) {
             characterState(code);
-        } else if (gp.gameState == gp.characterState) {
+        } else if (gp.gameState == gp.optionState) {
             optionsState(code);
         }
 
     }
 
-    public void optionsState( int  code) {
+    public void optionsState(int code) {//这段代码的作用是，当游戏状态为选项状态时，按下ESC键，
+        // 游戏状态会返回到游戏状态，按下ENTER键，游戏状态会返回到游戏状态
+
+        if (code == KeyEvent.VK_ESCAPE) {
+            gp.gameState = gp.playState;
+        }
+        if (code == KeyEvent.VK_ENTER) {
+            enterPressed = true;
+        }
+
+        int maxCommandNum = 0;
+        switch (gp.ui.subState) {
+
+            case 0:
+                maxCommandNum = 5;
+                break;
+        }
+        if (code == KeyEvent.VK_W) {
+
+            gp.ui.commandNum--;
+            gp.playSE(9);
+            if (gp.ui.commandNum < 0) {
+                gp.ui.commandNum = maxCommandNum;
+            }
+        }
+        if (code == KeyEvent.VK_S) {
+            gp.ui.commandNum++;
+            gp.playSE(9);
+            if (gp.ui.commandNum > maxCommandNum) {
+                gp.ui.commandNum = 0;
+            }
+        }
+        if (code == KeyEvent.VK_A) {
+            if (gp.ui.subState == 0) {
+                if (gp.ui.commandNum == 1 && gp.music.volumeScale > 0) {
+                    gp.music.volumeScale--;
+                    gp.music.checkVolume();
+                    gp.playSE(9);
+                }
+            }
+            if (gp.ui.commandNum == 2 && gp.se.volumeScale > 0) {
+                gp.se.volumeScale--;
+
+                gp.playSE(9);
+            }
+
+        }
+        if (code == KeyEvent.VK_D) {
+            if (gp.ui.subState == 0) {
+                if (gp.ui.commandNum == 1 && gp.music.volumeScale < 5) {
+                    gp.music.volumeScale++;
+                    gp.music.checkVolume();
+                    gp.playSE(9);
+                }
+                if (gp.ui.commandNum == 2 && gp.se.volumeScale < 5) {
+                    gp.se.volumeScale++;
+                    gp.playSE(9);
+                }
+            }
+        }
 
 
     }
@@ -177,7 +235,7 @@ public class KeyHandler implements KeyListener {
             }
             if (code == KeyEvent.VK_ENTER) {
                 if (gp.ui.commandNum == 0) {
-
+                    gp.playMusic(0);
                     gp.ui.titleScreenState = 1;
 
                 }
