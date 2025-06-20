@@ -186,11 +186,52 @@ public class UI {
                 option_fullScreenNotification(frameX, frameY);
                 break;
             case 2:
+                options_control(frameX, frameY);
                 break;
-
+            case 3:
+               options_endGameComfirmation(frameX, frameY);
+                break;
         }
         gp.keyH.enterPressed = false;//这段代码的作用是防止在options_top()方法中，
         // 点击enter键后，subState的值被重置为0，导致options_top()方法中的代码不执行。
+    }
+
+    public void options_endGameComfirmation(int frameX, int frameY) {
+        int textX = frameX + gp.tileSize;
+        int textY = frameY + gp.tileSize*3;
+
+        currentDialogue = "Quit the game and return\nto the title screen?";
+
+        for (String line : currentDialogue.split("\n")){
+            g2.drawString(line, textX, textY);
+            textY += 40;
+        }
+        //yes
+        String text = "YES";
+        textX = getXforCenteredText(text);
+        textY +=  gp.tileSize*3;
+        g2.drawString(text, textX, textY);
+        if (commandNum == 0){
+            g2.drawString(">", textX - 25, textY);
+            if (gp.keyH.enterPressed == true){
+                subState = 0;//退出
+                    gp.gameState = gp.titleState;
+            }
+        }
+
+        //no
+
+       text = "NO";
+        textX = getXforCenteredText(text);
+        textY +=  gp.tileSize;
+        g2.drawString(text, textX, textY);
+        if (commandNum == 1){
+            g2.drawString(">", textX - 25, textY);
+            if (gp.keyH.enterPressed == true){
+                subState = 0;//退出
+                commandNum = 4;
+            }
+        }
     }
 
     public void options_top(int frameX, int frameY) {
@@ -243,13 +284,23 @@ public class UI {
         if (commandNum == 3) {
 
             g2.drawString(">", textX - 25, textY);
+            if (gp.keyH.enterPressed == true) {
+
+                subState = 2;
+                commandNum = 0;
+            }
         }
 
         textY += gp.tileSize;
         g2.drawString("End Game", textX, textY);
         if (commandNum == 4) {
-
             g2.drawString(">", textX - 25, textY);
+            if (gp.keyH.enterPressed == true){
+                subState = 3;
+                commandNum = 0;
+
+            }
+
         }
 
         textY += gp.tileSize * 2;
@@ -257,6 +308,11 @@ public class UI {
         if (commandNum == 5) {
 
             g2.drawString(">", textX - 25, textY);
+       if (gp.keyH.enterPressed == true){
+           gp.gameState = gp.playState;
+           commandNum = 0;
+       }
+
         }
 
         textX = (int) (frameX + gp.tileSize * 4.5);
@@ -278,7 +334,7 @@ public class UI {
 //SE VOLUME
         textY += gp.tileSize;
         g2.drawRect(textX, textY, 120, 24);
-         volumeWidth = 24 * gp.se.volumeScale;
+        volumeWidth = 24 * gp.se.volumeScale;
         g2.fillRect(textX, textY, volumeWidth, 24);
 
     }
@@ -699,10 +755,62 @@ public class UI {
             g2.drawString(">", textX - 25, textY);
             if (gp.keyH.enterPressed == true) {//确认选择
                 subState = 0;
+
+                commandNum = 0;
             }
         }
 
     }
 
+    public void options_control(int frameX, int frameY) {
+        int textX;
+        int textY;
+        String text = "Control";
+        textX = getXforCenteredText(text);
+        textY = frameY + gp.tileSize;
+        g2.drawString(text, textX, textY);
 
+        textX = frameX + gp.tileSize;
+        textY += gp.tileSize;
+        g2.drawString("Move", textX, textY);
+        textY += gp.tileSize;
+        g2.drawString("Confirm/Attack", textX, textY);
+        textY += gp.tileSize;
+        g2.drawString("Shoot/Cast", textX, textY);
+        textY += gp.tileSize;
+        g2.drawString("Character Screen", textX, textY);
+        textY += gp.tileSize;
+        g2.drawString("Pause", textX, textY);
+        textY += gp.tileSize;
+        g2.drawString("Options", textX, textY);
+        textY += gp.tileSize;
+
+        textX = frameX + gp.tileSize * 6;
+        textY = frameY + gp.tileSize * 2;
+        g2.drawString("WASD", textX, textY);
+        textY += gp.tileSize;
+        g2.drawString("ENTER", textX, textY);
+        textY += gp.tileSize;
+        g2.drawString("F", textX, textY);
+        textY += gp.tileSize;
+        g2.drawString("C", textX, textY);
+        textY += gp.tileSize;
+        g2.drawString("P", textX, textY);
+        textY += gp.tileSize;
+        g2.drawString("ESC", textX, textY);
+        textY += gp.tileSize;
+
+        textX = frameX + gp.tileSize;
+        textY = frameY + gp.tileSize * 9;
+        g2.drawString("Back", textX, textY);
+        if (commandNum == 0) {
+            g2.drawString(">", textX - 25, textY);
+            if (gp.keyH.enterPressed ==true){
+                subState = 0;
+               commandNum = 3;
+            }
+
+        }
+
+    }
 }

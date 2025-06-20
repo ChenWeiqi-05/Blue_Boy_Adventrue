@@ -166,10 +166,13 @@ public class KeyHandler implements KeyListener {
         }
 
         int maxCommandNum = 0;
-        switch (gp.ui.subState) {
+        switch (gp.ui.subState) {// 根据当前子状态，设置最大命令数
 
             case 0:
-                maxCommandNum = 5;
+                maxCommandNum = 5;// 子状态为0时，最大命令数设为5
+                break;
+            case 3:
+                maxCommandNum = 1;// 子状态为3时，最大命令数设为1
                 break;
         }
         if (code == KeyEvent.VK_W) {
