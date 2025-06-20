@@ -31,6 +31,7 @@ public class Sound {
         soundURL[9] = getClass().getResource("/sound/cursor.wav");
         soundURL[10] = getClass().getResource("/sound/burning.wav");
         soundURL[11] = getClass().getResource("/sound/cuttree.wav");
+        soundURL[12] = getClass().getResource("/sound/gameover.wav");
 
 
     }
@@ -44,7 +45,7 @@ public class Sound {
             clip.open(ais);
 
             fc = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);//声量从-80到6
-checkVolume();
+            checkVolume();
 
         } catch (Exception e) {
             e.printStackTrace();

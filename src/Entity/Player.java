@@ -48,6 +48,7 @@ public class Player extends Entity {
     }
 
     public void setItems() {
+        inventory.clear();
         inventory.add(currentWeapon);
         inventory.add(currentShield);
         inventory.add(new OBJ_Shield_Wood(gp));
@@ -55,14 +56,12 @@ public class Player extends Entity {
     }
 
     public void setDaultValues() {
-        worldX = gp.tileSize * 23;
-        worldY = gp.tileSize * 21;
-
+        setDefaultPositions();
 //        worldX = gp.tileSize * 10;
 //
 //        worldY = gp.tileSize * 13;
         speed = 4;
-        direction = "down";
+
 // PLAYER STATUS
         maxLife = 6;
         life = maxLife;
@@ -83,7 +82,17 @@ public class Player extends Entity {
         attack = getAttack();
         defense = getDefense();
     }
+    public void setDefaultPositions() {
+        worldX = gp.tileSize * 23;
+        worldY = gp.tileSize * 21;
+        direction = "down";
+    }
 
+    public void restoreLifeAndMana() {
+        life = maxLife;
+        mana = maxMana;
+        invincible = false;
+    }
     public int getAttack() {
 
         attackArea = currentWeapon.attackArea;
@@ -268,6 +277,14 @@ public class Player extends Entity {
         if (mana > maxMana) {//确保玩家生命值不能超过最大生命值
             mana = maxMana;
         }
+        if (life <= 0) {
+            gp.gameState = gp.gameOverState;
+            gp.ui.commandNum = -1;//这段代码的意思是，
+            // 当玩家生命值小于等于0时，游戏状态切换为游戏结束状态，
+            // 并且commandNum设置为-1，表示当前没有选中任何命令。
+            gp.playSE(12);
+        }
+
     }
 
     public void attacking() {
@@ -329,18 +346,18 @@ public class Player extends Entity {
 
     public void damageInteractiveTile(int i) {//碰撞检测
         if (i != 999 && gp.iTile[i].destructible == true && gp.iTile[i].isCorrectItem(this) == true
-        && gp.iTile[i].invincible == false
+                && gp.iTile[i].invincible == false
         ) {//检测是否可破坏
 
             gp.iTile[i].playSE();
 
             gp.iTile[i].life--;//枯树的生命值
 
-            gp.iTile[i].invincible  = true;
+            gp.iTile[i].invincible = true;
             //树被攻击后，树将不再可破坏,防止玩家单次攻击造成多次伤害，让游戏更加真实可行
 
-            generateParticle(gp.iTile[i],gp.iTile[i]);//树被攻击后，生成树碎片
-            if (gp.iTile[i].life == 0){
+            generateParticle(gp.iTile[i], gp.iTile[i]);//树被攻击后，生成树碎片
+            if (gp.iTile[i].life == 0) {
                 gp.iTile[i] = gp.iTile[i].getDestroyedForm();//获取被破坏的方块
             }
 

@@ -151,7 +151,40 @@ public class KeyHandler implements KeyListener {
             characterState(code);
         } else if (gp.gameState == gp.optionState) {
             optionsState(code);
+        } else if (gp.gameState == gp.gameOverState) {
+            gameOverState(code);
         }
+
+    }
+
+    public void gameOverState(int code) {
+        if (code == KeyEvent.VK_W) {//如果按W键，则commandNum减1，选项箭头就会向上移动
+            gp.ui.commandNum--;
+            if (gp.ui.commandNum < 0) {
+                gp.ui.commandNum = 1;
+            }
+            gp.playSE(9);
+        }
+        if (code == KeyEvent.VK_S) {//如果按S键，则commandNum加1，选项箭头就会向下移动
+            gp.ui.commandNum++;
+            if (gp.ui.commandNum > 1) {
+                gp.ui.commandNum = 0;
+            }
+            gp.playSE(9);
+        }
+        if (code == KeyEvent.VK_ENTER) {
+            if (gp.ui.commandNum == 0) {
+                gp.gameState = gp.playState;
+               gp.retry();
+
+            }
+            else if (gp.ui.commandNum == 1) {
+                gp.gameState = gp.titleState;
+                gp.restart();
+            }
+
+        }
+
 
     }
 
@@ -172,7 +205,7 @@ public class KeyHandler implements KeyListener {
                 maxCommandNum = 5;// 子状态为0时，最大命令数设为5
                 break;
             case 3:
-                maxCommandNum = 1;// 子状态为3时，最大命令数设为1
+                maxCommandNum = 1;//
                 break;
         }
         if (code == KeyEvent.VK_W) {
@@ -223,7 +256,7 @@ public class KeyHandler implements KeyListener {
     }
 
     public void titleState(int code) {
-        if (gp.ui.titleScreenState == 0) {
+       /* if (gp.ui.titleScreenState == 0) {
             if (code == KeyEvent.VK_W) {
                 gp.ui.commandNum--;
                 if (gp.ui.commandNum < 0) {
@@ -258,7 +291,6 @@ public class KeyHandler implements KeyListener {
                 gp.ui.commandNum--;
                 if (gp.ui.commandNum < 0) {
                     gp.ui.commandNum = 3;
-
                 }
             }
             if (code == KeyEvent.VK_S) {
@@ -288,7 +320,32 @@ public class KeyHandler implements KeyListener {
                 }
             }
         }
+*/
+        if (code == KeyEvent.VK_W) {
+            gp.ui.commandNum--;
+            if (gp.ui.commandNum < 0) {
+                gp.ui.commandNum = 2;
+            }
+        }
+        if (code == KeyEvent.VK_S) {
+            gp.ui.commandNum++;
+            if (gp.ui.commandNum > 2) {
+                gp.ui.commandNum = 0;
+            }
+        }
+        if (code == KeyEvent.VK_ENTER) {
+            if (gp.ui.commandNum == 0) {
+                gp.gameState = gp.playState;
+                gp.playMusic(0);
+            }
+            if (gp.ui.commandNum == 1) {
+                //  add later 选择人物属性
 
+            }
+            if (gp.ui.commandNum == 2) {
+                System.exit(0);
+            }
+        }
     }
 
     public void playState(int code) {

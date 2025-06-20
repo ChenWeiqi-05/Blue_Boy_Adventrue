@@ -5,6 +5,8 @@ import InteractiveTile.IT_DryTree;
 import monster.MON_GreenSlime;
 import object.*;
 
+import java.util.Random;
+
 public class AssetSetter {
     GamePanel gp;
 

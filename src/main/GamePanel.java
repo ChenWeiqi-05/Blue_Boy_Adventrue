@@ -42,6 +42,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public EventHandler eHandler = new EventHandler(this);
 
+    Config config = new Config(this);
     Thread gameThread;
 
     int playerX = 100;
@@ -65,8 +66,9 @@ public class GamePanel extends JPanel implements Runnable {
     public final int pauseState = 2;
     public final int dialogueState = 3;
     public final int characterState = 4;
-
     public final int optionState = 5;
+
+    public final int gameOverState = 6;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -89,8 +91,33 @@ public class GamePanel extends JPanel implements Runnable {
         tempScreen = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB);//创建一个临时屏幕
 
         g2 = (Graphics2D) tempScreen.getGraphics();//创建一个Graphics2D对象
-        // setFullScreen();
 
+        if (fullScreenOn == true) {
+            setFullScreen();
+
+        }
+
+    }
+
+    public void retry() {
+        player.setDefaultPositions();
+        player.restoreLifeAndMana();
+        aSetter.setNPC();
+        aSetter.setMonster();
+
+    }
+
+    public void restart() {
+        player.setDaultValues();
+      /*  player.setDefaultPositions();
+        player.restoreLifeAndMana();*/
+        player.setItems();
+
+        aSetter.setObject();
+        aSetter.setNPC();
+        aSetter.setMonster();
+
+        aSetter.setInteractiveTile();
     }
 
     public void setFullScreen() {

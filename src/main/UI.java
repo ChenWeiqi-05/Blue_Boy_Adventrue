@@ -29,6 +29,8 @@ public class UI {
     public int messageCounter = 0;*/
     ArrayList<String> message = new ArrayList<>();
     ArrayList<Integer> messageCounter = new ArrayList<>();
+
+
     public String currentDialogue = "";
     public int commandNum = 0;
     public int titleScreenState = 0;
@@ -162,11 +164,57 @@ public class UI {
             drawInventory();
         }
         if (gp.gameState == gp.optionState) {
-
             drawOptionsScreen();
+        }
+
+        // game over
+        if (gp.gameState == gp.gameOverState) {
+            drawGameOverScreen();
         }
     }
 
+    public void drawGameOverScreen() {
+
+        g2.setColor(new Color(0, 0, 0, 150));
+        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+
+        int x;
+        int y;
+        String text;
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 110F));//画出字体
+
+        text = "Game Over";
+        //Shadow
+        g2.setColor(Color.black);
+        x = getXforCenteredText(text);
+        y = gp.tileSize * 4;
+        g2.drawString(text, x, y);
+
+        //Main text
+        g2.setColor(Color.white);
+        g2.drawString(text, x - 4, y - 4);
+
+
+        //Retry
+
+        g2.setFont(g2.getFont().deriveFont(50f));
+
+        text = "Retry";
+        x = getXforCenteredText(text);
+        y += gp.tileSize * 3;
+        g2.drawString(text, x, y);
+        if (commandNum == 0){
+            g2.drawString(">", x - 40, y);
+        }
+        // Back to the title screen
+        text = "Quit";
+        x = getXforCenteredText(text);
+        y += 55;
+        g2.drawString(text, x, y);
+        if (commandNum == 1){
+            g2.drawString(">", x - 40, y);
+        }
+    }
     public void drawOptionsScreen() {
 
         g2.setColor(Color.white);//画出白色
@@ -189,7 +237,7 @@ public class UI {
                 options_control(frameX, frameY);
                 break;
             case 3:
-               options_endGameComfirmation(frameX, frameY);
+                options_endGameComfirmation(frameX, frameY);
                 break;
         }
         gp.keyH.enterPressed = false;//这段代码的作用是防止在options_top()方法中，
@@ -198,36 +246,36 @@ public class UI {
 
     public void options_endGameComfirmation(int frameX, int frameY) {
         int textX = frameX + gp.tileSize;
-        int textY = frameY + gp.tileSize*3;
+        int textY = frameY + gp.tileSize * 3;
 
         currentDialogue = "Quit the game and return\nto the title screen?";
 
-        for (String line : currentDialogue.split("\n")){
+        for (String line : currentDialogue.split("\n")) {
             g2.drawString(line, textX, textY);
             textY += 40;
         }
         //yes
         String text = "YES";
         textX = getXforCenteredText(text);
-        textY +=  gp.tileSize*3;
+        textY += gp.tileSize * 3;
         g2.drawString(text, textX, textY);
-        if (commandNum == 0){
+        if (commandNum == 0) {
             g2.drawString(">", textX - 25, textY);
-            if (gp.keyH.enterPressed == true){
+            if (gp.keyH.enterPressed == true) {
                 subState = 0;//退出
-                    gp.gameState = gp.titleState;
+                gp.gameState = gp.titleState;
             }
         }
 
         //no
 
-       text = "NO";
+        text = "NO";
         textX = getXforCenteredText(text);
-        textY +=  gp.tileSize;
+        textY += gp.tileSize;
         g2.drawString(text, textX, textY);
-        if (commandNum == 1){
+        if (commandNum == 1) {
             g2.drawString(">", textX - 25, textY);
-            if (gp.keyH.enterPressed == true){
+            if (gp.keyH.enterPressed == true) {
                 subState = 0;//退出
                 commandNum = 4;
             }
@@ -295,7 +343,7 @@ public class UI {
         g2.drawString("End Game", textX, textY);
         if (commandNum == 4) {
             g2.drawString(">", textX - 25, textY);
-            if (gp.keyH.enterPressed == true){
+            if (gp.keyH.enterPressed == true) {
                 subState = 3;
                 commandNum = 0;
 
@@ -308,10 +356,10 @@ public class UI {
         if (commandNum == 5) {
 
             g2.drawString(">", textX - 25, textY);
-       if (gp.keyH.enterPressed == true){
-           gp.gameState = gp.playState;
-           commandNum = 0;
-       }
+            if (gp.keyH.enterPressed == true) {
+                gp.gameState = gp.playState;
+                commandNum = 0;
+            }
 
         }
 
@@ -337,6 +385,8 @@ public class UI {
         volumeWidth = 24 * gp.se.volumeScale;
         g2.fillRect(textX, textY, volumeWidth, 24);
 
+
+        gp.config.saveConfig();//保存
     }
 
     public void drawInventory() {
@@ -805,9 +855,9 @@ public class UI {
         g2.drawString("Back", textX, textY);
         if (commandNum == 0) {
             g2.drawString(">", textX - 25, textY);
-            if (gp.keyH.enterPressed ==true){
+            if (gp.keyH.enterPressed == true) {
                 subState = 0;
-               commandNum = 3;
+                commandNum = 3;
             }
 
         }
