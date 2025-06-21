@@ -3,6 +3,7 @@ package main;
 import Entity.Entity;
 import Entity.Player;
 import InteractiveTile.InteractiveTile;
+import ai.PathFinder;
 import tile.TileManager;
 
 import javax.swing.*;
@@ -43,10 +44,10 @@ public class GamePanel extends JPanel implements Runnable {
     public UI ui = new UI(this);
 
     public EventHandler eHandler = new EventHandler(this);
-
     Config config = new Config(this);
-    Thread gameThread;
 
+    public PathFinder pFinder = new PathFinder(this);
+    Thread gameThread;
     int playerX = 100;
     int playerY = 100;
     int playerSpeed = 4;
@@ -57,7 +58,6 @@ public class GamePanel extends JPanel implements Runnable {
     public Entity monster[][] = new Entity[maxMap][20];
     public InteractiveTile iTile[][] = new InteractiveTile[maxMap][50];//创建一个 interactiveTile 数组
     public ArrayList<Entity> projectileList = new ArrayList<>();
-
     public ArrayList<Entity> particleList = new ArrayList<>();
     ArrayList<Entity> entityList = new ArrayList<>();//创建a一个实体列表
 
@@ -339,4 +339,6 @@ public class GamePanel extends JPanel implements Runnable {
         music.setFile(i);
         music.play();
     }
+
+
 }

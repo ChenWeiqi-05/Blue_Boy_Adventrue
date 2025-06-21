@@ -18,10 +18,10 @@ public class MON_GreenSlime extends Entity {
         this.gp = gp;
         type = type_monster;
         name = "Green Slime";
-        speed = 1;
+        speed = 2;
         maxLife = 4;
         life = maxLife;
-        attack = 5;
+        attack = 1;
         defense = 0;
         exp = 2;
         projectile = new OBJ_Rock(gp);
@@ -48,40 +48,54 @@ public class MON_GreenSlime extends Entity {
         right1 = setup("/monster/greenslime_down_1", gp.tileSize, gp.tileSize);
         right2 = setup("/monster/greenslime_down_2", gp.tileSize, gp.tileSize);
     }
+    public void update() {
+        super.update();
+    }
 
     public void setAction() {//monster的ai移动
-        actionLockCounter++;
-        if (actionLockCounter == 120) {
-            Random random = new Random();
-            int i = random.nextInt(100) + 1;
-            if (i < 25) {
-                direction = "up";
+        if (onPath == true) {
+            int goalCol = (gp.player.worldX + gp.player.solidArea.x) / gp.tileSize;
+            int goalRow = (gp.player.worldY + gp.player.solidArea.y) / gp.tileSize;
+
+            searchPath(goalCol, goalRow);
+            int i = new Random().nextInt(100) + 1;
+            if (i > 197 && projectile.alive == false && shotAvailCounter == 30) {//如果技能可用，则释放技能
+
+                projectile.set(worldX, worldY, direction, true, this);//创建技能
+                gp.projectileList.add(projectile);//添加技能
+
+                shotAvailCounter = 0;//技能可用
             }
-            if (i > 25 && i <= 50) {
-                direction = "down";
+        } else {
+            actionLockCounter++;
+            if (actionLockCounter == 120) {
+                Random random = new Random();
+                int i = random.nextInt(100) + 1;
+
+                if (i < 25) {
+                    direction = "up";
+                }
+                if (i > 25 && i <= 50) {
+                    direction = "down";
+                }
+                if (i >= 50 && i <= 75) {
+                    direction = "left";
+                }
+                if (i > 75 && i <= 100) {
+                    direction = "right";
+                }
+                actionLockCounter = 0;
             }
-            if (i >= 50 && i <= 75) {
-                direction = "left";
-            }
-            if (i > 75 && i <= 100) {
-                direction = "right";
-            }
-            actionLockCounter = 0;
         }
 
-        int i = new Random().nextInt(100) + 1;
-        if (i > 99 && projectile.alive == false && shotAvailCounter == 30) {//如果技能可用，则释放技能
 
-            projectile.set(worldX, worldY, direction, true, this);//创建技能
-            gp.projectileList.add(projectile);//添加技能
-
-            shotAvailCounter = 0;//技能可用
-        }
     }
 
     public void damageReaction() {//史莱姆受到攻击后的退后ai
         actionLockCounter = 0;
-        direction = gp.player.direction1;
+        // direction = gp.player.direction1;
+        onPath = true;
+
     }
 
     public void checkDrop() {//这段代码控制物品的随机掉落物品
