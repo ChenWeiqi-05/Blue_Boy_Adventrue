@@ -16,7 +16,7 @@ public class OBJ_Rock extends Projectile {
         speed = 8;
         maxLife = 80;
         life = maxLife;
-        attack = 2;
+        attack = 6;
 
         useCost = 1;
         alive = false;//这段代码的意思是，当火球被创建时，它将处于非活动状态。

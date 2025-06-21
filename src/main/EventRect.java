@@ -3,7 +3,8 @@ package main;
 import java.awt.*;
 
 public class EventRect extends Rectangle {
-    int eventRectDefaultX, eventRectDefaultY;
+    int eventRectDefaultX;
+    int eventRectDefaultY;
     boolean eventDone = false;
 
 

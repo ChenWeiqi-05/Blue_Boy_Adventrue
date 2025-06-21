@@ -326,11 +326,11 @@ public class Entity {
     }
 
     public void dropItem(Entity droppedItem) {//这段代码用来处理道具的掉落逻辑
-        for (int i = 0; i < gp.obj.length; i++) {//遍历所有物体
-            if (gp.obj[i] == null) {//如果物体为空，则将掉落物放入物体中
-                gp.obj[i] = droppedItem;//将掉落物放入物体中
-                gp.obj[i].worldX = worldX;//死去怪物的世界位置
-                gp.obj[i].worldY = worldY;//死去怪物的世界位置
+        for (int i = 0; i < gp.obj[1].length; i++) {//遍历所有物体
+            if (gp.obj[gp.currentMap][i] == null) {//如果物体为空，则将掉落物放入物体中
+                gp.obj[gp.currentMap][i] = droppedItem;//将掉落物放入物体中
+                gp.obj[gp.currentMap][i].worldX = worldX;//死去怪物的世界位置
+                gp.obj[gp.currentMap][i].worldY = worldY;//死去怪物的世界位置
                 break;
             }
         }

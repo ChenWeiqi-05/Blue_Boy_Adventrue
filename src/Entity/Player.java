@@ -41,7 +41,7 @@ public class Player extends Entity {
        /* attackArea.width = 36;
         attackArea.height = 36;*/
 
-        setDaultValues();
+        setDefaultValues();
         getPlayerImage();
         getPlayerAttackImage();
         setItems();
@@ -55,11 +55,14 @@ public class Player extends Entity {
         inventory.add(new OBJ_Sword_Normal(gp));
     }
 
-    public void setDaultValues() {
+    public void setDefaultValues() {
         setDefaultPositions();
-//        worldX = gp.tileSize * 10;
-//
-//        worldY = gp.tileSize * 13;
+     /*  worldX = gp.tileSize * 13;
+
+       worldY = gp.tileSize * 14;*/
+       /* worldX = gp.tileSize * 12;
+
+        worldY = gp.tileSize * 13;*/
         speed = 4;
 
 // PLAYER STATUS
@@ -82,6 +85,7 @@ public class Player extends Entity {
         attack = getAttack();
         defense = getDefense();
     }
+
     public void setDefaultPositions() {
         worldX = gp.tileSize * 23;
         worldY = gp.tileSize * 21;
@@ -93,6 +97,7 @@ public class Player extends Entity {
         mana = maxMana;
         invincible = false;
     }
+
     public int getAttack() {
 
         attackArea = currentWeapon.attackArea;
@@ -283,6 +288,7 @@ public class Player extends Entity {
             // 当玩家生命值小于等于0时，游戏状态切换为游戏结束状态，
             // 并且commandNum设置为-1，表示当前没有选中任何命令。
             gp.playSE(12);
+            gp.stopMusic();
         }
 
     }
@@ -345,20 +351,20 @@ public class Player extends Entity {
     }
 
     public void damageInteractiveTile(int i) {//碰撞检测
-        if (i != 999 && gp.iTile[i].destructible == true && gp.iTile[i].isCorrectItem(this) == true
-                && gp.iTile[i].invincible == false
+        if (i != 999 && gp.iTile[gp.currentMap][i].destructible == true && gp.iTile[gp.currentMap][i].isCorrectItem(this) == true
+                && gp.iTile[gp.currentMap][i].invincible == false
         ) {//检测是否可破坏
 
-            gp.iTile[i].playSE();
+            gp.iTile[gp.currentMap][i].playSE();
 
-            gp.iTile[i].life--;//枯树的生命值
+            gp.iTile[gp.currentMap][i].life--;//枯树的生命值
 
-            gp.iTile[i].invincible = true;
+            gp.iTile[gp.currentMap][i].invincible = true;
             //树被攻击后，树将不再可破坏,防止玩家单次攻击造成多次伤害，让游戏更加真实可行
 
-            generateParticle(gp.iTile[i], gp.iTile[i]);//树被攻击后，生成树碎片
-            if (gp.iTile[i].life == 0) {
-                gp.iTile[i] = gp.iTile[i].getDestroyedForm();//获取被破坏的方块
+            generateParticle(gp.iTile[gp.currentMap][i], gp.iTile[gp.currentMap][i]);//树被攻击后，生成树碎片
+            if (gp.iTile[gp.currentMap][i].life == 0) {
+                gp.iTile[gp.currentMap][i] = gp.iTile[gp.currentMap][i].getDestroyedForm();//获取被破坏的方块
             }
 
         }
@@ -366,24 +372,24 @@ public class Player extends Entity {
 
     public void damageMonster(int i, int attack) {//攻击方法
         if (i != 999) {
-            if (gp.monster[i].invincible == false) {
+            if (gp.monster[gp.currentMap][i].invincible == false) {
                 gp.playSE(5);
 
-                int damage = attack - gp.monster[i].defense;//攻击力减去防御力
+                int damage = attack - gp.monster[gp.currentMap][i].defense;//攻击力减去防御力
                 if (damage < 0) {
                     damage = 0;
                 }
-                gp.monster[i].life -= damage;
+                gp.monster[gp.currentMap][i].life -= damage;
                 gp.ui.addMessage(damage + " damage!");
                 gp.player.life += 2;
-                gp.monster[i].invincible = true;
-                gp.monster[i].damageReaction();//当玩家攻击史莱姆后，史莱姆会触发退后方法
-                if (gp.monster[i].life <= 0) {//当史莱姆的血量小于等于0时，会触发死亡方法
-                    gp.monster[i].dying = true;//死亡
+                gp.monster[gp.currentMap][i].invincible = true;
+                gp.monster[gp.currentMap][i].damageReaction();//当玩家攻击史莱姆后，史莱姆会触发退后方法
+                if (gp.monster[gp.currentMap][i].life <= 0) {//当史莱姆的血量小于等于0时，会触发死亡方法
+                    gp.monster[gp.currentMap][i].dying = true;//死亡
 
-                    gp.ui.addMessage("Killed the " + gp.monster[i].name + "!");
-                    gp.ui.addMessage("Exp + " + gp.monster[i].exp + "!");
-                    exp += gp.monster[i].exp;
+                    gp.ui.addMessage("Killed the " + gp.monster[gp.currentMap][i].name + "!");
+                    gp.ui.addMessage("Exp + " + gp.monster[gp.currentMap][i].exp + "!");
+                    exp += gp.monster[gp.currentMap][i].exp;
                     CheckLevelUp();
                 }
             }
@@ -409,9 +415,9 @@ public class Player extends Entity {
 
     public void contactMonster(int i) {//这段代码的意思是
         if (i != 999) {
-            if (invincible == false && gp.monster[i].dying == false) {
+            if (invincible == false && gp.monster[gp.currentMap][i].dying == false) {
                 gp.playSE(6);
-                int damage = gp.monster[i].attack - defense;//攻击力减去防御力
+                int damage = gp.monster[gp.currentMap][i].attack - defense;//攻击力减去防御力
                 if (damage < 0) {
                     damage = 0;
                 }
@@ -463,19 +469,19 @@ public class Player extends Entity {
                         gp.playSE(4);
                         break;
             }*/
-            if (gp.obj[i].type == type_pickupOnly) {//拾取物品
-                gp.obj[i].use(this);
-                gp.obj[i] = null;
+            if (gp.obj[gp.currentMap][i].type == type_pickupOnly) {//拾取物品
+                gp.obj[gp.currentMap][i].use(this);
+                gp.obj[gp.currentMap][i] = null;
 
 
             } else {//使用物品
                 String text;
                 if (inventory.size() != maxInventorySize) {
 
-                    inventory.add(gp.obj[i]);
+                    inventory.add(gp.obj[gp.currentMap][i]);
 
                     gp.playSE(1);
-                    text = "You got " + gp.obj[i].name + "!";
+                    text = "You got " + gp.obj[gp.currentMap][i].name + "!";
                 } else {
                     text = "You cannot carry anymore!";
                 }
@@ -495,7 +501,7 @@ public class Player extends Entity {
                 System.out.println("you are hitting an npc");
                 attackCanceled = true;
                 gp.gameState = gp.dialogueState;
-                gp.npc[i].speak();
+                gp.npc[gp.currentMap][i].speak();
             }/* else {
                 gp.playSE(7);
                 attacking = true;

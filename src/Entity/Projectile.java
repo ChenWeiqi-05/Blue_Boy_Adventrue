@@ -27,7 +27,7 @@ public class Projectile extends Entity {
             if (monsterIndex != 999) {//投掷物是否击中了怪物
                 gp.player.damageMonster(monsterIndex, attack);//击中怪物
 
-              generateParticle(user.projectile,gp.monster[monsterIndex]);//玩家攻击后，在怪物身上创建粒子特效。
+              generateParticle(user.projectile,gp.monster[gp.currentMap][monsterIndex]);//玩家攻击后，在怪物身上创建粒子特效。
 
                 alive = false;//投掷物消亡
             }

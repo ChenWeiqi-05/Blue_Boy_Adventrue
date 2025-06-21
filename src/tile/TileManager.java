@@ -1,4 +1,5 @@
 package tile;
+
 import main.GamePanel;
 import main.UtilityTool;
 
@@ -8,18 +9,20 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
 public class TileManager {
     GamePanel gp;
     public Tile[] tile;
-    public int mapTileNum[][];
+    public int mapTileNum[][][];
+
     public TileManager(GamePanel gp) {
         this.gp = gp;
         //   tile = new Tile[10];
         tile = new Tile[50];
-        mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
+        mapTileNum = new int[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow];
         getTileImage();
-        loadMap("/maps/worldV2.txt");
-
+        loadMap("/maps/worldV3.txt", 0);
+        loadMap("/maps/interior01.txt", 1);
     }
     public void getTileImage()//这段代码是用来获取图片的
     {
@@ -77,13 +80,17 @@ public class TileManager {
         setup(40, "wall", true);
         setup(41, "tree", true);
 
+        setup(42, "hut", false);
+        setup(43, "floor01", false);
+        setup(44, "table01", true);
     }
+
     public void setup(int index, String imageName, boolean collision)//这段代码用来设置地图
     {
         UtilityTool uTool = new UtilityTool();
         try {
             tile[index] = new Tile();
-        //    tile[index].image = ImageIO.read(getClass().getResourceAsStream("/tiles2/" + imageName + ".png"));
+            //    tile[index].image = ImageIO.read(getClass().getResourceAsStream("/tiles2/" + imageName + ".png"));
             tile[index].image = ImageIO.read(getClass().getResourceAsStream("/tiles/" + imageName + ".png"));
             tile[index].image = uTool.scaleImage(tile[index].image, gp.tileSize, gp.tileSize);
             tile[index].collision = collision;
@@ -96,7 +103,7 @@ public class TileManager {
     }
 
 
-    public void loadMap(String filePath)//这段代码用来加载地图
+    public void loadMap(String filePath, int map)//这段代码用来加载地图
     {
         try {
             InputStream is = getClass().getResourceAsStream(filePath);
@@ -112,7 +119,7 @@ public class TileManager {
                     String numbers[] = line.split(" ");
 
                     int num = Integer.parseInt(numbers[col]);//将字符串转换为整数
-                    mapTileNum[col][row] = num;
+                    mapTileNum[map][col][row] = num;
                     col++;
                 }//不要把下面的if放在前面的括号里面,不然程序会报错！！！！！！
                 if (col == gp.maxWorldCol) {//当读取到一行数据时，将数据存储在二维数组中，并继续读取下一行数据
@@ -136,7 +143,7 @@ public class TileManager {
 
         while (worldCol < gp.maxWorldCol && worldRow < gp.maxWorldRow) {//这段代码用来绘制地图
             //这个while循环开始绘制地图的所有图块，但是这样会带来额外的性能开销，所以我们优化了图块的绘制。
-            int tileNum = mapTileNum[worldCol][worldRow];
+            int tileNum = mapTileNum[gp.currentMap][worldCol][worldRow];
 
             int worldX = worldCol * gp.tileSize;
             int worldY = worldRow * gp.tileSize;
