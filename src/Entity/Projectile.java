@@ -25,7 +25,7 @@ public class Projectile extends Entity {
             int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
             //检测是否打中怪物
             if (monsterIndex != 999) {//投掷物是否击中了怪物
-                gp.player.damageMonster(monsterIndex, attack);//击中怪物
+                gp.player.damageMonster(monsterIndex, attack, knockBackPower);//击中怪物
 
               generateParticle(user.projectile,gp.monster[gp.currentMap][monsterIndex]);//玩家攻击后，在怪物身上创建粒子特效。
 

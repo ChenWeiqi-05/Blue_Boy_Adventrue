@@ -12,7 +12,8 @@ public class PathFinder {
     // ArrayList对象pathList，这个对象存储的是Node类对象
     public ArrayList<Node> pathList = new ArrayList<>();
     Node startNode, goalNode, currentNode;
-    boolean goalReached = false;
+    boolean goalReached = false;//这段代码的意思是创建一个布尔变量goalReached
+    // ，这个变量表示是否 goalNode 被找到
     int step = 0;
 
     public PathFinder(GamePanel gp) {
@@ -61,9 +62,10 @@ public class PathFinder {
         step = 0;
     }
 
-    public void setNode(int startCol, int startRow, int goalCol, int goalRow, Entity entity) {//
-        resetNodes();
+    public void setNodes(int startCol, int startRow, int goalCol, int goalRow, Entity entity) {//
 
+
+        resetNodes();
         startNode = node[startCol][startRow];
         currentNode = startNode;
         goalNode = node[goalCol][goalRow];
@@ -80,7 +82,7 @@ public class PathFinder {
                 node[col][row].solid = true;
             }
             for (int i = 0; i < gp.iTile[1].length; i++) {
-                if (gp.iTile[gp.currentMap][i] != null && gp.iTile[gp.currentMap][i].destructible == true) {
+                if ( gp.iTile[gp.currentMap][i] != null &&  gp.iTile[gp.currentMap][i] .destructible==true) {
                     int itCol = gp.iTile[gp.currentMap][i].worldX / gp.tileSize;
                     int itRow = gp.iTile[gp.currentMap][i].worldY / gp.tileSize;
                     node[itCol][itRow].solid = true;
@@ -110,4 +112,69 @@ public class PathFinder {
 
     }
 
+    public boolean search() {//这段代码的目是
+        while (goalReached == false && step < 500) {
+            int col = currentNode.col;
+            int row = currentNode.row;
+
+            currentNode.checked = true;
+            openList.remove(currentNode);
+
+            if (row - 1 >= 0) {
+                openNode(node[col][row - 1]);
+            }
+            if (col - 1 >= 0) {
+                openNode(node[col - 1][row]);
+            }
+            if (row + 1 < gp.maxWorldRow) {
+                openNode(node[col][row+1]);
+            }
+            if (col + 1 < gp.maxWorldCol) {
+                openNode(node[col + 1][row]);
+            }
+
+            int bestNodeIndex = 0;
+            int bestNodefCost = 999;
+
+            for (int i = 0; i < openList.size(); i++) {//循环openList
+                if (openList.get(i).fCost < bestNodefCost) {
+
+                    bestNodeIndex = i;
+                    bestNodefCost = openList.get(i).fCost;
+                } else if (openList.get(i).fCost == bestNodefCost) {//节点的f值相同
+
+                    if (openList.get(i).gCost < openList.get(bestNodeIndex).gCost) {
+                        bestNodeIndex = i;
+                    }
+                }
+            }
+//如果在openlist中没有弄得，就结束以上循环
+            if (openList.size() == 0) {
+                break;
+            }
+//结束循环之后，openList[NodeIndex] 是下一个step（currentNode）
+            currentNode = openList.get(bestNodeIndex);
+            if (currentNode == goalNode) {
+                goalReached = true;
+                trackThePath();
+            }
+            step++;
+        }
+        return goalReached;
+    }
+    public void openNode(Node node) {
+        if (node.open == false && node.checked == false && node.solid == false) {
+
+            node.open = true;
+            node.parent = currentNode;
+            openList.add(node);
+        }
+    }
+    public void trackThePath(){//
+        Node current = goalNode;
+        while (current != startNode) {
+            pathList.add(0,current);
+            current = current.parent;
+        }
+    }
 }

@@ -18,7 +18,7 @@ public class OBJ_Fireball extends Projectile {
         maxLife = 80;
         life = maxLife;
         attack = 4;
-
+        knockBackPower = 0;
         useCost = 1;
         alive = false;//这段代码的意思是，当火球被创建时，它将处于非活动状态。
         getImage();

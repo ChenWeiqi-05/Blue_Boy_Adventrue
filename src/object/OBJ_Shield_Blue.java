@@ -13,7 +13,7 @@ public OBJ_Shield_Blue(GamePanel gp) {
         defenseValue = 2;
         description = "[" + name + "]\nA shield that can\nbe used to protect\nyour body.";
 
+        price = 250;
+
     }
-
-
 }

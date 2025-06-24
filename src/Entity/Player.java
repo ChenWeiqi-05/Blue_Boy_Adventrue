@@ -3,6 +3,7 @@ package Entity;
 import main.GamePanel;
 import main.KeyHandler;
 import main.UtilityTool;
+import object.OBJ_Axe;
 import object.OBJ_Fireball;
 import object.OBJ_Shield_Wood;
 import object.OBJ_Sword_Normal;
@@ -11,7 +12,6 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class Player extends Entity {
     KeyHandler keyH;
@@ -20,8 +20,6 @@ public class Player extends Entity {
     // public int hasKey = 0;
     public boolean attackCanceled = false;
     int standTime = 0;
-    public ArrayList<Entity> inventory = new ArrayList<>();
-    public final int maxInventorySize = 20;
 
 
     public Player(GamePanel gp, KeyHandler keyH) {
@@ -53,6 +51,7 @@ public class Player extends Entity {
         inventory.add(currentShield);
         inventory.add(new OBJ_Shield_Wood(gp));
         inventory.add(new OBJ_Sword_Normal(gp));
+        inventory.add(new OBJ_Axe(gp));
     }
 
     public void setDefaultValues() {
@@ -60,10 +59,16 @@ public class Player extends Entity {
      /*  worldX = gp.tileSize * 13;
 
        worldY = gp.tileSize * 14;*/
-       /* worldX = gp.tileSize * 12;
-
+    /*  worldX = gp.tileSize * 12;
         worldY = gp.tileSize * 13;*/
-        speed = 4;
+      /*  worldX = gp.tileSize * 12;
+
+        worldY = gp.tileSize * 12;
+        */
+
+        defaultSpeed = 4;
+        gp.currentMap = 0;
+        speed = defaultSpeed;
 
 // PLAYER STATUS
         maxLife = 6;
@@ -76,7 +81,7 @@ public class Player extends Entity {
         dexterity = 1;
         exp = 0;
         nextLevelExp = 5;
-        coin = 0;
+        coin = 1000;
         currentWeapon = new OBJ_Sword_Normal(gp);
         currentShield = new OBJ_Shield_Wood(gp);//添加盾牌
         projectile = new OBJ_Fireball(gp);//添加火球投掷物
@@ -258,7 +263,14 @@ public class Player extends Entity {
             //减少玩家的魔法值
             projectile.subtractResource(this);
 
-            gp.projectileList.add(projectile);
+            //gp.projectileList.add(projectile);
+
+            for (int i = 0; i < gp.projectile[1].length; i++) {
+                if (gp.projectile[gp.currentMap][i] == null) {
+                    gp.projectile[gp.currentMap][i] = projectile;
+                    break;
+                }
+            }
 
             shotAvailCounter = 0;//这段代码是用来确保玩家可以连续攻击
 
@@ -330,14 +342,17 @@ public class Player extends Entity {
             int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
             //这段代码用来检测是否发生攻击
 
-            damageMonster(monsterIndex, attack);//攻击怪物
+            damageMonster(monsterIndex, attack,currentWeapon.knockBackPower);//攻击怪物
 
             int iTileIndex = gp.cChecker.checkEntity(this, gp.iTile);//检测是否打中 interactiveTile
             damageInteractiveTile(iTileIndex);//攻击 interactiveTile
 
+            int projectileIndex = gp.cChecker.checkEntity(this, gp.projectile);
+            damageProjectile(projectileIndex);
+
+
             worldX = currentWorldX;//恢复实体的位置和碰撞区域。
             worldY = currentWorldY;
-
             solidArea.width = solidAreaWidth;
             solidArea.height = solidAreaHeight;
 
@@ -348,6 +363,24 @@ public class Player extends Entity {
             spriteCounter = 0;
             attacking = false;
         }
+    }
+
+    public void damageProjectile(int i) {
+
+        if (i != 999) {
+            Entity projectile = gp.projectile[gp.currentMap][i];
+            projectile.alive = false;
+            generateParticle(projectile, projectile);
+
+        }
+
+    }
+
+    public void knockBack(Entity entity, int knockBackPower) {
+        entity.direction = direction;
+        entity.speed += knockBackPower;
+        entity.knockBack = true;
+
     }
 
     public void damageInteractiveTile(int i) {//碰撞检测
@@ -370,12 +403,16 @@ public class Player extends Entity {
         }
     }
 
-    public void damageMonster(int i, int attack) {//攻击方法
+    public void damageMonster(int i, int attack,int knockBackPower) {//攻击方法
         if (i != 999) {
             if (gp.monster[gp.currentMap][i].invincible == false) {
                 gp.playSE(5);
 
-                int damage = attack - gp.monster[gp.currentMap][i].defense;//攻击力减去防御力
+                if (knockBackPower > 0){
+                    knockBack(gp.monster[gp.currentMap][i], knockBackPower);
+
+                }
+                      int damage = attack - gp.monster[gp.currentMap][i].defense;//攻击力减去防御力
                 if (damage < 0) {
                     damage = 0;
                 }
@@ -431,67 +468,26 @@ public class Player extends Entity {
 
     }
 
-    public void pickUpObject(int i) {//这个方法可改变捡起道具后的数值属性
+    public void pickUpObject(int i) {
         if (i != 999) {
-            //一下文本注释为寻宝小游戏的拾起逻辑的代码
-            /*//999代表没有物体，并且0代表没有物体
-         //   gp.obj[i].name = null;
-            String objectName = gp.obj[i].name ;
-            switch (objectName){
-                case "Key"://注意此处单词首字母要大写！！！
-                    gp.playSE(1);
-                    hasKey++;
-                    gp.obj[i]=null;
-                    System.out.println("key：" +hasKey);
-                    gp.ui.showMessage("You got "+hasKey+" key!"+"also have "+ (3 - hasKey)+ " key,should be found");
-                    break;
-                case "Door"://注意此处单词首字母要大写！！！
-                    gp.playSE(3);
-                    if (hasKey >0){
-                        gp.obj[i] = null;
-                        hasKey--;
-                           gp.ui.showMessage("You open a door! ");
-
-                    }else {
-                        gp.ui.showMessage("You need a key!");
-                    }
-                    System.out.println("key：" +hasKey);
-                    break;
-                case "Boots":
-                    gp.playSE(1);
-                    speed +=3;
-                    gp.obj[i] = null;
-                    gp.ui.showMessage("speed up!GoGoGo！");
-                    break;
-                    case "Chest":
-                        gp.ui.gameFinish = true;
-                        gp.stopMusic();
-                        gp.playSE(4);
-                        break;
-            }*/
-            if (gp.obj[gp.currentMap][i].type == type_pickupOnly) {//拾取物品
+            // 检查对象是否可交互
+            if (gp.obj[gp.currentMap][i].type == type_pickupOnly) {
                 gp.obj[gp.currentMap][i].use(this);
                 gp.obj[gp.currentMap][i] = null;
-
-
-            } else {//使用物品
+            } else {
                 String text;
                 if (inventory.size() != maxInventorySize) {
-
                     inventory.add(gp.obj[gp.currentMap][i]);
-
                     gp.playSE(1);
                     text = "You got " + gp.obj[gp.currentMap][i].name + "!";
                 } else {
                     text = "You cannot carry anymore!";
                 }
                 gp.ui.addMessage(text);
-                gp.obj[i] = null;
-
+                gp.obj[gp.currentMap][i] = null;
             }
         }
-
-    }
+    }//这个方法可改变捡起道具后的数值属性
 
     public void interactNPC(int i) {//这个方法可改变与npc的交互逻辑
 
@@ -510,7 +506,9 @@ public class Player extends Entity {
     }
 
     public void selectItem() {
-        int itemIndex = gp.ui.getItemIndexOnSlot();
+
+
+        int itemIndex = gp.ui.getItemIndexOnSlot(gp.ui.playerSlotCol, gp.ui.playerSlotRow);
 
         if (itemIndex < inventory.size()) {
             Entity selectedItem = inventory.get(itemIndex);
@@ -530,6 +528,7 @@ public class Player extends Entity {
                 inventory.remove(itemIndex);
                 //这段代码的作用是删除物品列表中的物品，以便
                 // 绘制下一个物品，从而绘制下一个物品，以达到。
+
             }
         }
     }

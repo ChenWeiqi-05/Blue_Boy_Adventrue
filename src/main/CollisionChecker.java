@@ -160,9 +160,10 @@ public class CollisionChecker {
         }
     }
 
+
     public int checkObject(Entity entity, boolean player) {
         int index = 999;
-
+//2025年6月24日01:01:08 以下代码不要急着用if（xxx ！= null）包裹判断非空的状态，会出现object被拾取好多次的情况
         for (int i = 0; i < gp.obj[1].length; i++) {
             if (gp.obj[gp.currentMap][i] != null) {
 
@@ -208,7 +209,6 @@ public class CollisionChecker {
         }
         return index;
     }
-
     public int checkEntity(Entity entity, Entity[][] target) {
         //这段代码通过遍历数组来检查实体与目标之间的碰撞。
         // 如果两个实体的碰撞区域相交，则返回目标数组中该实体的索引。
@@ -295,8 +295,8 @@ public class CollisionChecker {
         gp.player.solidArea.x = gp.player.solidAreaDefaultX;
         gp.player.solidArea.y = gp.player.solidAreaDefaultY;
 
-       return contactPlayer;
+        return contactPlayer;
     }
 
-}
 
+}

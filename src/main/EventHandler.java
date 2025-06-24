@@ -1,5 +1,7 @@
 package main;
 
+import Entity.Entity;
+
 public class EventHandler {
     GamePanel gp;
     EventRect eventRect[][][];
@@ -8,6 +10,7 @@ public class EventHandler {
 
     int previousEventX, previousEventY;
     boolean canTouchEvent = true;
+    int tempMap, tempCol, tempRow;
 
     public EventHandler(GamePanel gp) {
         this.gp = gp;
@@ -57,22 +60,26 @@ public class EventHandler {
 
                 //System.out.println("call checkEvent");
             }
-            if (hit(0, 23, 12, "any") == true) {
+            else if (hit(0, 10, 39, "up") == true) {
                 damagePit(gp.dialogueState);
             }
-            if (hit(0, 10, 39, "right") == true) {
+            else  if (hit(0, 10, 39, "any") == true) {
                 teleport(1, 10, 13);
             }
-            if (hit(1, 12, 13, "right") == true) {
+            else  if (hit(1, 12, 13, "any") == true) {
                 teleport(0, 10, 39);
             }
+            else if (hit(1, 12, 9, "up")){
+                speak(gp.npc[1][0]);
+            }
+
         }
 
         if (hit(0, 27, 16, "right") == true) {
 //  判断玩家是否与pit发生碰撞
             damagePit(gp.dialogueState);
             count = count + 1;
-           // System.out.println("call checkEvent");
+            // System.out.println("call checkEvent");
         }
         if (hit(0, 23, 12, "up") == true) {
             count = count + 1;
@@ -80,13 +87,21 @@ public class EventHandler {
         }
     }
 
+    public  void speak(Entity entity) {
+        if (gp.keyH.enterPressed == true){
+            gp.gameState = gp.dialogueState;
+            gp.player.attackCanceled = true;
+            entity.speak();
+        }
+    }
+
     public void teleport(int map, int col, int row) {
 
         gp.currentMap = map;
-       gp.player.worldX =  gp.tileSize * col  ;
-        gp.player.worldY = gp.tileSize * row - (gp.tileSize*2);
+        gp.player.worldX = gp.tileSize * col;
+        gp.player.worldY = gp.tileSize * row - (gp.tileSize * 2);
 
-       previousEventX = gp.player.worldX;
+        previousEventX = gp.player.worldX;
         previousEventY = gp.player.worldY;
         canTouchEvent = false;
         gp.playSE(13);
@@ -129,6 +144,8 @@ public class EventHandler {
         if (gp.keyH.enterPressed == true) {
             gp.gameState = gameState;
             gp.player.attackCanceled = true;
+            gp.playSE(9);
+
             gp.ui.currentDialogue = "You drink the water .\nYour life and mana have been recovered !\n oh yeah! ";
             gp.player.life = gp.player.maxLife;
             gp.player.mana = gp.player.maxMana;

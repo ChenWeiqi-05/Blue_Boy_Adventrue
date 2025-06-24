@@ -3,6 +3,7 @@ package main;
 import Entity.Entity;
 import Entity.Player;
 import InteractiveTile.InteractiveTile;
+import ai.PathFinder;
 import tile.TileManager;
 
 import javax.swing.*;
@@ -43,10 +44,10 @@ public class GamePanel extends JPanel implements Runnable {
     public UI ui = new UI(this);
 
     public EventHandler eHandler = new EventHandler(this);
-
     Config config = new Config(this);
-    Thread gameThread;
 
+    public PathFinder pFinder = new PathFinder(this);
+    Thread gameThread;
     int playerX = 100;
     int playerY = 100;
     int playerSpeed = 4;
@@ -54,10 +55,11 @@ public class GamePanel extends JPanel implements Runnable {
     public Player player = new Player(this, keyH);
     public Entity obj[][] = new Entity[maxMap][20];
     public Entity npc[][] = new Entity[maxMap][10];
-    public Entity monster[][] = new Entity[maxMap][20];
+    public Entity monster[][] = new Entity[maxMap][2000];
     public InteractiveTile iTile[][] = new InteractiveTile[maxMap][50];//创建一个 interactiveTile 数组
-    public ArrayList<Entity> projectileList = new ArrayList<>();
 
+    public Entity projectile[][] = new Entity[maxMap][20];
+  // public ArrayList<Entity> projectileList = new ArrayList<>();
     public ArrayList<Entity> particleList = new ArrayList<>();
     ArrayList<Entity> entityList = new ArrayList<>();//创建a一个实体列表
 
@@ -70,6 +72,10 @@ public class GamePanel extends JPanel implements Runnable {
     public final int optionState = 5;
 
     public final int gameOverState = 6;
+
+    public final int transitionState = 7;
+
+    public final int tradeState = 8;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -118,6 +124,7 @@ public class GamePanel extends JPanel implements Runnable {
         aSetter.setMonster();
 
         aSetter.setInteractiveTile();
+
     }
 
     public void setFullScreen() {
@@ -186,13 +193,13 @@ public class GamePanel extends JPanel implements Runnable {
                     }
                 }
             }
-            for (int i = 0; i < projectileList.size(); i++) {//循环遍历projectileList数组，以此绘制projectileList
-                if (projectileList.get(i) != null) {
-                    if (projectileList.get(i).alive == true) {
-                        projectileList.get(i).update();//绘制projectileList
+            for (int i = 0; i < projectile[1].length; i++) {//循环遍历projectileList数组，以此绘制projectileList
+                if (projectile[currentMap][i] != null) {
+                    if (projectile[currentMap][i].alive == true) {
+                        projectile[currentMap][i].update();//绘制projectileList
                     }
-                    if (projectileList.get(i).alive == false) {
-                        projectileList.remove(i);
+                    if (projectile[currentMap][i].alive == false) {
+                        projectile[currentMap][i]= null;
                     }
                 }
             }
@@ -259,9 +266,9 @@ public class GamePanel extends JPanel implements Runnable {
                     entityList.add(monster[currentMap][i]);
                 }
             }
-            for (int i = 0; i < projectileList.size(); i++) {//循环遍历projectileList数组，以此绘制projectileList
-                if (projectileList.get(i) != null) {
-                    entityList.add(projectileList.get(i));
+            for (int i = 0; i < projectile[1].length; i++) {//循环遍历projectileList数组，以此绘制projectileList
+                if (projectile[currentMap][i] != null) {
+                    entityList.add(projectile[currentMap][i]);
                 }
             }
             for (int i = 0; i < particleList.size(); i++) {//循环遍历 particleList数组，以此绘制 particleList
@@ -339,4 +346,6 @@ public class GamePanel extends JPanel implements Runnable {
         music.setFile(i);
         music.play();
     }
+
+
 }

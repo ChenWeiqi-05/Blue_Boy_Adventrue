@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Entity {
     GamePanel gp;
@@ -20,7 +21,6 @@ public class Entity {
     public boolean collision = false;
     String dialogues[] = new String[20];
     public int worldX, worldY;//这个是world01的绝对坐标
-
     public String direction = "down";
     public String direction1 = "up";
     public int spriteNum = 1;
@@ -32,7 +32,9 @@ public class Entity {
     public boolean alive = true;
     public boolean dying = false;
     boolean hpBarOn = false;//这个是hp条的开关
+    public boolean onPath = false;
 
+    public boolean knockBack = false;
     public int spriteCounter = 0;
     public int actionLockCounter = 0; //  这个是实体动作计数器，用来控制实体的动作
     public int invincibleCounter = 0;
@@ -40,11 +42,11 @@ public class Entity {
     public int shotAvailCounter = 0;
     //STATE
     int dyingCounter = 0;
-
+    int knockBackCounter = 0;
     int hpBarOnCounter = 0;//这个是hp条的开关
 
     public String name;
-
+    public int defaultSpeed;
     public int maxLife;
     public int level;
     public int life;
@@ -66,6 +68,11 @@ public class Entity {
 
     public Projectile projectile;
 
+    public ArrayList<Entity> inventory = new ArrayList<>();
+
+    public final int maxInventorySize = 20;
+
+    public int price;
     public int value;
     public int attackValue;
 
@@ -73,6 +80,8 @@ public class Entity {
 
     public String description = "";
     public int useCost;
+    public int knockBackPower = 0;
+
 
     public int type; // 0 是player 1 = npc 2 = monster
     public final int type_player = 0;
@@ -124,9 +133,7 @@ public class Entity {
         }
     }
 
-    ///这个是更新实体的代码，用来控制实体的移动
-    public void update() {
-        setAction();//这个是设置实体的动作的代码，用来控制实体的移动
+    public void checkCollision() {
         collisionOn = false;//这个是检查地图块是否与实体发生碰触的代码
         gp.cChecker.checkTile(this);// 这个是检查地图块是否与实体发生碰
         gp.cChecker.checkObject(this, false);//这个是检查物体是否与实体发生碰撞
@@ -138,26 +145,69 @@ public class Entity {
         if (this.type == type_monster && contactPlayer == true) {//这段代码的意思是当实体与玩家发生碰撞时
             damagePlayer(attack);//玩家损失生命值
         }
-        if (collisionOn == false) {//检测实体是否发生碰撞
-            switch (direction) {
-                case "up":
-                    //  System.out.println("向上碰撞");
-                    worldY -= speed;
-                    break;
-                case "down":
-                    //System.out.println("向下碰撞");
-                    worldY += speed;
-                    break;
-                case "left":
-                    //System.out.println("向左碰撞");
-                    worldX -= speed;
-                    break;
-                case "right":
-                    // System.out.println("向右碰撞");
-                    worldX += speed;
-                    break;
+    }
+
+    ///这个是更新实体的代码，用来控制实体的移动
+    public void update() {
+
+        if (knockBack == true) {
+            checkCollision();
+            if (collisionOn == true) {
+                knockBackCounter = 0;
+                knockBack = false;
+                speed = defaultSpeed;
+
+            } else if (collisionOn == false) {
+                switch (gp.player.direction) {
+                    case "up":
+                        worldY -= speed;
+                        break;
+                    case "down":
+                        worldY += speed;
+                        break;
+                    case "left":
+                        worldX -= speed;
+                        break;
+                    case "right":
+                        worldX += speed;
+                        break;
+                }
+            }
+            knockBackCounter++;
+            if (knockBackCounter == 10) {
+
+                knockBackCounter = 0;
+                knockBack = false;
+
+                speed = defaultSpeed;
+            }
+
+        } else {
+            setAction();//这个是设置实体的动作的代码，用来控制实体的移动
+            checkCollision();
+
+            if (collisionOn == false) {//检测实体是否发生碰撞
+                switch (direction) {
+                    case "up":
+                        //  System.out.println("向上碰撞");
+                        worldY -= speed;
+                        break;
+                    case "down":
+                        //System.out.println("向下碰撞");
+                        worldY += speed;
+                        break;
+                    case "left":
+                        //System.out.println("向左碰撞");
+                        worldX -= speed;
+                        break;
+                    case "right":
+                        // System.out.println("向右碰撞");
+                        worldX += speed;
+                        break;
+                }
             }
         }
+
         gp.cChecker.checkTile(this);
         spriteCounter++;
         if (spriteCounter > 12) {
@@ -385,4 +435,68 @@ public class Entity {
         gp.particleList.add(p3);
         gp.particleList.add(p4);
     }
+
+    public void searchPath(int goalCol, int goalRow) {
+
+        int startCol = (worldX + solidArea.x) / gp.tileSize;
+        int startRow = (worldY + solidArea.y) / gp.tileSize;
+
+        gp.pFinder.setNodes(startCol, startRow, goalCol, goalRow, this);
+
+        if (gp.pFinder.search() == true) {//这段代码的作用是找到路径
+
+            int nextX = gp.pFinder.pathList.get(0).col * gp.tileSize;
+            int nextY = gp.pFinder.pathList.get(0).row * gp.tileSize;
+
+            int enLeftX = worldX + solidArea.x;
+            int enRightX = worldX + solidArea.x + solidArea.width;
+            int enTopY = worldY + solidArea.y;
+            int enBottomY = worldY + solidArea.y + solidArea.height;
+
+            if (enTopY > nextY && enLeftX >= nextX && enRightX < nextX + gp.tileSize) {
+                direction = "up";
+            } else if (enTopY < nextY && enLeftX >= nextX && enRightX < nextX + gp.tileSize) {
+                direction = "down";
+            } else if (enTopY >= nextY && enBottomY < nextY + gp.tileSize) {
+
+                if (enLeftX > nextX) {
+                    direction = "left";
+                }
+                if (enLeftX < nextX) {
+                    direction = "right";
+                }
+            } else if (enTopY > nextY && enLeftX > nextX) {
+                direction = "up";
+                checkCollision();
+                if (collisionOn == true) {
+                    direction = "left";
+                }
+            } else if (enTopY > nextY && enLeftX < nextX) {
+                direction = "up";
+                checkCollision();
+                if (collisionOn == true) {
+                    direction = "right";
+                }
+            } else if (enTopY < nextY && enLeftX > nextX) {
+                direction = "down";
+                checkCollision();
+                if (collisionOn == true) {
+                    direction = "left";
+                }
+            } else if (enTopY < nextY && enLeftX < nextX) {
+                direction = "down";
+                checkCollision();
+                if (collisionOn == true) {
+                    direction = "right";
+                }
+            }
+
+           /* int nextCol = gp.pFinder.pathList.get(0).col;
+            int nextRow = gp.pFinder.pathList.get(0).row;
+            if (nextCol == goalCol && nextRow == goalRow) {
+                onPath = false;
+            }*/
+        }
+    }
+//如果我没有考到离家的学校，我还会这样想吗？
 }

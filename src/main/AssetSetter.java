@@ -1,5 +1,6 @@
 package main;
 
+import Entity.NPC_Merchant;
 import Entity.NPC_OldMan;
 import InteractiveTile.IT_DryTree;
 import monster.MON_GreenSlime;
@@ -43,14 +44,14 @@ public class AssetSetter {
 
         int mapNum  = 0;
         int i = 0;
-        gp.obj[mapNum][i] = new OBJ_Key(gp);
+       /* gp.obj[mapNum][i] = new OBJ_Key(gp);
         gp.obj[mapNum][i].worldX = gp.tileSize * 25;
         gp.obj[mapNum][i].worldY = gp.tileSize * 23;
         i++;
         gp.obj[mapNum][i] = new OBJ_Key(gp);
         gp.obj[mapNum][i].worldX = gp.tileSize * 21;
         gp.obj[mapNum][i].worldY = gp.tileSize * 19;
-        i++;
+        i++;*/
         gp.obj[mapNum][i] = new OBJ_Key(gp);
         gp.obj[mapNum][i].worldX = gp.tileSize * 26;
         gp.obj[mapNum][i].worldY = gp.tileSize * 21;
@@ -69,7 +70,7 @@ public class AssetSetter {
         gp.obj[mapNum][i].worldY = gp.tileSize * 27;
         i++;
         gp.obj[mapNum][i] = new OBJ_Potion_Red(gp);
-        gp.obj[mapNum][i].worldX = gp.tileSize * 10;
+        gp.obj[mapNum][i].worldX = gp.tileSize * 12;
         gp.obj[mapNum][i].worldY = gp.tileSize * 8;
         i++;
         gp.obj[mapNum][i] = new OBJ_Coin_Bronze(gp);
@@ -90,14 +91,20 @@ public class AssetSetter {
 
     public void setNPC() {
         int mapNum  = 0;
-        gp.npc[mapNum][0] = new NPC_OldMan(gp);
-        gp.npc[mapNum][0].worldX = gp.tileSize * 21;//npc的在世界的x位置
-        gp.npc[mapNum][0].worldY = gp.tileSize * 21;//npc的在世界的y位置
+      int   i = 0;
+        gp.npc[mapNum][i] = new NPC_OldMan(gp);
+        gp.npc[mapNum][i].worldX = gp.tileSize * 21;//npc的在世界的x位置
+        gp.npc[mapNum][i].worldY = gp.tileSize * 21;//npc的在世界的y位置
     /*  gp.npc[0] = new NPC_OldMan(gp);
      gp.npc[0].worldX = gp.tileSize * 9;//npc的在世界的x位置
        gp.npc[0].worldY = gp.tileSize * 10;//npc的在世界的y位置
-
 */
+        i++;
+         mapNum  = 1;
+        i = 0;
+        gp.npc[mapNum][i] = new NPC_Merchant(gp);
+        gp.npc[mapNum][i].worldX = gp.tileSize * 12;//npc的在世界的x位置
+        gp.npc[mapNum][i].worldY = gp.tileSize * 7;//npc的在世界的y位置
     }
 
     public void setMonster() {
@@ -122,16 +129,16 @@ public class AssetSetter {
         gp.monster[i] = new MON_GreenSlime(gp);
         gp.monster[i].worldX = gp.tileSize * 38;
         gp.monster[i].worldY = gp.tileSize * 42;*/
-
+        int mapNum  = 0;
        /* Random random = new Random();
         // 仅初始化部分史莱姆(例如10个)，保留空间用于后续生成
         int initialCount = 1000;
-        for (int i = 0; i < initialCount && i < gp.monster.length; i++) {
-            gp.monster[i] = new MON_GreenSlime(gp);
-            gp.monster[i].worldX = gp.tileSize * (1 + random.nextInt(gp.maxWorldCol - 1));
-            gp.monster[i].worldY = gp.tileSize * (1 + random.nextInt(gp.maxWorldRow - 1));
+        for (int i = 0; i < initialCount && i < gp.monster[1].length; i++) {
+            gp.monster[mapNum][i] = new MON_GreenSlime(gp);
+            gp.monster[mapNum][i].worldX = gp.tileSize * (1 + random.nextInt(gp.maxWorldCol - 1));
+            gp.monster[mapNum][i].worldY = gp.tileSize * (1 + random.nextInt(gp.maxWorldRow - 1));
         }*/
-        int mapNum  = 0;
+
         int i = 0;
         gp.monster[mapNum][i] = new MON_GreenSlime(gp);
         gp.monster[mapNum][i].worldX = gp.tileSize * 11;
@@ -152,7 +159,16 @@ public class AssetSetter {
         gp.monster[mapNum][i] = new MON_GreenSlime(gp);
         gp.monster[mapNum][i].worldX = gp.tileSize * 23;
         gp.monster[mapNum][i].worldY = gp.tileSize * 35;
+
         i++;
+        gp.monster[mapNum][i] = new MON_GreenSlime(gp);
+        gp.monster[mapNum][i].worldX = gp.tileSize * 23;
+        gp.monster[mapNum][i].worldY = gp.tileSize * 36;
+        i++;
+        gp.monster[mapNum][i] = new MON_GreenSlime(gp);
+        gp.monster[mapNum][i].worldX = gp.tileSize * 23;
+        gp.monster[mapNum][i].worldY = gp.tileSize * 37;
+
         gp.monster[mapNum][i] = new MON_GreenSlime(gp);
         gp.monster[mapNum][i].worldX = gp.tileSize * 11;
         gp.monster[mapNum][i].worldY = gp.tileSize * 10;

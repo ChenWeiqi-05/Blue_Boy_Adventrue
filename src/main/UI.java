@@ -1,6 +1,7 @@
 package main;
 
 import Entity.Entity;
+import object.OBJ_Coin_Bronze;
 import object.OBJ_Heart;
 import object.OBJ_ManaCrystal;
 
@@ -12,7 +13,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class UI {
-    BufferedImage heart_full, heart_half, heart_blank, crystal_full, crystal_blank;//创建血槽（生命值）对象
+    BufferedImage heart_full, heart_half, heart_blank, crystal_full, crystal_blank, coin;//创建血槽（生命值）对象
 
     public int commamdNum;
     public boolean gameFinish = false;
@@ -35,10 +36,15 @@ public class UI {
     public int commandNum = 0;
     public int titleScreenState = 0;
 
-    public int slotCol = 0;//鼠标点击的格子列数
-    public int slotRow = 0;//鼠标点击的格子行数
-    int subState = 0;
+    public int playerSlotCol = 0;//鼠标点击的格子列数
+    public int playerSlotRow = 0;//鼠标点击的格子行数
 
+    public int npcSlotCol = 0;
+    public int npcSlotRow = 0;
+
+    int subState = 0;
+    int counter = 0;
+    public Entity npc;
 
     public UI(GamePanel gp) {
         this.gp = gp;
@@ -61,6 +67,9 @@ public class UI {
         crystal_full = crystal.image;//创建魔力水晶对象
         crystal_blank = crystal.image2;//创建魔力水晶对象
 
+        Entity bronzeCoin = new OBJ_Coin_Bronze(gp);
+
+        coin = bronzeCoin.down1;
 
     }
 
@@ -149,19 +158,19 @@ public class UI {
             drawMessage();
         }
         if (gp.gameState == gp.pauseState) {
-            drawPlayerLife();
+            //drawPlayerLife();
             drawPauseScreen();
             System.out.println("draw pause screen");
         }
         if (gp.gameState == gp.dialogueState) {
-            drawPlayerLife();
+            //drawPlayerLife();
             drawDialogueScreen();
             System.out.println("draw dialogue screen");
         }
         if (gp.gameState == gp.characterState) {
-            drawPlayerLife();
+
             drawCharacterScreen();
-            drawInventory();
+            drawInventory(gp.player, true);
         }
         if (gp.gameState == gp.optionState) {
             drawOptionsScreen();
@@ -170,6 +179,198 @@ public class UI {
         // game over
         if (gp.gameState == gp.gameOverState) {
             drawGameOverScreen();
+        }
+        //transition state
+     if (gp.gameState == gp.transitionState) {
+            drawTransitionScreen();
+        }
+
+        if (gp.gameState == gp.tradeState) {
+            drawTradeScreen();
+        }
+
+    }
+
+    public void drawTradeScreen() {
+
+        switch (subState) {
+            case 0:
+                trade_select();
+                break;
+            case 1:
+                trade_buy();
+                break;
+            case 2:
+                sell();
+                break;
+        }
+        gp.keyH.enterPressed = false;//添加这个方法，防止玩家点击enter键时，游戏继续进行
+    }
+
+    public void trade_select() {
+
+        drawDialogueScreen();
+        int x = gp.tileSize * 15;
+        int y = gp.tileSize * 4;
+        int width = gp.tileSize * 3;
+        int height = (int) (gp.tileSize * 3.5);
+        drawSubWindow(x, y, width, height);
+
+        x += gp.tileSize;
+        y += gp.tileSize;
+        g2.drawString("Buy", x, y);
+        if (commandNum == 0) {
+            g2.drawString(">", x - 24, y);
+            if (gp.keyH.enterPressed == true) {
+                subState = 1;
+            }
+        }
+        y += gp.tileSize;
+        g2.drawString("Sell", x, y);
+        if (commandNum == 1) {
+            g2.drawString(">", x - 24, y);
+            if (gp.keyH.enterPressed == true) {
+                subState = 2;
+            }
+        }
+        y += gp.tileSize;
+        g2.drawString("Leave", x, y);
+        if (commandNum == 2) {
+            g2.drawString(">", x - 24, y);
+            if (gp.keyH.enterPressed == true) {
+                commandNum = 0;
+                gp.gameState = gp.dialogueState;
+                currentDialogue = "Come again, hehe!";
+            }
+        }
+    }
+
+    public void trade_buy() {
+
+        //玩家在
+//显示玩家背包
+        drawInventory(gp.player, false);
+        //显示NPC背包
+        drawInventory(npc, true);
+
+        int x = gp.tileSize * 2;
+        int y = gp.tileSize * 9;
+        int width = gp.tileSize * 6;
+        int height = gp.tileSize * 2;
+        drawSubWindow(x, y, width, height);
+        g2.drawString("[ESC]Back", x + 24, y + 60);
+
+
+        x = gp.tileSize * 12;
+        y = gp.tileSize * 9;
+        width = gp.tileSize * 6;
+        height = gp.tileSize * 2;
+        drawSubWindow(x, y, width, height);
+        g2.drawString("Your Coint:" + gp.player.coin , x + 24, y + 60);
+
+        int itemIndex = getItemIndexOnSlot(npcSlotCol, npcSlotRow);
+        if (itemIndex < npc.inventory.size()) {
+
+            x = (int) (gp.tileSize * 5.5);
+            y = (int) (gp.tileSize * 5.5);
+            width = (int) (gp.tileSize * 2.5);
+            height = gp.tileSize;
+            drawSubWindow(x, y, width, height);
+            g2.drawImage(coin, x + 10, y + 8, 30, 30, null);
+
+            int price = npc.inventory.get(itemIndex).price;
+            String text = "" + price;
+            x = getXforAlignToRightText(text, gp.tileSize * 8 - 20);
+            g2.drawString(text, x, y + 34);
+
+            if (gp.keyH.enterPressed == true) {
+                if (npc.inventory.get(itemIndex).price > gp.player.coin) {
+                    subState = 0;
+
+                    gp.gameState = gp.dialogueState;//显示对话框
+
+                    currentDialogue = "You need more coin to buy that!";
+                    drawDialogueScreen();
+                }
+              else if (gp.player.inventory.size() == gp.player.maxInventorySize) {
+                    subState = 0;
+                    gp.gameState = gp.dialogueState;
+                    currentDialogue = "Your inventory is full!";
+                }else {
+                  gp.player.coin -= npc.inventory.get(itemIndex).price;
+
+                  gp.player.inventory.add(npc.inventory.get(itemIndex));
+              }
+
+            }
+        }
+    }
+
+    public void sell() {
+        drawInventory(gp.player, true);
+        int x;
+        int y;
+        int width;
+        int height;
+         x = gp.tileSize * 2;
+         y = gp.tileSize * 9;
+         width = gp.tileSize * 6;
+         height = gp.tileSize * 2;
+        drawSubWindow(x, y, width, height);
+        g2.drawString("[ESC]Back", x + 24, y + 60);
+
+
+        x = gp.tileSize * 12;
+        y = gp.tileSize * 9;
+        width = gp.tileSize * 6;
+        height = gp.tileSize * 2;
+        drawSubWindow(x, y, width, height);
+        g2.drawString("Your Coint:" + gp.player.coin , x + 24, y + 60);
+
+        int itemIndex = getItemIndexOnSlot(playerSlotCol, playerSlotRow);
+        if (itemIndex < gp.player.inventory.size()) {
+
+            x = (int) (gp.tileSize * 15.5);
+            y = (int) (gp.tileSize * 5.5);
+            width = (int) (gp.tileSize * 2.5);
+            height = gp.tileSize;
+            drawSubWindow(x, y, width, height);
+            g2.drawImage(coin, x + 10, y + 8, 32, 32, null);
+
+            int price = gp.player.inventory.get(itemIndex).price/2;//奸商的小伎俩
+            String text = "" + price;
+            x = getXforAlignToRightText(text, gp.tileSize * 8 - 20);
+            g2.drawString(text, x, y + 34);
+
+            if (gp.keyH.enterPressed == true) {
+
+                gp.player.inventory.remove(itemIndex);
+                gp.player.coin += price;
+
+                if (gp.player.inventory.size() == 0) {
+
+                    currentDialogue = "Your inventory is nothing.\n you could get out the game. ";
+
+                }
+            }
+        }
+    }
+
+    public void drawTransitionScreen() {
+        counter++;
+        g2.setColor(new Color(0, 0, 0, counter * 10));
+
+        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+
+        if (counter == 50) {
+            counter = 0;
+            gp.gameState = gp.playState;
+            gp.currentMap = gp.eHandler.tempMap;
+            gp.player.worldX = gp.tileSize * gp.eHandler.tempCol;
+            gp.player.worldY = gp.tileSize * gp.eHandler.tempRow;
+            gp.eHandler.previousEventX = gp.player.worldX;
+            gp.eHandler.previousEventY = gp.player.worldY;
+
         }
     }
 
@@ -203,7 +404,7 @@ public class UI {
         x = getXforCenteredText(text);
         y += gp.tileSize * 3;
         g2.drawString(text, x, y);
-        if (commandNum == 0){
+        if (commandNum == 0) {
             g2.drawString(">", x - 40, y);
         }
         // Back to the title screen
@@ -211,10 +412,11 @@ public class UI {
         x = getXforCenteredText(text);
         y += 55;
         g2.drawString(text, x, y);
-        if (commandNum == 1){
+        if (commandNum == 1) {
             g2.drawString(">", x - 40, y);
         }
     }
+
     public void drawOptionsScreen() {
 
         g2.setColor(Color.white);//画出白色
@@ -389,13 +591,35 @@ public class UI {
         gp.config.saveConfig();//保存
     }
 
-    public void drawInventory() {
+    public void drawInventory(Entity entity, boolean cursor) {
+
+        int frameX = 0;
+        int frameY = 0;
+        int frameWidth = 0;
+        int frameHeight = 0;
+        int slotCol = 0;
+        int slotRow = 0;
+
+        if (entity == gp.player) {
+            frameX = gp.tileSize * 12;
+            frameY = gp.tileSize;
+            frameWidth = gp.tileSize * 6;
+            frameHeight = gp.tileSize * 5;
+
+            slotCol = playerSlotCol;
+            slotRow = playerSlotRow;
+        } else {
+            frameX = gp.tileSize * 2;
+            frameY = gp.tileSize;
+            frameWidth = gp.tileSize * 6;
+            frameHeight = gp.tileSize * 5;
+
+            slotCol = npcSlotCol;
+            slotRow = npcSlotRow;
+        }
+
         //绘制玩家库存
-        int frameX = gp.tileSize * 12;
-        int frameY = gp.tileSize;
-        int frameWidth = gp.tileSize * 6;
-        int frameHeight = gp.tileSize * 5;
-        drawSubWindow(frameX, frameY, frameWidth, frameHeight);
+        drawSubWindow(frameX, frameY, frameWidth, frameHeight);//绘制窗口
 
         final int slotXstart = frameX + 20;//绘制库存的X坐标
         final int slotYstart = frameY + 20;//绘制库存的Y坐标
@@ -406,66 +630,67 @@ public class UI {
         int slotSize = gp.tileSize + 3;
 
 //DRAW  PLAYER INVENTORY ITEM
-        for (int i = 0; i < gp.player.inventory.size(); i++) {//绘制库存
+        for (int i = 0; i < entity.inventory.size(); i++) {//绘制库存
 
-            if (gp.player.inventory.get(i) == gp.player.currentWeapon//当前武器或者当前盾牌
-                    || gp.player.inventory.get(i) == gp.player.currentShield//当前盾牌
+            if (entity.inventory.get(i) == entity.currentWeapon//当前武器或者当前盾牌
+                    || entity.inventory.get(i) == entity.currentShield//当前盾牌
             ) {
                 g2.setColor(new Color(240, 190, 90));
                 g2.fillRoundRect(slotX, slotY, gp.tileSize, gp.tileSize, 10, 10);
             }
-            g2.drawImage(gp.player.inventory.get(i).down1, slotX, slotY, null);
+            g2.drawImage(entity.inventory.get(i).down1, slotX, slotY, null);
             slotX += gp.tileSize;//换列
             if (i == 4 || i == 9 || i == 14) {//每行有5个物品
                 slotX = slotXstart;//换列
                 slotY += slotSize;//换行
             }
         }
-        //CURSOR这段代码是绘制库存游标
-        int cursorX = slotXstart + (slotSize * slotCol);
-        int cursorY = slotYstart + (slotSize * slotRow);
+        if (cursor == true) {
+            //CURSOR这段代码是绘制库存游标
+            int cursorX = slotXstart + (slotSize * playerSlotCol);
+            int cursorY = slotYstart + (slotSize * playerSlotRow);
 //SLOT这段代码是绘制库存游标
-        int cursorWidth = gp.tileSize;
-        int cursorHeight = gp.tileSize;
+            int cursorWidth = gp.tileSize;
+            int cursorHeight = gp.tileSize;
 
-        g2.setColor(Color.white);
-        g2.setStroke(new BasicStroke(3));//绘制库存游标的边框
-        g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
+            g2.setColor(Color.white);
+            g2.setStroke(new BasicStroke(3));//绘制库存游标的边框
+            g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
 //这段代码是绘制库存游标
 
-        //绘制库存中游标所对应的物品的描述对话框
-        int dFrameX = frameX;
-        int dFrameY = frameY + frameHeight;
-        int dFrameWidth = frameWidth;
-        int dFrameHeight = gp.tileSize * 3;
+            //绘制库存中游标所对应的物品的描述对话框
+            int dFrameX = frameX;
+            int dFrameY = frameY + frameHeight;
+            int dFrameWidth = frameWidth;
+            int dFrameHeight = gp.tileSize * 3;
 
 //DRAW DESCRIPTION TEXT
 
-        int textX = frameX + 20;
-        int textY = dFrameY + gp.tileSize;
-        g2.setFont(g2.getFont().deriveFont(28F));
+            int textX = frameX + 20;
+            int textY = dFrameY + gp.tileSize;
+            g2.setFont(g2.getFont().deriveFont(28F));
 
-        int itemIndex = getItemIndexOnSlot();//获取库存物品的索引
+            int itemIndex = getItemIndexOnSlot(slotCol, slotRow);//获取库存物品的索引
 
-        if (itemIndex < gp.player.inventory.size()) {
-            drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight);
-            //如果索引小于库存物品的数量，则绘制库存物品的描述
-            for (String line : gp.player.inventory.get(itemIndex).description.split("\n")) {
-                //通过循环绘制库存物品的描述，已达到换行
-                g2.drawString(line, textX, textY);
-                textY += 32;//换行
+            if (itemIndex < entity.inventory.size()) {
+                drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight);
+                //如果索引小于库存物品的数量，则绘制库存物品的描述
+                for (String line : entity.inventory.get(itemIndex).description.split("\n")) {
+                    //通过循环绘制库存物品的描述，已达到换行
+                    g2.drawString(line, textX, textY);
+                    textY += 32;//换行
+                }
             }
         }
 
     }
 
-    public int getItemIndexOnSlot() {//获取库存物品的索引,以实现库存物品的描述
+    public int getItemIndexOnSlot(int slotCol, int slotRow) {//获取库存物品的索引,以实现库存物品的描述
 
         int itemIndex = slotCol + (slotRow * 5);//获取库存物品的索引
         return itemIndex;//返回库存物品的索引
 
     }
-
     public void drawPlayerLife() {
         int x = gp.tileSize / 2;
         int y = gp.tileSize / 2;
@@ -634,10 +859,10 @@ public class UI {
 
     public void drawDialogueScreen() {
         //  DIALOGUE WINDOW
-        System.out.println("call draw dialogue screen command");
-        int x = gp.tileSize / 2;
+        // System.out.println("call draw dialogue screen command");
+        int x = gp.tileSize * 3;
         int y = gp.tileSize / 2;
-        int width = gp.screenWidth - (gp.tileSize * 2);
+        int width = gp.screenWidth - (gp.tileSize * 6);
         int height = gp.tileSize * 4;
         drawSubWindow(x, y, width, height);//绘制对话框
 
@@ -651,7 +876,6 @@ public class UI {
             y += 40;
 
         }
-
     }
 
     public void drawCharacterScreen() {

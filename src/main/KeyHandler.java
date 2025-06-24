@@ -153,8 +153,45 @@ public class KeyHandler implements KeyListener {
             optionsState(code);
         } else if (gp.gameState == gp.gameOverState) {
             gameOverState(code);
+        } else if (gp.gameState == gp.tradeState) {
+            tradeState(code);
+            characterState(code);
         }
+    }
 
+    public void tradeState(int code) {
+
+        if (code == KeyEvent.VK_ENTER) {
+            enterPressed = true;
+        }
+        if (gp.ui.subState == 0) {
+            if (code == KeyEvent.VK_W) {
+                gp.ui.commandNum--;
+                if (gp.ui.commandNum < 0) {
+                    gp.ui.commandNum = 2;
+                }
+                gp.playSE(9);
+            }
+            if (code == KeyEvent.VK_S) {
+                gp.ui.commandNum++;
+                if (gp.ui.commandNum > 2) {
+                    gp.ui.commandNum = 0;
+                }
+                gp.playSE(9);
+            }
+        }
+        if (gp.ui.subState == 1) {
+            npcInventory(code);
+            if (code == KeyEvent.VK_ESCAPE) {
+                gp.ui.subState = 0;
+            }
+        }
+        if (gp.ui.subState == 2) {
+            playerInventory(code);
+            if (code == KeyEvent.VK_ESCAPE) {
+                gp.ui.subState = 0;
+            }
+        }
     }
 
     public void gameOverState(int code) {
@@ -175,10 +212,9 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_ENTER) {
             if (gp.ui.commandNum == 0) {
                 gp.gameState = gp.playState;
-               gp.retry();
+                gp.retry();
                 gp.playMusic(0);
-            }
-            else if (gp.ui.commandNum == 1) {
+            } else if (gp.ui.commandNum == 1) {
                 gp.gameState = gp.titleState;
                 gp.restart();
             }
@@ -197,7 +233,6 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_ENTER) {
             enterPressed = true;
         }
-
         int maxCommandNum = 0;
         switch (gp.ui.subState) {// 根据当前子状态，设置最大命令数
 
@@ -395,12 +430,14 @@ public class KeyHandler implements KeyListener {
 
             }
         }
-        if (code == KeyEvent.VK_R){
-            switch (gp.currentMap){
+        if (code == KeyEvent.VK_R) {
+            switch (gp.currentMap) {
                 case 0:
-                    gp.tileM.loadMap("/maps/worldV3.txt",0); break;
+                    gp.tileM.loadMap("/maps/worldV3.txt", 0);
+                    break;
                 case 1:
-                    gp.tileM.loadMap("/maps/interior01.txt",1); break;
+                    gp.tileM.loadMap("/maps/interior01.txt", 1);
+                    break;
             }
         }
 
@@ -423,34 +460,10 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_C) {
             gp.gameState = gp.playState;
         }
-        if (code == KeyEvent.VK_W) {
-            if (gp.ui.slotRow != 0) {
-                gp.ui.slotRow--;
-                gp.playSE(9);
-            }
-        }
-        if (code == KeyEvent.VK_A) {
-            if (gp.ui.slotCol != 0) {
-                gp.ui.slotCol--;
-                gp.playSE(9);
-            }
-
-        }
-        if (code == KeyEvent.VK_S) {
-            if (gp.ui.slotRow != 3) {
-                gp.ui.slotRow++;
-                gp.playSE(9);
-            }
-        }
-        if (code == KeyEvent.VK_D) {
-            if (gp.ui.slotCol != 4) {
-                gp.ui.slotCol++;
-                gp.playSE(9);
-            }
-        }
         if (code == KeyEvent.VK_ENTER) {//选择物品
             gp.player.selectItem();
         }
+        playerInventory(code);
     }
 
     @Override
@@ -473,4 +486,61 @@ public class KeyHandler implements KeyListener {
         }
     }
 
+    public void playerInventory(int code) {
+        if (code == KeyEvent.VK_W) {
+            if (gp.ui.playerSlotRow != 0) {
+                gp.ui.playerSlotRow--;
+                gp.playSE(9);
+            }
+        }
+        if (code == KeyEvent.VK_A) {
+            if (gp.ui.playerSlotCol != 0) {
+                gp.ui.playerSlotCol--;
+                gp.playSE(9);
+            }
+        }
+        if (code == KeyEvent.VK_S) {
+            if (gp.ui.playerSlotRow != 3) {
+                gp.ui.playerSlotRow++;
+                gp.playSE(9);
+            }
+        }
+        if (code == KeyEvent.VK_D) {
+            if (gp.ui.playerSlotCol != 4) {
+                gp.ui.playerSlotCol++;
+                gp.playSE(9);
+            }
+        }
+        if (code == KeyEvent.VK_ENTER) {//选择物品
+            gp.player.selectItem();
+        }
+    }
+
+    public void npcInventory(int code) {
+        if (code == KeyEvent.VK_W) {
+            if (gp.ui.npcSlotRow != 0) {
+                gp.ui.npcSlotRow--;
+                gp.playSE(9);
+            }
+        }
+        if (code == KeyEvent.VK_A) {
+            if (gp.ui.npcSlotCol != 0) {
+                gp.ui.npcSlotCol--;
+                gp.playSE(9);
+            }
+        }
+        if (code == KeyEvent.VK_S) {
+            if (gp.ui.npcSlotRow != 3) {
+                gp.ui.npcSlotRow++;
+                gp.playSE(9);
+            }
+        }
+        if (code == KeyEvent.VK_D) {
+            if (gp.ui.npcSlotCol != 4) {
+                gp.ui.npcSlotCol++;
+                gp.playSE(9);
+            }
+        }
+
+    }
 }
