@@ -3,10 +3,7 @@ package Entity;
 import main.GamePanel;
 import main.KeyHandler;
 import main.UtilityTool;
-import object.OBJ_Axe;
-import object.OBJ_Fireball;
-import object.OBJ_Shield_Wood;
-import object.OBJ_Sword_Normal;
+import object.*;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -52,6 +49,7 @@ public class Player extends Entity {
         inventory.add(new OBJ_Shield_Wood(gp));
         inventory.add(new OBJ_Sword_Normal(gp));
         inventory.add(new OBJ_Axe(gp));
+        inventory.add(new OBJ_Key(gp));
     }
 
     public void setDefaultValues() {
@@ -342,7 +340,7 @@ public class Player extends Entity {
             int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
             //这段代码用来检测是否发生攻击
 
-            damageMonster(monsterIndex, attack,currentWeapon.knockBackPower);//攻击怪物
+            damageMonster(monsterIndex, attack, currentWeapon.knockBackPower);//攻击怪物
 
             int iTileIndex = gp.cChecker.checkEntity(this, gp.iTile);//检测是否打中 interactiveTile
             damageInteractiveTile(iTileIndex);//攻击 interactiveTile
@@ -403,16 +401,16 @@ public class Player extends Entity {
         }
     }
 
-    public void damageMonster(int i, int attack,int knockBackPower) {//攻击方法
+    public void damageMonster(int i, int attack, int knockBackPower) {//攻击方法
         if (i != 999) {
             if (gp.monster[gp.currentMap][i].invincible == false) {
                 gp.playSE(5);
 
-                if (knockBackPower > 0){
+                if (knockBackPower > 0) {
                     knockBack(gp.monster[gp.currentMap][i], knockBackPower);
 
                 }
-                      int damage = attack - gp.monster[gp.currentMap][i].defense;//攻击力减去防御力
+                int damage = attack - gp.monster[gp.currentMap][i].defense;//攻击力减去防御力
                 if (damage < 0) {
                     damage = 0;
                 }
@@ -474,10 +472,16 @@ public class Player extends Entity {
             if (gp.obj[gp.currentMap][i].type == type_pickupOnly) {
                 gp.obj[gp.currentMap][i].use(this);
                 gp.obj[gp.currentMap][i] = null;
+            } else if (gp.obj[gp.currentMap][i].type == type_obstacle) {
+                if (keyH.enterPressed == true) {
+
+                    attackCanceled = true;
+                    gp.obj[gp.currentMap][i].interact();
+                }
             } else {
                 String text;
-                if (inventory.size() != maxInventorySize) {
-                    inventory.add(gp.obj[gp.currentMap][i]);
+                if (canObtainItem(gp.obj[gp.currentMap][i]) == true) {
+                    //inventory.add(gp.obj[gp.currentMap][i]);
                     gp.playSE(1);
                     text = "You got " + gp.obj[gp.currentMap][i].name + "!";
                 } else {
@@ -506,8 +510,6 @@ public class Player extends Entity {
     }
 
     public void selectItem() {
-
-
         int itemIndex = gp.ui.getItemIndexOnSlot(gp.ui.playerSlotCol, gp.ui.playerSlotRow);
 
         if (itemIndex < inventory.size()) {
@@ -522,15 +524,60 @@ public class Player extends Entity {
                 currentShield = selectedItem;
                 defense = getDefense();
             }
-            if (selectedItem.type == type_consumable) {
+            if (selectedItem.type == type_consumable) {//检测物品是否可消耗
 
-                selectedItem.use(this);
-                inventory.remove(itemIndex);
+
+                if (selectedItem.use(this) == true) {
+
+                    if(selectedItem.amount > 1){
+                        selectedItem.amount--;
+                    }
+                    inventory.remove(itemIndex);
+                }else {
+                    inventory.remove(itemIndex);
+                }
                 //这段代码的作用是删除物品列表中的物品，以便
                 // 绘制下一个物品，从而绘制下一个物品，以达到。
-
             }
         }
+    }
+
+    public int searchItemInInventory(String itemName) {
+
+        int itemIndex = 999;
+
+        for (int i = 0; i < inventory.size(); i++) {
+            if (inventory.get(i).name.equals(itemName)) {
+                itemIndex = i;
+                break;
+            }
+        }
+        return itemIndex;
+    }
+
+    public boolean canObtainItem(Entity item) {
+        boolean canObtain = false;
+
+        if (item.stackable == true) {
+            int index = searchItemInInventory(item.name);
+
+            if (index != 999){
+                inventory.get(index).amount++;
+                canObtain = true;
+            }
+            else {
+                if (inventory.size() != maxInventorySize) {
+                    inventory.add(item);
+                    canObtain = true;
+                }
+            }
+        }else {
+            if (inventory.size() != maxInventorySize) {
+                inventory.add(item);
+                canObtain = true;
+            }
+        }
+        return canObtain;
     }
 
     /*    public void pickupObject(int i) {

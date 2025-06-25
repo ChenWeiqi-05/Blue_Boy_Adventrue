@@ -4,6 +4,7 @@ import Entity.Entity;
 import Entity.Player;
 import InteractiveTile.InteractiveTile;
 import ai.PathFinder;
+import environment.EnvironmentManage;
 import tile.TileManager;
 
 import javax.swing.*;
@@ -47,6 +48,9 @@ public class GamePanel extends JPanel implements Runnable {
     Config config = new Config(this);
 
     public PathFinder pFinder = new PathFinder(this);
+
+    EnvironmentManage eManage = new EnvironmentManage(this);
+
     Thread gameThread;
     int playerX = 100;
     int playerY = 100;
@@ -59,7 +63,7 @@ public class GamePanel extends JPanel implements Runnable {
     public InteractiveTile iTile[][] = new InteractiveTile[maxMap][50];//创建一个 interactiveTile 数组
 
     public Entity projectile[][] = new Entity[maxMap][20];
-  // public ArrayList<Entity> projectileList = new ArrayList<>();
+    // public ArrayList<Entity> projectileList = new ArrayList<>();
     public ArrayList<Entity> particleList = new ArrayList<>();
     ArrayList<Entity> entityList = new ArrayList<>();//创建a一个实体列表
 
@@ -92,6 +96,8 @@ public class GamePanel extends JPanel implements Runnable {
 
         aSetter.setInteractiveTile();
 
+
+        eManage.setup();//设置环境
         //playMusic(0);
         gameState = titleState;//游戏状态的设置
 
@@ -199,7 +205,7 @@ public class GamePanel extends JPanel implements Runnable {
                         projectile[currentMap][i].update();//绘制projectileList
                     }
                     if (projectile[currentMap][i].alive == false) {
-                        projectile[currentMap][i]= null;
+                        projectile[currentMap][i] = null;
                     }
                 }
             }
@@ -295,6 +301,9 @@ public class GamePanel extends JPanel implements Runnable {
                 entityList.remove(i);
             }
             entityList.clear();//清空实体列表
+
+            eManage.draw(g2);//初始化绘制环境
+
             ui.draw(g2);
             // 保持背景绘制
             // 确保UI绘制

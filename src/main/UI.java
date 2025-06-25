@@ -181,7 +181,7 @@ public class UI {
             drawGameOverScreen();
         }
         //transition state
-     if (gp.gameState == gp.transitionState) {
+        if (gp.gameState == gp.transitionState) {
             drawTransitionScreen();
         }
 
@@ -266,7 +266,7 @@ public class UI {
         width = gp.tileSize * 6;
         height = gp.tileSize * 2;
         drawSubWindow(x, y, width, height);
-        g2.drawString("Your Coint:" + gp.player.coin , x + 24, y + 60);
+        g2.drawString("Your Coint:" + gp.player.coin, x + 24, y + 60);
 
         int itemIndex = getItemIndexOnSlot(npcSlotCol, npcSlotRow);
         if (itemIndex < npc.inventory.size()) {
@@ -292,16 +292,24 @@ public class UI {
                     currentDialogue = "You need more coin to buy that!";
                     drawDialogueScreen();
                 }
-              else if (gp.player.inventory.size() == gp.player.maxInventorySize) {
+                else if (gp.player.canObtainItem(npc.inventory.get(itemIndex)) == true) {
+                    gp.player.coin -= npc.inventory.get(itemIndex).price;
+                 }
+                else {
                     subState = 0;
                     gp.gameState = gp.dialogueState;
                     currentDialogue = "Your inventory is full!";
-                }else {
-                  gp.player.coin -= npc.inventory.get(itemIndex).price;
+                }
+               /* else if (gp.player.inventory.size() == gp.player.maxInventorySize) {
+                    subState = 0;
+                    gp.gameState = gp.dialogueState;
+                    currentDialogue = "Your inventory is full!";
+                } else {
+                    gp.player.coin -= npc.inventory.get(itemIndex).price;
 
-                  gp.player.inventory.add(npc.inventory.get(itemIndex));
-              }
-
+                    gp.player.inventory.add(npc.inventory.get(itemIndex));
+                }
+*/
             }
         }
     }
@@ -312,10 +320,10 @@ public class UI {
         int y;
         int width;
         int height;
-         x = gp.tileSize * 2;
-         y = gp.tileSize * 9;
-         width = gp.tileSize * 6;
-         height = gp.tileSize * 2;
+        x = gp.tileSize * 2;
+        y = gp.tileSize * 9;
+        width = gp.tileSize * 6;
+        height = gp.tileSize * 2;
         drawSubWindow(x, y, width, height);
         g2.drawString("[ESC]Back", x + 24, y + 60);
 
@@ -325,7 +333,7 @@ public class UI {
         width = gp.tileSize * 6;
         height = gp.tileSize * 2;
         drawSubWindow(x, y, width, height);
-        g2.drawString("Your Coint:" + gp.player.coin , x + 24, y + 60);
+        g2.drawString("Your Coint:" + gp.player.coin, x + 24, y + 60);
 
         int itemIndex = getItemIndexOnSlot(playerSlotCol, playerSlotRow);
         if (itemIndex < gp.player.inventory.size()) {
@@ -337,21 +345,33 @@ public class UI {
             drawSubWindow(x, y, width, height);
             g2.drawImage(coin, x + 10, y + 8, 32, 32, null);
 
-            int price = gp.player.inventory.get(itemIndex).price/2;//奸商的小伎俩
+            int price = gp.player.inventory.get(itemIndex).price / 2;//奸商的小伎俩
             String text = "" + price;
             x = getXforAlignToRightText(text, gp.tileSize * 8 - 20);
             g2.drawString(text, x, y + 34);
 
             if (gp.keyH.enterPressed == true) {
 
-                gp.player.inventory.remove(itemIndex);
-                gp.player.coin += price;
+             if(gp.player.inventory.get(itemIndex)== gp.player.currentWeapon ||
+                     gp.player.inventory.get(itemIndex)== gp.player.currentShield){
+                 commandNum = 0;
+                 subState = 0;
+                 gp.gameState = gp.dialogueState;
 
-                if (gp.player.inventory.size() == 0) {
+                 currentDialogue = "You can't sell your weapon or shield!";
+             }else {
 
-                    currentDialogue = "Your inventory is nothing.\n you could get out the game. ";
+                 if (gp.player.inventory.get(itemIndex).amount > 1){
+                     gp.player.inventory.get(itemIndex).amount--;
+                 }
+                 else {
+                     gp.player.inventory.remove(itemIndex);
+                 }
 
-                }
+              gp.player.inventory.remove(itemIndex);
+              gp.player.coin += price;
+
+             }
             }
         }
     }
@@ -639,6 +659,26 @@ public class UI {
                 g2.fillRoundRect(slotX, slotY, gp.tileSize, gp.tileSize, 10, 10);
             }
             g2.drawImage(entity.inventory.get(i).down1, slotX, slotY, null);
+
+            //DISPLAY ITEM Amount 展示物品数量
+            if ( entity==gp.player && entity.inventory.get(i).amount > 1) {
+                g2.setFont(gp.getFont().deriveFont(32f));
+                int amountX;
+                int amountY;
+
+                String s = "" +entity.inventory.get(i).amount;
+
+                amountX = getXforAlignToRightText(s, slotX +44);
+                amountY = slotY + gp.tileSize;
+//SHADOW
+                g2.setColor(new Color(60,60,60));
+                g2.drawString(s, amountX, amountY);
+
+                g2.setColor(Color.white);
+                g2.drawString(s, amountX - 3, amountY - 3);
+
+            }
+
             slotX += gp.tileSize;//换列
             if (i == 4 || i == 9 || i == 14) {//每行有5个物品
                 slotX = slotXstart;//换列
@@ -685,12 +725,14 @@ public class UI {
 
     }
 
+
     public int getItemIndexOnSlot(int slotCol, int slotRow) {//获取库存物品的索引,以实现库存物品的描述
 
         int itemIndex = slotCol + (slotRow * 5);//获取库存物品的索引
         return itemIndex;//返回库存物品的索引
 
     }
+
     public void drawPlayerLife() {
         int x = gp.tileSize / 2;
         int y = gp.tileSize / 2;

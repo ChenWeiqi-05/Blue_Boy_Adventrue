@@ -81,6 +81,8 @@ public class Entity {
     public String description = "";
     public int useCost;
     public int knockBackPower = 0;
+    public boolean stackable = false;
+    public int amount = 1;
 
 
     public int type; // 0 是player 1 = npc 2 = monster
@@ -94,9 +96,35 @@ public class Entity {
     public final int type_consumable = 6;
     public final int type_pickupOnly = 7;
 
+    public final int type_obstacle = 8;
+
     // public Object solidArea;
     public Entity(GamePanel gp) {
         this.gp = gp;
+    }
+
+    public int getLeftX() {
+        return worldX + solidArea.x;
+    }
+
+    public int getRightX() {
+        return worldX + solidArea.x + solidArea.width;
+    }
+
+    public int getTopY() {
+        return worldY + solidArea.y;
+    }
+
+    public int getBottomY() {
+        return worldY + solidArea.y + solidArea.height;
+    }
+
+    public int getCol() {
+        return (worldX + solidArea.x) / gp.tileSize;
+    }
+
+    public int getRow() {
+        return (worldY + solidArea.y) / gp.tileSize;
     }
 
     public void setAction() {
@@ -367,7 +395,12 @@ public class Entity {
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alphaValue));
     }
 
-    public void use(Entity entity) {
+    public void interact() {
+
+    }
+
+    public boolean use(Entity entity) {
+        return false;
 
     }
 
@@ -499,4 +532,41 @@ public class Entity {
         }
     }
 //如果我没有考到离家的学校，我还会这样想吗？
+
+
+    public int getDetected(Entity user, Entity target[][], String targetName) {
+
+        int index = 999;
+
+        int nextWorldX = user.getLeftX();
+        int nextWorldY = user.getTopY();
+
+        switch (user.direction) {
+            case "up":
+                nextWorldY = user.getTopY() - 1;
+                break;
+            case "down":
+                nextWorldY = user.getBottomY() + 1;
+                break;
+            case "left":
+                nextWorldX = user.getLeftX() - 1;
+                break;
+            case "right":
+                nextWorldX = user.getRightX() + 1;
+        }
+        int col = nextWorldX / gp.tileSize;
+        int row = nextWorldY / gp.tileSize;
+
+        for (int i = 0; i < target[1].length; i++) {
+            if (target[gp.currentMap][i] != null) {
+                if (target[gp.currentMap][i].getCol() == col
+                        && target[gp.currentMap][i].getRow() == row
+                        && target[gp.currentMap][i].name.equals(targetName)) {
+                    index = i;
+                    break;
+                }
+            }
+        }
+        return index;
+    }
 }

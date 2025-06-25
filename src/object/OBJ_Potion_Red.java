@@ -16,10 +16,10 @@ public class OBJ_Potion_Red extends Entity {
         down1 = setup("/objects/potion_red", gp.tileSize, gp.tileSize);
         description = "[" + name + "]\nHeals your life by " + value + ".";
         price = 25;
-
+        stackable = true;
     }
 
-    public void use(Entity entity) {
+    public boolean use(Entity entity) {
       // gp.gameState = gp.playState;
           gp.gameState = gp.dialogueState;
 
@@ -27,5 +27,6 @@ public class OBJ_Potion_Red extends Entity {
         entity.life += value;
 
         gp.playSE(2);
+        return true;
     }
 }
