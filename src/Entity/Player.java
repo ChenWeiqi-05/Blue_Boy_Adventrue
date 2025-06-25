@@ -16,6 +16,7 @@ public class Player extends Entity {
     public final int screenY;
     // public int hasKey = 0;
     public boolean attackCanceled = false;
+    public boolean lightUpdated = false;
     int standTime = 0;
 
 
@@ -523,6 +524,16 @@ public class Player extends Entity {
             if (selectedItem.type == type_shield) {
                 currentShield = selectedItem;
                 defense = getDefense();
+            }
+            if (selectedItem.type == type_light){
+
+                if (currentLight ==selectedItem){
+                    currentLight = null;
+                }else{
+                    currentLight = selectedItem;
+                }
+                lightUpdated = true;
+
             }
             if (selectedItem.type == type_consumable) {//检测物品是否可消耗
 

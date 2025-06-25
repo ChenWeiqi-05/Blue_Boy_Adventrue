@@ -41,7 +41,6 @@ public class UI {
 
     public int npcSlotCol = 0;
     public int npcSlotRow = 0;
-
     int subState = 0;
     int counter = 0;
     public Entity npc;
@@ -291,11 +290,9 @@ public class UI {
 
                     currentDialogue = "You need more coin to buy that!";
                     drawDialogueScreen();
-                }
-                else if (gp.player.canObtainItem(npc.inventory.get(itemIndex)) == true) {
+                } else if (gp.player.canObtainItem(npc.inventory.get(itemIndex)) == true) {
                     gp.player.coin -= npc.inventory.get(itemIndex).price;
-                 }
-                else {
+                } else {
                     subState = 0;
                     gp.gameState = gp.dialogueState;
                     currentDialogue = "Your inventory is full!";
@@ -352,26 +349,25 @@ public class UI {
 
             if (gp.keyH.enterPressed == true) {
 
-             if(gp.player.inventory.get(itemIndex)== gp.player.currentWeapon ||
-                     gp.player.inventory.get(itemIndex)== gp.player.currentShield){
-                 commandNum = 0;
-                 subState = 0;
-                 gp.gameState = gp.dialogueState;
+                if (gp.player.inventory.get(itemIndex) == gp.player.currentWeapon ||
+                        gp.player.inventory.get(itemIndex) == gp.player.currentShield) {
+                    commandNum = 0;
+                    subState = 0;
+                    gp.gameState = gp.dialogueState;
 
-                 currentDialogue = "You can't sell your weapon or shield!";
-             }else {
+                    currentDialogue = "You can't sell your weapon or shield!";
+                } else {
 
-                 if (gp.player.inventory.get(itemIndex).amount > 1){
-                     gp.player.inventory.get(itemIndex).amount--;
-                 }
-                 else {
-                     gp.player.inventory.remove(itemIndex);
-                 }
+                    if (gp.player.inventory.get(itemIndex).amount > 1) {
+                        gp.player.inventory.get(itemIndex).amount--;
+                    } else {
+                        gp.player.inventory.remove(itemIndex);
+                    }
 
-              gp.player.inventory.remove(itemIndex);
-              gp.player.coin += price;
+                    gp.player.inventory.remove(itemIndex);
+                    gp.player.coin += price;
 
-             }
+                }
             }
         }
     }
@@ -652,8 +648,10 @@ public class UI {
 //DRAW  PLAYER INVENTORY ITEM
         for (int i = 0; i < entity.inventory.size(); i++) {//绘制库存
 
-            if (entity.inventory.get(i) == entity.currentWeapon//当前武器或者当前盾牌
-                    || entity.inventory.get(i) == entity.currentShield//当前盾牌
+            if (entity.inventory.get(i) == entity.currentWeapon || //当前武器或者当前盾牌
+                    entity.inventory.get(i) == entity.currentShield ||
+                    entity.inventory.get(i) == entity.currentLight
+                //当前盾牌
             ) {
                 g2.setColor(new Color(240, 190, 90));
                 g2.fillRoundRect(slotX, slotY, gp.tileSize, gp.tileSize, 10, 10);
@@ -661,17 +659,17 @@ public class UI {
             g2.drawImage(entity.inventory.get(i).down1, slotX, slotY, null);
 
             //DISPLAY ITEM Amount 展示物品数量
-            if ( entity==gp.player && entity.inventory.get(i).amount > 1) {
+            if (entity == gp.player && entity.inventory.get(i).amount > 1) {
                 g2.setFont(gp.getFont().deriveFont(32f));
                 int amountX;
                 int amountY;
 
-                String s = "" +entity.inventory.get(i).amount;
+                String s = "" + entity.inventory.get(i).amount;
 
-                amountX = getXforAlignToRightText(s, slotX +44);
+                amountX = getXforAlignToRightText(s, slotX + 44);
                 amountY = slotY + gp.tileSize;
 //SHADOW
-                g2.setColor(new Color(60,60,60));
+                g2.setColor(new Color(60, 60, 60));
                 g2.drawString(s, amountX, amountY);
 
                 g2.setColor(Color.white);

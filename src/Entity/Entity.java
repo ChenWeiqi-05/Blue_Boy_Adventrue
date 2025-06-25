@@ -28,23 +28,19 @@ public class Entity {
     public boolean collisionOn = false;
     public boolean invincible = false;
     boolean attacking = false;
-
     public boolean alive = true;
     public boolean dying = false;
     boolean hpBarOn = false;//这个是hp条的开关
     public boolean onPath = false;
-
     public boolean knockBack = false;
     public int spriteCounter = 0;
     public int actionLockCounter = 0; //  这个是实体动作计数器，用来控制实体的动作
     public int invincibleCounter = 0;
-
     public int shotAvailCounter = 0;
     //STATE
     int dyingCounter = 0;
     int knockBackCounter = 0;
     int hpBarOnCounter = 0;//这个是hp条的开关
-
     public String name;
     public int defaultSpeed;
     public int maxLife;
@@ -66,6 +62,7 @@ public class Entity {
     public Entity currentWeapon;//这个是实体的武器
     public Entity currentShield;//这个是实体的盾牌
 
+    public Entity  currentLight;
     public Projectile projectile;
 
     public ArrayList<Entity> inventory = new ArrayList<>();
@@ -84,6 +81,7 @@ public class Entity {
     public boolean stackable = false;
     public int amount = 1;
 
+    public int lightRadius;//光半径
 
     public int type; // 0 是player 1 = npc 2 = monster
     public final int type_player = 0;
@@ -97,6 +95,7 @@ public class Entity {
     public final int type_pickupOnly = 7;
 
     public final int type_obstacle = 8;
+    public final int type_light = 9;
 
     // public Object solidArea;
     public Entity(GamePanel gp) {
