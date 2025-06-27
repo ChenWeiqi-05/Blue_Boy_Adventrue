@@ -430,6 +430,7 @@ public class KeyHandler implements KeyListener {
 
             }
         }
+
         if (code == KeyEvent.VK_R) {
             switch (gp.currentMap) {
                 case 0:
@@ -452,7 +453,9 @@ public class KeyHandler implements KeyListener {
 
     public void dialogueState(int code) {
         if (code == KeyEvent.VK_ENTER) {
-            gp.gameState = gp.playState;
+            //gp.gameState = gp.playState;
+
+            enterPressed = true;
         }
     }
 

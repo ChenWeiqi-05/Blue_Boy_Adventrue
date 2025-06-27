@@ -88,8 +88,7 @@ public class TileManager {
         setup(44, "table01", true);
     }
 
-    public void setup(int index, String imageName, boolean collision)//这段代码用来设置地图
-    {
+    public void setup(int index, String imageName, boolean collision) {//这段代码用来设置地图
         UtilityTool uTool = new UtilityTool();
         try {
             tile[index] = new Tile();

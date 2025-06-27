@@ -33,7 +33,7 @@ public class UI {
 
 
     public String currentDialogue = "";
-    public int commandNum = 0;
+    public int commandNum = 1;
     public int titleScreenState = 0;
 
     public int playerSlotCol = 0;//鼠标点击的格子列数
@@ -187,7 +187,32 @@ public class UI {
         if (gp.gameState == gp.tradeState) {
             drawTradeScreen();
         }
+        if (gp.gameState == gp.sleepState) {
+            drawSleepScreen();
+        }
+    }
 
+    public void drawSleepScreen() {
+        counter++;
+        if (counter < 120){
+           gp.eManager.lighting.filterAlpha += 0.01;
+           if(gp.eManager.lighting.filterAlpha> 1f){
+               gp.eManager.lighting.filterAlpha = 1f;
+           }
+        }
+        if(counter >= 120){
+            gp.eManager.lighting.filterAlpha -= 0.01;
+            if(gp.eManager.lighting.filterAlpha <= 0f){
+                gp.eManager.lighting.filterAlpha = 0f;
+                counter = 0;
+                gp.eManager.lighting.dayState = gp.eManager.lighting.day;
+
+                gp.eManager.lighting.dayCounter = 0;
+                gp.gameState = gp.playState;
+
+                gp.player.getPlayerImage();
+            }
+        }
     }
 
     public void drawTradeScreen() {
@@ -648,11 +673,9 @@ public class UI {
 //DRAW  PLAYER INVENTORY ITEM
         for (int i = 0; i < entity.inventory.size(); i++) {//绘制库存
 
-            if (entity.inventory.get(i) == entity.currentWeapon || //当前武器或者当前盾牌
+            if (entity.inventory.get(i) == entity.currentWeapon ||
                     entity.inventory.get(i) == entity.currentShield ||
-                    entity.inventory.get(i) == entity.currentLight
-                //当前盾牌
-            ) {
+                    entity.inventory.get(i) == entity.currentLight) {
                 g2.setColor(new Color(240, 190, 90));
                 g2.fillRoundRect(slotX, slotY, gp.tileSize, gp.tileSize, 10, 10);
             }
@@ -910,6 +933,26 @@ public class UI {
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
         x += gp.tileSize;
         y += gp.tileSize + 10;
+
+        if (npc.dialogues[npc.dialogueSet][npc.dialogueIndex]!= null)
+        {
+            currentDialogue = npc.dialogues[npc.dialogueSet][npc.dialogueIndex];
+
+            if (gp.keyH.enterPressed == true){
+
+                if (gp.gameState == gp.dialogueState){
+                    npc.dialogueIndex ++;
+                    gp.keyH.enterPressed = false;
+                }
+            }
+        }
+        else {
+            npc.dialogueIndex = 0;
+            if (gp.gameState == gp.dialogueState){
+              gp.gameState = gp.playState;
+            }
+        }
+
 
         for (String line : currentDialogue.split("\n")) {//遍历文本
             g2.drawString(line, x, y);

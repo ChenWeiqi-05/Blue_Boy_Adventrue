@@ -4,7 +4,8 @@ import Entity.Entity;
 import Entity.Player;
 import InteractiveTile.InteractiveTile;
 import ai.PathFinder;
-import environment.EnvironmentManage;
+import environment.EnvironmentManager;
+import environment.EnvironmentManager;
 import tile.TileManager;
 
 import javax.swing.*;
@@ -25,6 +26,8 @@ public class GamePanel extends JPanel implements Runnable {
     public int maxWorldCol = 50;
     public int maxWorldRow = 50;
     public final int maxMap = 10;
+
+
     public int currentMap = 0;//0 是worldV3 1 是interior01
 
     public int currentMusic = 0;  //当前播放的音乐编号
@@ -33,7 +36,6 @@ public class GamePanel extends JPanel implements Runnable {
     int screenHeight2 = screenHeight;
     BufferedImage tempScreen;//
     Graphics2D g2;//画笔
-
     public boolean fullScreenOn = false;
     int FPS = 60;
     public TileManager tileM = new TileManager(this);
@@ -49,8 +51,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public PathFinder pFinder = new PathFinder(this);
 
-    EnvironmentManage eManage = new EnvironmentManage(this);
-
+   public EnvironmentManager eManager = new EnvironmentManager(this);
     Thread gameThread;
     int playerX = 100;
     int playerY = 100;
@@ -80,6 +81,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int transitionState = 7;
 
     public final int tradeState = 8;
+    public final int sleepState = 9;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -97,7 +99,7 @@ public class GamePanel extends JPanel implements Runnable {
         aSetter.setInteractiveTile();
 
 
-        eManage.setup();//设置环境
+        eManager.setup();//设置环境
         //playMusic(0);
         gameState = titleState;//游戏状态的设置
 
@@ -227,7 +229,7 @@ public class GamePanel extends JPanel implements Runnable {
                     iTile[currentMap][i].update();//更新 interactiveTile
                 }
             }
-            eManage.update();
+            eManager.update();
         }
         if (gameState == pauseState) {
 
@@ -303,7 +305,7 @@ public class GamePanel extends JPanel implements Runnable {
             }
             entityList.clear();//清空实体列表
 
-            eManage.draw(g2);//初始化绘制环境
+            eManager.draw(g2);//初始化绘制环境
 
             ui.draw(g2);
             // 保持背景绘制

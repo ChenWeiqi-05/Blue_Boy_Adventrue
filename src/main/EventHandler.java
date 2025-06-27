@@ -29,6 +29,7 @@ public class EventHandler {
             eventRect[map][col][row].eventRectDefaultX = eventRect[map][col][row].x;
 
             eventRect[map][col][row].eventRectDefaultY = eventRect[map][col][row].y;
+
             col++;
             if (col == gp.maxWorldCol) {
                 col = 0;
@@ -57,14 +58,12 @@ public class EventHandler {
             if (hit(0, 27, 16, "right") == true) {
 //  判断玩家是否与pit发生碰撞
                 damagePit(gp.dialogueState);
-
-                //System.out.println("call checkEvent");
             }
-            else if (hit(0, 10, 39, "up") == true) {
+            else if (hit(0, 23, 12, "up") == true) {
                 damagePit(gp.dialogueState);
             }
             else  if (hit(0, 10, 39, "any") == true) {
-                teleport(1, 10, 13);
+                teleport(1, 12, 13);
             }
             else  if (hit(1, 12, 13, "any") == true) {
                 teleport(0, 10, 39);
@@ -99,10 +98,10 @@ public class EventHandler {
 
         gp.currentMap = map;
         gp.player.worldX = gp.tileSize * col;
-        gp.player.worldY = gp.tileSize * row - (gp.tileSize * 2);
+        gp.player.worldY = gp.tileSize * row-(gp.tileSize) ;
 
         previousEventX = gp.player.worldX;
-        previousEventY = gp.player.worldY;
+        previousEventY = gp.player.worldY -(gp.tileSize);
         canTouchEvent = false;
         gp.playSE(13);
     }
@@ -119,11 +118,11 @@ public class EventHandler {
                 if (gp.player.direction.contentEquals(reqDirection) || reqDirection.contentEquals("any")) {
                     hit = true;
                     previousEventX = gp.player.worldX;
-                    previousEventY = gp.player.worldY;
+                    previousEventY = gp.player.worldY ;
 
                 }
             }
-            gp.player.solidArea.x = gp.player.solidAreaDefaultX;
+            gp.player.solidArea.x = gp.player.solidAreaDefaultX ;
             gp.player.solidArea.y = gp.player.solidAreaDefaultY;
             eventRect[map][col][row].x = eventRect[map][col][row].eventRectDefaultX;
             eventRect[map][col][row].y = eventRect[map][col][row].eventRectDefaultY;
@@ -138,6 +137,7 @@ public class EventHandler {
         //   eventRect[col][row].eventDone = true;
         gp.ui.currentDialogue = "I fall into a pit ! ";
         canTouchEvent = false;
+
     }
 
     public void healingPool(int gameState) {

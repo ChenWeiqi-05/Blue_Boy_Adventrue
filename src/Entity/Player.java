@@ -23,6 +23,7 @@ public class Player extends Entity {
     public Player(GamePanel gp, KeyHandler keyH) {
         super(gp);
         this.keyH = keyH;
+
         screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
         solidArea = new Rectangle();
@@ -41,16 +42,18 @@ public class Player extends Entity {
         getPlayerImage();
         getPlayerAttackImage();
         setItems();
+        setDialogue();
     }
 
     public void setItems() {
         inventory.clear();
         inventory.add(currentWeapon);
         inventory.add(currentShield);
-        inventory.add(new OBJ_Shield_Wood(gp));
-        inventory.add(new OBJ_Sword_Normal(gp));
+       // inventory.add(new OBJ_Shield_Wood(gp));
+        //inventory.add(new OBJ_Sword_Normal(gp));
         inventory.add(new OBJ_Axe(gp));
-        inventory.add(new OBJ_Key(gp));
+    inventory.add(new OBJ_Key(gp));
+        inventory.add(new OBJ_Lantern(gp));
     }
 
     public void setDefaultValues() {
@@ -91,11 +94,17 @@ public class Player extends Entity {
     }
 
     public void setDefaultPositions() {
-        worldX = gp.tileSize * 23;
+      worldX = gp.tileSize * 23;
         worldY = gp.tileSize * 21;
+        /*worldX = gp.tileSize * 12;
+        worldY = gp.tileSize * 13;*/
         direction = "down";
     }
 
+    public void setDialogue(){
+        dialogues[0][0] = "You are level " + level + " now!\n" + "You feel stronger!";
+
+    }
     public void restoreLifeAndMana() {
         life = maxLife;
         mana = maxMana;
@@ -121,6 +130,18 @@ public class Player extends Entity {
         left2 = setup("/player/boy_left_2", gp.tileSize, gp.tileSize);
         right1 = setup("/player/boy_right_1", gp.tileSize, gp.tileSize);
         right2 = setup("/player/boy_right_2", gp.tileSize, gp.tileSize);
+    }
+
+    public void getSleepingImage(BufferedImage image) {
+        up1 = image;
+        up2 = image;
+        down1 = image;
+        down2 = image;
+        left1 = image;
+        left2 = image;
+        right1 = image;
+        right2 = image;
+
     }
 
     public void getPlayerAttackImage() {
@@ -177,24 +198,26 @@ public class Player extends Entity {
 
             if (keyH.upPressed == true) {
                 direction = "up";
-                System.out.println("向上");
+                //System.out.println("向上");
                 //  worldY -= speed; // 添加向上移动的逻辑
             } else if (keyH.downPressed == true) {
                 direction = "down";
-                System.out.println("向下");
+                //System.out.println("向下");
                 // worldY += speed; // 添加向下移动的逻辑
             } else if (keyH.leftPressed == true) {
                 direction = "left";
-                System.out.println("向左");
+                //System.out.println("向左");
                 //worldX -= speed; // 添加向左移动的逻辑
             } else if (keyH.rightPressed == true) {
                 direction = "right";
-                System.out.println("向右");
+               // System.out.println("向右");
                 //worldX += speed;
             }
             //这段代码用来检测obj是否发生碰撞
             collisionOn = false;
-            gp.cChecker.checkTile(this);
+
+           gp.cChecker.checkTile(this);
+
             //这段代码用于检测obj是否发生碰撞
             int objIndex = gp.cChecker.checkObject(this, true);
             pickUpObject(objIndex);
@@ -445,7 +468,9 @@ public class Player extends Entity {
 
             gp.playSE(8);
             gp.gameState = gp.dialogueState;
-            gp.ui.currentDialogue = "You are level " + level + " now!\n" + "You feel stronger!";
+
+       startDialogue(this, 0);
+
         }
     }
 
@@ -499,9 +524,9 @@ public class Player extends Entity {
         if (gp.keyH.enterPressed == true) {
             if (i != 999) {
                 //这段代码enter  键被按下时，会触发npc的speak方法，并进入对话状态。
-                System.out.println("you are hitting an npc");
+                //System.out.println("you are hitting an npc");
                 attackCanceled = true;
-                gp.gameState = gp.dialogueState;
+               // gp.gameState = gp.dialogueState;
                 gp.npc[gp.currentMap][i].speak();
             }/* else {
                 gp.playSE(7);
@@ -526,7 +551,6 @@ public class Player extends Entity {
                 defense = getDefense();
             }
             if (selectedItem.type == type_light){
-
                 if (currentLight ==selectedItem){
                     currentLight = null;
                 }else{
@@ -536,8 +560,6 @@ public class Player extends Entity {
 
             }
             if (selectedItem.type == type_consumable) {//检测物品是否可消耗
-
-
                 if (selectedItem.use(this) == true) {
 
                     if(selectedItem.amount > 1){

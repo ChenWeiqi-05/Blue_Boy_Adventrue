@@ -19,12 +19,15 @@ public class Entity {
     public Rectangle attackArea = new Rectangle(0, 0, 0, 0);
     public int solidAreaDefaultX, solidAreaDefaultY;
     public boolean collision = false;
-    String dialogues[] = new String[20];
+   public String dialogues[][] = new String[20][20];
     public int worldX, worldY;//这个是world01的绝对坐标
     public String direction = "down";
     public String direction1 = "up";
     public int spriteNum = 1;
-    int dialogueIndex = 0;
+
+    public int dialogueSet = 0;
+
+    public  int dialogueIndex = 0;
     public boolean collisionOn = false;
     public boolean invincible = false;
     boolean attacking = false;
@@ -62,7 +65,7 @@ public class Entity {
     public Entity currentWeapon;//这个是实体的武器
     public Entity currentShield;//这个是实体的盾牌
 
-    public Entity  currentLight;
+    public Entity currentLight;
     public Projectile projectile;
 
     public ArrayList<Entity> inventory = new ArrayList<>();
@@ -134,11 +137,11 @@ public class Entity {
     }
 
     public void speak() {
-        if (dialogues[dialogueIndex] == null) {//防止dialogues数组的空指针异常
-            dialogueIndex = 0;
-        }
-        gp.ui.currentDialogue = dialogues[dialogueIndex];
-        dialogueIndex++;
+        facePlayer();
+
+    }
+
+    public void facePlayer() {
 //本段代码实现让npc对话时面向玩家
         switch (gp.player.direction) {
 
@@ -158,6 +161,15 @@ public class Entity {
                 direction = "left";
                 break;
         }
+    }
+
+    public void startDialogue(Entity entity, int setNum) {
+
+        gp.gameState = gp.dialogueState;
+        gp.ui.npc = entity;
+        dialogueSet = setNum;
+
+
     }
 
     public void checkCollision() {
