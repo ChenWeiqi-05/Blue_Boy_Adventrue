@@ -398,13 +398,12 @@ public class Player extends Entity {
 
     }
 
-    public void knockBack(Entity entity, int knockBackPower) {
+  /*  public void knockBack(Entity entity, int knockBackPower) {
         entity.direction = direction;
         entity.speed += knockBackPower;
         entity.knockBack = true;
-
     }
-
+*/
     public void damageInteractiveTile(int i) {//碰撞检测
         if (i != 999 && gp.iTile[gp.currentMap][i].destructible == true && gp.iTile[gp.currentMap][i].isCorrectItem(this) == true
                 && gp.iTile[gp.currentMap][i].invincible == false

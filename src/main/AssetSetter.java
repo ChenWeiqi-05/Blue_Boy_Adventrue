@@ -4,6 +4,7 @@ import Entity.NPC_Merchant;
 import Entity.NPC_OldMan;
 import InteractiveTile.IT_DryTree;
 import monster.MON_GreenSlime;
+import monster.MON_Orc;
 import object.*;
 
 import java.util.Random;
@@ -202,6 +203,12 @@ public class AssetSetter {
         gp.monster[mapNum][i] = new MON_GreenSlime(gp);
         gp.monster[mapNum][i].worldX = gp.tileSize * 11;
         gp.monster[mapNum][i].worldY = gp.tileSize * 10;
+
+        i++;
+        gp.monster[mapNum][i] = new MON_Orc(gp);
+        gp.monster[mapNum][i].worldX = gp.tileSize * 12;
+        gp.monster[mapNum][i].worldY = gp.tileSize * 33;
+
 
     }
 

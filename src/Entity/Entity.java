@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Entity {
     GamePanel gp;
@@ -129,6 +130,31 @@ public class Entity {
         return (worldY + solidArea.y) / gp.tileSize;
     }
 
+    public int getXdistance(Entity target){//获取两个实体之间的X轴距离
+
+        int xDistance = Math.abs(worldX - target.worldX);
+       return xDistance;
+    }
+    public int getYdistance(Entity target){//获取两个实体之间的y距离
+
+        int yDistance = Math.abs(worldY - target.worldY);
+        return yDistance;
+    }
+    public int getTileDistance(Entity target){//获取两个实体之间的距离
+
+        int tileDistance = (getXdistance(target) + getYdistance(target)) ;
+        return tileDistance;
+    }
+    public int getGoalCol(Entity target){
+        int goalCol = (target.worldX + target.solidArea.x) / gp.tileSize;
+
+        return  goalCol;
+    }
+    public int getGoalRow(Entity target){
+        int goalRow = (target.worldY + target.solidArea.y) / gp.tileSize;
+        return  goalRow;
+    }
+
     public void setAction() {
 
     }
@@ -138,9 +164,7 @@ public class Entity {
 
     public void speak() {
         facePlayer();
-
     }
-
     public void facePlayer() {
 //本段代码实现让npc对话时面向玩家
         switch (gp.player.direction) {
@@ -164,12 +188,9 @@ public class Entity {
     }
 
     public void startDialogue(Entity entity, int setNum) {
-
         gp.gameState = gp.dialogueState;
         gp.ui.npc = entity;
         dialogueSet = setNum;
-
-
     }
 
     public void checkCollision() {
@@ -272,7 +293,69 @@ public class Entity {
             shotAvailCounter++;
         }
     }
+    public void checkShootOrNot(int rate ,int shotInventory){
 
+        int i = new Random().nextInt(rate) ;
+        if (i == 0 && projectile.alive == false && shotAvailCounter == shotInventory) {//如果技能可用，则释放技能
+            projectile.set(worldX, worldY, direction, true, this);//创建技能
+            //  gp.projectileList.add(projectile);//添加技能
+            for (int i1 = 0; i1 < gp.projectile[1].length; i1++){
+                if (gp.projectile[gp.currentMap][i1]==null){
+                    gp.projectile[gp.currentMap][i1] = projectile;
+                    break;
+                }
+            }
+            shotAvailCounter = 0;//技能可用
+        }
+    }
+    public void checkStopChasingOrNot(Entity target,int distance, int rate) {
+
+        if (getTileDistance(target)>distance){
+          int i = new Random().nextInt();
+          if(i == 0){
+              onPath =false;
+          }
+        }
+    }
+
+    public void checkStartChasingOrNot(Entity target,int distance, int rate) {
+
+        if (getTileDistance(target)<distance){
+            int i = new Random().nextInt();
+            if(i == 0){
+                onPath =true;
+            }
+        }
+    }
+
+    public void setkKnockBack(Entity entity, int knockBackPower) {
+
+        entity.speed += knockBackPower;
+        entity.knockBack = true;
+    }
+    public void getRandomDirection(){
+
+        actionLockCounter++;
+        if (actionLockCounter == 120) {
+            Random random = new Random();
+            int i = random.nextInt(100) + 1;
+
+            if (i < 25) {
+                direction = "up";
+            }
+            if (i > 25 && i <= 50) {
+                direction = "down";
+            }
+            if (i >= 50 && i <= 75) {
+                direction = "left";
+            }
+            if (i > 75 && i <= 100) {
+                direction = "right";
+            }
+            actionLockCounter = 0;
+        }
+
+    }
     public void damagePlayer(int attack) {
         // ，如果玩家没有被保护，则玩家会损失生命值
         if (gp.player.invincible == false) {
