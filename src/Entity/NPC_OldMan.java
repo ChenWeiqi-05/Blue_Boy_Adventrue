@@ -77,20 +77,10 @@ public class NPC_OldMan extends Entity {
             }
         }
     }
-
-
     public void speak() {
-
        /* super.speak();
-
-        onPath = true;
-*/
+        onPath = true;*/
         facePlayer();
         startDialogue(this, 0);
-
     }
-
-
-
-
 }

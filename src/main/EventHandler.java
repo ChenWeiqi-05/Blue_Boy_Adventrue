@@ -5,7 +5,7 @@ import Entity.Entity;
 public class EventHandler {
     GamePanel gp;
     EventRect eventRect[][][];
-
+    Entity eventMaster;
     int count = 0;
 
     int previousEventX, previousEventY;
@@ -14,6 +14,9 @@ public class EventHandler {
 
     public EventHandler(GamePanel gp) {
         this.gp = gp;
+
+        eventMaster = new Entity(gp);
+
         eventRect = new EventRect[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow];
         int map = 0;
         int col = 0;
@@ -39,12 +42,19 @@ public class EventHandler {
                     row = 0;
                     map++;
                 }
-
-
             }
         }
+        setDialogue();
 //宇宙 世界末日  计算机存储  时间 历史 记忆 图书管理员  生命 性 萝莉 怀孕 社会压力
 
+    }
+
+    public void setDialogue() {
+
+        eventMaster.dialogues[0][0] = "You fall into a pit!";
+
+
+        eventMaster.dialogues[1][0] = "\"You drink the water .\nYour life and mana have been recovered !\n oh yeah! \";\n" + "";
     }
 
     public void checkEvent() {
@@ -58,17 +68,13 @@ public class EventHandler {
             if (hit(0, 27, 16, "right") == true) {
 //  判断玩家是否与pit发生碰撞
                 damagePit(gp.dialogueState);
-            }
-            else if (hit(0, 23, 12, "up") == true) {
+            } else if (hit(0, 23, 12, "up") == true) {
                 damagePit(gp.dialogueState);
-            }
-            else  if (hit(0, 10, 39, "any") == true) {
+            } else if (hit(0, 10, 39, "any") == true) {
                 teleport(1, 12, 13);
-            }
-            else  if (hit(1, 12, 13, "any") == true) {
+            } else if (hit(1, 12, 13, "any") == true) {
                 teleport(0, 10, 39);
-            }
-            else if (hit(1, 12, 9, "up")){
+            } else if (hit(1, 12, 9, "up")) {
                 speak(gp.npc[1][0]);
             }
 
@@ -86,8 +92,8 @@ public class EventHandler {
         }
     }
 
-    public  void speak(Entity entity) {
-        if (gp.keyH.enterPressed == true){
+    public void speak(Entity entity) {
+        if (gp.keyH.enterPressed == true) {
             gp.gameState = gp.dialogueState;
             gp.player.attackCanceled = true;
             entity.speak();
@@ -95,13 +101,12 @@ public class EventHandler {
     }
 
     public void teleport(int map, int col, int row) {
-
         gp.currentMap = map;
         gp.player.worldX = gp.tileSize * col;
-        gp.player.worldY = gp.tileSize * row-(gp.tileSize) ;
+        gp.player.worldY = gp.tileSize * row - (gp.tileSize);
 
         previousEventX = gp.player.worldX;
-        previousEventY = gp.player.worldY -(gp.tileSize);
+        previousEventY = gp.player.worldY - (gp.tileSize);
         canTouchEvent = false;
         gp.playSE(13);
     }
@@ -118,11 +123,11 @@ public class EventHandler {
                 if (gp.player.direction.contentEquals(reqDirection) || reqDirection.contentEquals("any")) {
                     hit = true;
                     previousEventX = gp.player.worldX;
-                    previousEventY = gp.player.worldY ;
+                    previousEventY = gp.player.worldY;
 
                 }
             }
-            gp.player.solidArea.x = gp.player.solidAreaDefaultX ;
+            gp.player.solidArea.x = gp.player.solidAreaDefaultX;
             gp.player.solidArea.y = gp.player.solidAreaDefaultY;
             eventRect[map][col][row].x = eventRect[map][col][row].eventRectDefaultX;
             eventRect[map][col][row].y = eventRect[map][col][row].eventRectDefaultY;
@@ -132,10 +137,10 @@ public class EventHandler {
     }
 
     public void damagePit(int gameState) {//掉落事件
-   /*  gp.gameState = gameState;
-       gp.player.life -= 1;*/
-        //   eventRect[col][row].eventDone = true;
-        gp.ui.currentDialogue = "I fall into a pit ! ";
+        gp.gameState = gameState;
+        gp.playSE(6);
+        eventMaster.startDialogue(eventMaster, 0);
+        gp.player.life -= 1;
         canTouchEvent = false;
 
     }
@@ -144,9 +149,8 @@ public class EventHandler {
         if (gp.keyH.enterPressed == true) {
             gp.gameState = gameState;
             gp.player.attackCanceled = true;
-            gp.playSE(9);
-
-            gp.ui.currentDialogue = "You drink the water .\nYour life and mana have been recovered !\n oh yeah! ";
+            gp.playSE(2);
+            eventMaster.startDialogue(eventMaster, 1);
             gp.player.life = gp.player.maxLife;
             gp.player.mana = gp.player.maxMana;
 

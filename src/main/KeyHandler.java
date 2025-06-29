@@ -155,7 +155,16 @@ public class KeyHandler implements KeyListener {
             gameOverState(code);
         } else if (gp.gameState == gp.tradeState) {
             tradeState(code);
-            characterState(code);
+            //characterState(code);
+        }
+        else if (gp.gameState == gp.mapState) {
+            mapState(code);
+        }
+    }
+
+    public void mapState(int code) {
+        if (code == KeyEvent.VK_M){
+            gp.gameState = gp.playState;
         }
     }
 
@@ -271,7 +280,6 @@ public class KeyHandler implements KeyListener {
 
                 gp.playSE(9);
             }
-
         }
         if (code == KeyEvent.VK_D) {
             if (gp.ui.subState == 0) {
@@ -421,13 +429,26 @@ public class KeyHandler implements KeyListener {
                 gp.gameState = gp.playState;
             }
         }
+        if (code == KeyEvent.VK_M){
+            gp.gameState = gp.mapState;
+        }
+        if (code == KeyEvent.VK_X){
+            if (gp.map.miniMapOn == false){
+                gp.map.miniMapOn = true;
+            }else{
+                gp.map.miniMapOn = false;
+            }
+
+
+        }
+
+
         if (code == KeyEvent.VK_T) {
             if (showDebugText == false) {
                 showDebugText = true;
 
             } else if (showDebugText == true) {
                 showDebugText = false;
-
             }
         }
 

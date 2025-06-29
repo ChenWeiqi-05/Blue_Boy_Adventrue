@@ -114,6 +114,7 @@ public class PathFinder {
 
     public boolean search() {//这段代码的目是
         while (goalReached == false && step < 500) {
+
             int col = currentNode.col;
             int row = currentNode.row;
 

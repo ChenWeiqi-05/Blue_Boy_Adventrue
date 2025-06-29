@@ -5,7 +5,7 @@ import Entity.Player;
 import InteractiveTile.InteractiveTile;
 import ai.PathFinder;
 import environment.EnvironmentManager;
-import environment.EnvironmentManager;
+import tile.Map;
 import tile.TileManager;
 
 import javax.swing.*;
@@ -51,7 +51,11 @@ public class GamePanel extends JPanel implements Runnable {
 
     public PathFinder pFinder = new PathFinder(this);
 
-   public EnvironmentManager eManager = new EnvironmentManager(this);
+    public EnvironmentManager eManager = new EnvironmentManager(this);
+
+    Map map = new Map(this);
+
+
     Thread gameThread;
     int playerX = 100;
     int playerY = 100;
@@ -82,6 +86,8 @@ public class GamePanel extends JPanel implements Runnable {
 
     public final int tradeState = 8;
     public final int sleepState = 9;
+    public final int mapState = 10;
+
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -109,7 +115,6 @@ public class GamePanel extends JPanel implements Runnable {
 
         if (fullScreenOn == true) {
             setFullScreen();
-
         }
     }
 
@@ -130,7 +135,6 @@ public class GamePanel extends JPanel implements Runnable {
         aSetter.setObject();
         aSetter.setNPC();
         aSetter.setMonster();
-
         aSetter.setInteractiveTile();
 
     }
@@ -148,8 +152,10 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void startGameThread() {
+
         gameThread = new Thread(this);
         gameThread.start();
+
     }
 
     public void run() {
@@ -242,11 +248,15 @@ public class GamePanel extends JPanel implements Runnable {
         if (keyH.showDebugText == true) {
             drawStart = System.nanoTime();
         }
-        //绘制对象
-        //TITLE SCREEN
         if (gameState == titleState) {
             ui.draw(g2);
+        } else if (gameState == mapState) {//绘制全图
+
+            map.drawFullMapScreen(g2);
         }
+        //绘制对象
+        //TITLE SCREEN
+
         //PLAY SCREEN
         else {
             tileM.draw(g2);
@@ -306,6 +316,8 @@ public class GamePanel extends JPanel implements Runnable {
             entityList.clear();//清空实体列表
 
             eManager.draw(g2);//初始化绘制环境
+
+            map.drawMiniMap(g2);
 
             ui.draw(g2);
             // 保持背景绘制

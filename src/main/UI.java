@@ -20,7 +20,7 @@ public class UI {
     BufferedImage keyImage;
 
     public GamePanel gp;
-    Font maruMonica, cambriaz;
+  public   Font maruMonica, cambriaz;
     Graphics2D g2;
     public boolean messageOn = false;
     double playTime;
@@ -44,6 +44,10 @@ public class UI {
     int subState = 0;
     int counter = 0;
     public Entity npc;
+
+    int charIndex = 0;
+
+    String combinedText = "";
 
     public UI(GamePanel gp) {
         this.gp = gp;
@@ -194,15 +198,15 @@ public class UI {
 
     public void drawSleepScreen() {
         counter++;
-        if (counter < 120){
-           gp.eManager.lighting.filterAlpha += 0.01;
-           if(gp.eManager.lighting.filterAlpha> 1f){
-               gp.eManager.lighting.filterAlpha = 1f;
-           }
+        if (counter < 120) {
+            gp.eManager.lighting.filterAlpha += 0.01;
+            if (gp.eManager.lighting.filterAlpha > 1f) {
+                gp.eManager.lighting.filterAlpha = 1f;
+            }
         }
-        if(counter >= 120){
+        if (counter >= 120) {
             gp.eManager.lighting.filterAlpha -= 0.01;
-            if(gp.eManager.lighting.filterAlpha <= 0f){
+            if (gp.eManager.lighting.filterAlpha <= 0f) {
                 gp.eManager.lighting.filterAlpha = 0f;
                 counter = 0;
                 gp.eManager.lighting.dayState = gp.eManager.lighting.day;
@@ -225,7 +229,7 @@ public class UI {
                 trade_buy();
                 break;
             case 2:
-                sell();
+                trade_sell();
                 break;
         }
         gp.keyH.enterPressed = false;//添加这个方法，防止玩家点击enter键时，游戏继续进行
@@ -233,7 +237,11 @@ public class UI {
 
     public void trade_select() {
 
+        npc.dialogueSet = 0;
+
         drawDialogueScreen();
+
+
         int x = gp.tileSize * 15;
         int y = gp.tileSize * 4;
         int width = gp.tileSize * 3;
@@ -263,8 +271,8 @@ public class UI {
             g2.drawString(">", x - 24, y);
             if (gp.keyH.enterPressed == true) {
                 commandNum = 0;
-                gp.gameState = gp.dialogueState;
-                currentDialogue = "Come again, hehe!";
+                npc.startDialogue(npc, 1);
+
             }
         }
     }
@@ -310,33 +318,21 @@ public class UI {
             if (gp.keyH.enterPressed == true) {
                 if (npc.inventory.get(itemIndex).price > gp.player.coin) {
                     subState = 0;
-
-                    gp.gameState = gp.dialogueState;//显示对话框
-
-                    currentDialogue = "You need more coin to buy that!";
-                    drawDialogueScreen();
-                } else if (gp.player.canObtainItem(npc.inventory.get(itemIndex)) == true) {
-                    gp.player.coin -= npc.inventory.get(itemIndex).price;
+                    npc.startDialogue(npc, 2);
                 } else {
-                    subState = 0;
-                    gp.gameState = gp.dialogueState;
-                    currentDialogue = "Your inventory is full!";
-                }
-               /* else if (gp.player.inventory.size() == gp.player.maxInventorySize) {
-                    subState = 0;
-                    gp.gameState = gp.dialogueState;
-                    currentDialogue = "Your inventory is full!";
-                } else {
-                    gp.player.coin -= npc.inventory.get(itemIndex).price;
+                    if (gp.player.canObtainItem(npc.inventory.get(itemIndex)) == true) {
+                        gp.player.coin -= npc.inventory.get(itemIndex).price;
+                    } else {
+                        subState = 0;
+                        npc.startDialogue(npc, 3);
 
-                    gp.player.inventory.add(npc.inventory.get(itemIndex));
+                    }
                 }
-*/
             }
         }
     }
 
-    public void sell() {
+    public void trade_sell() {
         drawInventory(gp.player, true);
         int x;
         int y;
@@ -378,11 +374,8 @@ public class UI {
                         gp.player.inventory.get(itemIndex) == gp.player.currentShield) {
                     commandNum = 0;
                     subState = 0;
-                    gp.gameState = gp.dialogueState;
-
-                    currentDialogue = "You can't sell your weapon or shield!";
+                    npc.startDialogue(npc, 4);
                 } else {
-
                     if (gp.player.inventory.get(itemIndex).amount > 1) {
                         gp.player.inventory.get(itemIndex).amount--;
                     } else {
@@ -934,22 +927,32 @@ public class UI {
         x += gp.tileSize;
         y += gp.tileSize + 10;
 
-        if (npc.dialogues[npc.dialogueSet][npc.dialogueIndex]!= null)
-        {
-            currentDialogue = npc.dialogues[npc.dialogueSet][npc.dialogueIndex];
+        if (npc.dialogues[npc.dialogueSet][npc.dialogueIndex] != null) {
 
-            if (gp.keyH.enterPressed == true){
+            char charatcers[] = npc.dialogues[npc.dialogueSet][npc.dialogueIndex].toCharArray();
+            if (charIndex < charatcers.length) {//这段代码的作用是当对话框显示的时候，每按一次enter键，就会显示一个字符
 
-                if (gp.gameState == gp.dialogueState){
-                    npc.dialogueIndex ++;
+                gp.playSE(15);
+                String s = String.valueOf(charatcers[charIndex]);//获取对话框中的字符
+                combinedText = combinedText + s;//将字符添加到combinedText中
+                currentDialogue = combinedText;//将combinedText赋给currentDialogue
+                charIndex++;//字符索引加1
+
+            }
+            if (gp.keyH.enterPressed == true) {
+
+                charIndex = 0;
+                combinedText = "";
+
+                if (gp.gameState == gp.dialogueState) {
+                    npc.dialogueIndex++;
                     gp.keyH.enterPressed = false;
                 }
             }
-        }
-        else {
+        } else {
             npc.dialogueIndex = 0;
-            if (gp.gameState == gp.dialogueState){
-              gp.gameState = gp.playState;
+            if (gp.gameState == gp.dialogueState) {
+                gp.gameState = gp.playState;
             }
         }
 
