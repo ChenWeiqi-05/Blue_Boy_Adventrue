@@ -8,7 +8,6 @@ public class CollisionChecker {
     public CollisionChecker(GamePanel gp) {
         this.gp = gp;
     }
-
     /*  public void checkTile(Entity entity) {
 
           // 检查关键对象是否为空
@@ -119,9 +118,13 @@ public class CollisionChecker {
 
         int tileNum1, tileNum2;
 
-        // 在获取数组值前先检查索引是否有效
 
-        switch (entity.direction) {
+        String direction = entity.direction;
+        if (entity.knockBack == true){
+            direction = entity.knockBackDirection;
+        }
+        // 在获取数组值前先检查索引是否有效
+        switch (direction) {
             case "up":
                 entityTopRow = (entityTopWorldY - entity.speed) / gp.tileSize;
                 tileNum1 = gp.tileM.mapTileNum[gp.currentMap][entityLeftCol][entityTopRow];
@@ -214,6 +217,12 @@ public class CollisionChecker {
         // 如果两个实体的碰撞区域相交，则返回目标数组中该实体的索引。
 
         int index = 999;
+
+        String direction = entity.direction;
+        if (entity.knockBack == true){
+            direction = entity.knockBackDirection;
+        }
+
         for (int i = 0; i < target[1].length; i++) {
             if (target[gp.currentMap][i] != null) {
 
@@ -223,7 +232,7 @@ public class CollisionChecker {
                 target[gp.currentMap][i].solidArea.x = target[gp.currentMap][i].worldX + target[gp.currentMap][i].solidArea.x;
                 target[gp.currentMap][i].solidArea.y = target[gp.currentMap][i].worldY + target[gp.currentMap][i].solidArea.y;
 
-                switch (entity.direction) {
+                switch (direction) {
                     case "up":
                         entity.solidArea.y -= entity.speed;
 

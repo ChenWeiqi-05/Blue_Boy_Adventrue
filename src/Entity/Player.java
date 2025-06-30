@@ -49,10 +49,10 @@ public class Player extends Entity {
         inventory.clear();
         inventory.add(currentWeapon);
         inventory.add(currentShield);
-       // inventory.add(new OBJ_Shield_Wood(gp));
+        // inventory.add(new OBJ_Shield_Wood(gp));
         //inventory.add(new OBJ_Sword_Normal(gp));
         inventory.add(new OBJ_Axe(gp));
-    inventory.add(new OBJ_Key(gp));
+        inventory.add(new OBJ_Key(gp));
         inventory.add(new OBJ_Lantern(gp));
     }
 
@@ -94,17 +94,18 @@ public class Player extends Entity {
     }
 
     public void setDefaultPositions() {
-      worldX = gp.tileSize * 23;
+        worldX = gp.tileSize * 23;
         worldY = gp.tileSize * 21;
         /*worldX = gp.tileSize * 12;
         worldY = gp.tileSize * 13;*/
         direction = "down";
     }
 
-    public void setDialogue(){
+    public void setDialogue() {
         dialogues[0][0] = "You are level " + level + " now!\n" + "You feel stronger!";
 
     }
+
     public void restoreLifeAndMana() {
         life = maxLife;
         mana = maxMana;
@@ -114,6 +115,10 @@ public class Player extends Entity {
     public int getAttack() {
 
         attackArea = currentWeapon.attackArea;
+        motion1_duration = currentWeapon.motion1_duration;
+        motion2_duration = currentWeapon.motion2_duration;
+
+
         return attack = strength * currentWeapon.attackValue;
     }
 
@@ -210,13 +215,13 @@ public class Player extends Entity {
                 //worldX -= speed; // 添加向左移动的逻辑
             } else if (keyH.rightPressed == true) {
                 direction = "right";
-               // System.out.println("向右");
+                // System.out.println("向右");
                 //worldX += speed;
             }
             //这段代码用来检测obj是否发生碰撞
             collisionOn = false;
 
-           gp.cChecker.checkTile(this);
+            gp.cChecker.checkTile(this);
 
             //这段代码用于检测obj是否发生碰撞
             int objIndex = gp.cChecker.checkObject(this, true);
@@ -327,65 +332,6 @@ public class Player extends Entity {
 
     }
 
-    public void attacking() {
-        spriteCounter++;
-        if (spriteCounter <= 5) {
-            spriteNum = 1;
-        }
-        if (spriteCounter > 5 && spriteCounter <= 25) {//攻击动画
-            spriteNum = 2;
-
-            //保持当前人物实体位置，以便于攻击
-            int currentWorldX = worldX;
-            int currentWorldY = worldY;
-            int solidAreaWidth = solidArea.width;
-            int solidAreaHeight = solidArea.height;
-
-            //这段代码的作用是，将当前实体的位置和碰撞区域设置为
-            // 攻击区域，然后根据攻击方向将实体的位置移动到攻击区域。
-            switch (direction) {
-                case "up":
-                    worldY -= attackArea.height;
-                    break;
-                case "down":
-                    worldY += attackArea.height;
-                    break;
-                case "left":
-                    worldX -= attackArea.width;
-                    break;
-                case "right":
-                    worldX += attackArea.width;
-                    break;
-            }
-            //从攻击区域中恢复实体的位置和碰撞区域。
-            solidArea.width = attackArea.width;
-            solidArea.height = attackArea.height;
-
-            int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
-            //这段代码用来检测是否发生攻击
-
-            damageMonster(monsterIndex, attack, currentWeapon.knockBackPower);//攻击怪物
-
-            int iTileIndex = gp.cChecker.checkEntity(this, gp.iTile);//检测是否打中 interactiveTile
-            damageInteractiveTile(iTileIndex);//攻击 interactiveTile
-
-            int projectileIndex = gp.cChecker.checkEntity(this, gp.projectile);
-            damageProjectile(projectileIndex);
-
-
-            worldX = currentWorldX;//恢复实体的位置和碰撞区域。
-            worldY = currentWorldY;
-            solidArea.width = solidAreaWidth;
-            solidArea.height = solidAreaHeight;
-
-        }
-        if (spriteCounter > 25) {//攻击结束
-            spriteNum = 1;
-            spriteNum = 1;
-            spriteCounter = 0;
-            attacking = false;
-        }
-    }
 
     public void damageProjectile(int i) {
 
@@ -398,12 +344,12 @@ public class Player extends Entity {
 
     }
 
-  /*  public void knockBack(Entity entity, int knockBackPower) {
-        entity.direction = direction;
-        entity.speed += knockBackPower;
-        entity.knockBack = true;
-    }
-*/
+    /*  public void knockBack(Entity entity, int knockBackPower) {
+          entity.direction = direction;
+          entity.speed += knockBackPower;
+          entity.knockBack = true;
+      }
+  */
     public void damageInteractiveTile(int i) {//碰撞检测
         if (i != 999 && gp.iTile[gp.currentMap][i].destructible == true && gp.iTile[gp.currentMap][i].isCorrectItem(this) == true
                 && gp.iTile[gp.currentMap][i].invincible == false
@@ -424,14 +370,13 @@ public class Player extends Entity {
         }
     }
 
-    public void damageMonster(int i, int attack, int knockBackPower) {//攻击方法
+    public void damageMonster(int i, Entity attacker, int attack, int knockBackPower) {//攻击方法
         if (i != 999) {
             if (gp.monster[gp.currentMap][i].invincible == false) {
                 gp.playSE(5);
 
                 if (knockBackPower > 0) {
-                    knockBack(gp.monster[gp.currentMap][i], knockBackPower);
-
+                    setKnockBack(gp.monster[gp.currentMap][i], attacker, knockBackPower);
                 }
                 int damage = attack - gp.monster[gp.currentMap][i].defense;//攻击力减去防御力
                 if (damage < 0) {
@@ -468,7 +413,7 @@ public class Player extends Entity {
             gp.playSE(8);
             gp.gameState = gp.dialogueState;
 
-       startDialogue(this, 0);
+            startDialogue(this, 0);
 
         }
     }
@@ -525,7 +470,7 @@ public class Player extends Entity {
                 //这段代码enter  键被按下时，会触发npc的speak方法，并进入对话状态。
                 //System.out.println("you are hitting an npc");
                 attackCanceled = true;
-               // gp.gameState = gp.dialogueState;
+                // gp.gameState = gp.dialogueState;
                 gp.npc[gp.currentMap][i].speak();
             }/* else {
                 gp.playSE(7);
@@ -549,10 +494,10 @@ public class Player extends Entity {
                 currentShield = selectedItem;
                 defense = getDefense();
             }
-            if (selectedItem.type == type_light){
-                if (currentLight ==selectedItem){
+            if (selectedItem.type == type_light) {
+                if (currentLight == selectedItem) {
                     currentLight = null;
-                }else{
+                } else {
                     currentLight = selectedItem;
                 }
                 lightUpdated = true;
@@ -561,11 +506,11 @@ public class Player extends Entity {
             if (selectedItem.type == type_consumable) {//检测物品是否可消耗
                 if (selectedItem.use(this) == true) {
 
-                    if(selectedItem.amount > 1){
+                    if (selectedItem.amount > 1) {
                         selectedItem.amount--;
                     }
                     inventory.remove(itemIndex);
-                }else {
+                } else {
                     inventory.remove(itemIndex);
                 }
                 //这段代码的作用是删除物品列表中的物品，以便
@@ -593,17 +538,16 @@ public class Player extends Entity {
         if (item.stackable == true) {
             int index = searchItemInInventory(item.name);
 
-            if (index != 999){
+            if (index != 999) {
                 inventory.get(index).amount++;
                 canObtain = true;
-            }
-            else {
+            } else {
                 if (inventory.size() != maxInventorySize) {
                     inventory.add(item);
                     canObtain = true;
                 }
             }
-        }else {
+        } else {
             if (inventory.size() != maxInventorySize) {
                 inventory.add(item);
                 canObtain = true;
@@ -636,11 +580,9 @@ public class Player extends Entity {
              }
          }*/
     public void draw(Graphics2D g2) {
-//            g2.setColor(Color.white);
-////
-//  g2.fillRect(x, y, gp.tileSize, gp.tileSize);
 
         BufferedImage image = null;
+
         int tempScreenX = screenX;
         int tempScreenY = screenY;
         switch (direction) {
@@ -724,7 +666,7 @@ public class Player extends Entity {
                 }
                 break;
         }
-        if (invincible == true) {
+        if (invincible == true) {//透明
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
         }
         // g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);

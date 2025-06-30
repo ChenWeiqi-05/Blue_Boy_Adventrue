@@ -4,7 +4,6 @@ import Entity.Entity;
 import main.GamePanel;
 
 public class OBJ_Sword_Normal extends Entity {
-
     public OBJ_Sword_Normal(GamePanel gp) {
         super(gp);
         type = type_sword;
@@ -17,5 +16,7 @@ public class OBJ_Sword_Normal extends Entity {
         description = "[" + name + "]\nA normal sword.";
         price = 20;
         knockBackPower = 3;
+        motion1_duration = 2;
+        motion2_duration = 10;
     }
 }

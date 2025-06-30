@@ -18,7 +18,7 @@ public class OBJ_Fireball extends Projectile {
         maxLife = 80;
         life = maxLife;
         attack = 4;
-        knockBackPower = 0;
+        knockBackPower = 5;
         useCost = 1;
         alive = false;//这段代码的意思是，当火球被创建时，它将处于非活动状态。
         getImage();
@@ -34,7 +34,6 @@ public class OBJ_Fireball extends Projectile {
         right1 = setup("/projectile/fireball_right_1", gp.tileSize, gp.tileSize);
         right2 = setup("/projectile/fireball_right_2", gp.tileSize, gp.tileSize);
     }
-
     public boolean haveResource(Entity user) {//判断是否满足释放火球的条件
         boolean haveResource = false;
         if (user.mana >= useCost) {
@@ -42,7 +41,6 @@ public class OBJ_Fireball extends Projectile {
         }
         return haveResource;
     }
-
     public void subtractResource(Entity user) {//减去消耗的魔法值
         user.mana -= useCost;
 

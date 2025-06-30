@@ -34,6 +34,9 @@ public class MON_Orc extends Entity {
         attackArea.width = 40;
         attackArea.height = 40;
 
+        motion1_duration = 40;
+        motion2_duration = 85;
+
         getImage();
         getAttackImage();
     }
@@ -75,17 +78,11 @@ public class MON_Orc extends Entity {
         attackLeft2 = setup("/monster/orc_attack_left_2", gp.tileSize * 2, gp.tileSize);
         attackRight1 = setup("/monster/orc_attack_right_1", gp.tileSize * 2, gp.tileSize);
         attackRight2 = setup("/monster/orc_attack_right_2", gp.tileSize * 2, gp.tileSize);
-
-
-
     }
-
     public void setAction() {//monster的ai移动
-
         /*int xDistance = Math.abs(worldX - gp.player.worldX);
         int yDistance = Math.abs(worldY - gp.player.worldY);
-        int tileDistance = (xDistance + yDistance) / gp.tileSize;
-*/
+        int tileDistance = (xDistance + yDistance) / gp.tileSize;*/
         if (onPath == true){
             checkStopChasingOrNot(gp.player, 15, 100);
            /* if (tileDistance > 20){
@@ -95,7 +92,6 @@ public class MON_Orc extends Entity {
             int goalRow = (gp.player.worldY + gp.player.solidArea.y) / gp.tileSize;
 */
             searchPath(getGoalCol(gp.player), getGoalRow(gp.player));
-
            /* int i = new Random().nextInt(100) + 1;
             if (i > 197 && projectile.alive == false && shotAvailCounter == 30) {//如果技能可用，则释放技能
 
@@ -113,9 +109,6 @@ public class MON_Orc extends Entity {
                 shotAvailCounter = 0;//技能可用
             }*/
          //   checkShootOrNot(200,30);
-
-
-
         }
         else {
             checkStartChasingOrNot(gp.player,5,100);
@@ -153,6 +146,9 @@ public class MON_Orc extends Entity {
                 }
                 shotAvailCounter = 0;//技能可用
             }*/
+        }
+        if (attacking == false){
+            checkAttackOrNot(30, gp.tileSize*4, gp.tileSize);
         }
         /*   if (onPath == true) {
          int goalCol = (gp.player.worldX + gp.player.solidArea.x) / gp.tileSize;
