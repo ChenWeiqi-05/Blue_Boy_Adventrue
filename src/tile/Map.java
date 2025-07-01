@@ -20,6 +20,7 @@ public class Map extends TileManager {
         WorldMap = new BufferedImage[gp.maxMap];
         int worldMapWidth = gp.tileSize * gp.maxWorldCol;
         int worldMapHeight = gp.tileSize * gp.maxWorldRow;
+
         for (int i = 0; i < gp.maxMap; i++) {//循环创建地图
 
             WorldMap[i] = new BufferedImage(worldMapWidth, worldMapHeight, BufferedImage.TYPE_INT_ARGB);

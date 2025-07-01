@@ -28,21 +28,17 @@ public class Projectile extends Entity {
                 gp.player.damageMonster(monsterIndex, this,attack, knockBackPower);//击中怪物
 
               generateParticle(user.projectile,gp.monster[gp.currentMap][monsterIndex]);//玩家攻击后，在怪物身上创建粒子特效。
-
                 alive = false;//投掷物消亡
             }
-
         }
         if (user != gp.player) {//如果使用投射物的对象不是玩家是怪物，那么创建粒子
             boolean contactPlayer = gp.cChecker.checkPlayer(this);
             if (gp.player.invincible == false && contactPlayer == true) {
                 damagePlayer(attack);
-                generateParticle(user.projectile, gp.player);
-
+                generateParticle(user.projectile, user.projectile);
                 alive = false;
             }
         }
-
         switch (direction) {
             case "up":
                 worldY -= speed;

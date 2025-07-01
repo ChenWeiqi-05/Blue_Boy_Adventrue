@@ -68,10 +68,7 @@ public class MON_GreenSlime extends Entity {
     */
     public void setAction() {//monster的ai移动
 
-        /*int xDistance = Math.abs(worldX - gp.player.worldX);
-        int yDistance = Math.abs(worldY - gp.player.worldY);
-        int tileDistance = (xDistance + yDistance) / gp.tileSize;
-*/
+
         if (onPath == true){
             checkStopChasingOrNot(gp.player, 15, 100);
            /* if (tileDistance > 20){
