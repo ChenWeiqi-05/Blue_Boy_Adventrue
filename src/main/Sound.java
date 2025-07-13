@@ -7,15 +7,10 @@ import javax.sound.sampled.FloatControl;
 import java.net.URL;
 
 public class Sound {
-
     Clip clip;
-
     URL soundURL[] = new URL[30];
-
     FloatControl fc;
-
     int volumeScale = 3;//这段代码的作用是设置音量
-
     float volume;
 
     public Sound() {
@@ -37,6 +32,11 @@ public class Sound {
         soundURL[15] = getClass().getResource("/sound/speak.wav");
         soundURL[16] = getClass().getResource("/sound/parry.wav");
         soundURL[17] = getClass().getResource("/sound/blocked.wav");
+        soundURL[18] = getClass().getResource("/sound/Merchant.wav");
+        soundURL[19] = getClass().getResource("/sound/Dungeon.wav");
+        soundURL[20] = getClass().getResource("/sound/chipwall.wav");
+        soundURL[21] = getClass().getResource("/sound/dooropen.wav");
+
 
 
     }

@@ -9,25 +9,66 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 public class TileManager {
     GamePanel gp;
     public Tile[] tile;
     public int mapTileNum[][][];
+    boolean drawPath = false;
+    ArrayList<String> fileNames = new ArrayList<>();
+    ArrayList<String> collisionStatus = new ArrayList<>();
 
-    boolean drawPath = true;
 
     public TileManager(GamePanel gp) {
         this.gp = gp;
         //   tile = new Tile[10];
-        tile = new Tile[50];
-        mapTileNum = new int[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow];
+
+        InputStream is = getClass().getResourceAsStream("/maps/tiledata.txt");
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+        String line;
+        try {
+            while ((line = br.readLine()) != null) {
+                fileNames.add(line);
+                collisionStatus.add(br.readLine());
+            }
+            br.close();
+        } catch (IOException e) {
+           e.printStackTrace();
+        }
+        tile = new Tile[fileNames.size()];
+
         getTileImage();
-        loadMap("/maps/worldV3.txt", 0);
-        loadMap("/maps/interior01.txt", 1);
+
+        is = getClass().getResourceAsStream("/maps/worldmap.txt");
+        br = new BufferedReader(new InputStreamReader(is));
+
+        try {//读取地图文件
+
+            String line2 = br.readLine();
+            String maxTile[] = line2.split(" ");
+
+            gp.maxWorldCol = maxTile.length;
+            gp.maxWorldRow = maxTile.length;
+
+            mapTileNum = new int[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow];
+
+            br.close();
+        } catch (IOException e) {
+            System.out.println("Exception!");
+        }
+
+        loadMap("/maps/worldmap.txt", 0);
+
+        loadMap("/maps/indoor01.txt", 1);
+        loadMap("/maps/dungeon01.txt", 2);
+
+        loadMap("/maps/dungeon02.txt", 3);
+
     }
 
-    public void getTileImage()//这段代码是用来获取图片的
+    public void getTileImage()//这段代码是用来获取图片的z
     {
        /*setup(0, "grass", false);
         setup(1, "wall", true);
@@ -36,7 +77,7 @@ public class TileManager {
         setup(4, "tree", true);
         setup(5, "sand", false);*/
 
-        setup(0, "grass00", false);
+ /*       setup(0, "grass00", false);
         setup(1, "grass00", false);
         setup(2, "grass00", false);
         setup(3, "grass00", false);
@@ -86,6 +127,24 @@ public class TileManager {
         setup(42, "hut", false);
         setup(43, "floor01", false);
         setup(44, "table01", true);
+        setup(45, "036", false);
+        setup(46, "037", false);*/
+        for (int i = 0; i < fileNames.size(); i++) {
+            String fileName;
+            boolean collision;
+
+            fileName = fileNames.get(i);
+
+            if (collisionStatus.get(i).equals("true")) {
+
+                collision = true;
+
+            } else {
+
+                collision = false;
+            }
+            setup(i, fileName, collision);
+        }
     }
 
     public void setup(int index, String imageName, boolean collision) {//这段代码用来设置地图
@@ -93,15 +152,12 @@ public class TileManager {
         try {
             tile[index] = new Tile();
             //    tile[index].image = ImageIO.read(getClass().getResourceAsStream("/tiles2/" + imageName + ".png"));
-            tile[index].image = ImageIO.read(getClass().getResourceAsStream("/tiles/" + imageName + ".png"));
+            tile[index].image = ImageIO.read(getClass().getResourceAsStream("/tiles/" + imageName ));
             tile[index].image = uTool.scaleImage(tile[index].image, gp.tileSize, gp.tileSize);
             tile[index].collision = collision;
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
 
@@ -132,6 +188,7 @@ public class TileManager {
             }
             br.close();
         } catch (Exception e) {
+
         }
 
     }
@@ -174,13 +231,13 @@ public class TileManager {
             g2.setColor(new Color(255, 0, 0, 70));
             for (int i = 0; i < gp.pFinder.pathList.size(); i++) {
 
-                int worldX = gp.pFinder.pathList.get(i).col*gp.tileSize;
-                int worldY = gp.pFinder.pathList.get(i).row*gp.tileSize;
+                int worldX = gp.pFinder.pathList.get(i).col * gp.tileSize;
+                int worldY = gp.pFinder.pathList.get(i).row * gp.tileSize;
 
                 int screenX = worldX - gp.player.worldX + gp.player.screenX;
                 int screenY = worldY - gp.player.worldY + gp.player.screenY;
 
-               g2.fillRect(screenX, screenY, gp.tileSize, gp.tileSize);
+                g2.fillRect(screenX, screenY, gp.tileSize, gp.tileSize);
             }
 
         }

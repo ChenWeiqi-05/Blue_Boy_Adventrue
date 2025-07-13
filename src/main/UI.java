@@ -278,7 +278,6 @@ public class UI {
     }
 
     public void trade_buy() {
-
         //玩家在
 //显示玩家背包
         drawInventory(gp.player, false);
@@ -392,7 +391,7 @@ public class UI {
 
     public void drawTransitionScreen() {
         counter++;
-        g2.setColor(new Color(0, 0, 0, counter * 10));
+        g2.setColor(new Color(0, 0, 0, counter * 5));
 
         g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
 
@@ -405,6 +404,7 @@ public class UI {
             gp.eHandler.previousEventX = gp.player.worldX;
             gp.eHandler.previousEventY = gp.player.worldY;
 
+            gp.changeArea();
         }
     }
 
@@ -500,6 +500,7 @@ public class UI {
             if (gp.keyH.enterPressed == true) {
                 subState = 0;//退出
                 gp.gameState = gp.titleState;
+                gp.resetGame( true);
             }
         }
 
@@ -734,6 +735,9 @@ public class UI {
                     g2.drawString(line, textX, textY);
                     textY += 32;//换行
                 }
+
+                g2.drawString("durability: "+ entity.inventory.get(itemIndex).durability,textX,textY+100);
+
             }
         }
 

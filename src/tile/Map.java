@@ -15,8 +15,8 @@ public class Map extends TileManager {
         this.gp = gp;
         createWorldMap();
     }
-
     public void createWorldMap() {
+
         WorldMap = new BufferedImage[gp.maxMap];
         int worldMapWidth = gp.tileSize * gp.maxWorldCol;
         int worldMapHeight = gp.tileSize * gp.maxWorldRow;
@@ -26,6 +26,8 @@ public class Map extends TileManager {
             WorldMap[i] = new BufferedImage(worldMapWidth, worldMapHeight, BufferedImage.TYPE_INT_ARGB);
 
             Graphics2D g2 = WorldMap[i].createGraphics();
+
+
             int col = 0;
             int row = 0;
 

@@ -166,6 +166,10 @@ public class CollisionChecker {
 
     public int checkObject(Entity entity, boolean player) {
         int index = 999;
+        String direction = entity.direction;
+        if (entity.knockBack == true){
+            direction = entity.knockBackDirection;
+        }
 //2025年6月24日01:01:08 以下代码不要急着用if（xxx ！= null）包裹判断非空的状态，会出现object被拾取好多次的情况
         for (int i = 0; i < gp.obj[1].length; i++) {
             if (gp.obj[gp.currentMap][i] != null) {
@@ -176,7 +180,7 @@ public class CollisionChecker {
                 gp.obj[gp.currentMap][i].solidArea.x = gp.obj[gp.currentMap][i].worldX + gp.obj[gp.currentMap][i].solidArea.x;
                 gp.obj[gp.currentMap][i].solidArea.y = gp.obj[gp.currentMap][i].worldY + gp.obj[gp.currentMap][i].solidArea.y;
 
-                switch (entity.direction) {
+                switch (direction) {
                     case "up":
                         entity.solidArea.y -= entity.speed;
 

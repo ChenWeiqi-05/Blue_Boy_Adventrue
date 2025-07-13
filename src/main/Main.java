@@ -22,7 +22,6 @@ public class Main {
             window.setUndecorated(true);
         }
 
-
         window.pack();
 
         window.setLocationRelativeTo(null);

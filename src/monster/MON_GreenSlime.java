@@ -118,7 +118,7 @@ public class MON_GreenSlime extends Entity {
                 }
                 actionLockCounter = 0;
             }*/
-            getRandomDirection();
+            getRandomDirection(120);
            /* int i = new Random().nextInt(100)+1;
             if (i > 99 && projectile.alive == false && shotAvailCounter == 30){//如果技能可用，则释放技能
 

@@ -2,6 +2,9 @@ package Entity;
 
 import main.GamePanel;
 import main.UtilityTool;
+import object.OBJ_Coin_Bronze;
+import object.OBJ_Heart;
+import object.OBJ_ManaCrystal;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -14,7 +17,7 @@ public class Entity {
     GamePanel gp;
     // public int worldX, worldY;
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
-    public BufferedImage attackUp1, attackUp2, attackDown1, attackDown2, attackLeft1, attackLeft2, attackRight1, attackRight2;
+    public BufferedImage attackUp1, attackUp2, attackDown1, attackDown2, attackLeft1, attackLeft2, attackRight1, attackRight2, guardUp, guardDown, guardLeft, guardRight;
     public BufferedImage image, image2, image3;
     public Rectangle solidArea = new Rectangle(0, 0, 48, 48);//这是所有实体的默认矩形
     public Rectangle attackArea = new Rectangle(0, 0, 0, 0);
@@ -22,6 +25,7 @@ public class Entity {
     public boolean collision = false;
     public String dialogues[][] = new String[20][20];
     public Entity attacker;
+    public Entity linkedEntity;//这个是实体的跟随者
 
     public int worldX, worldY;//这个是world01的绝对坐标
     public String direction = "down";
@@ -40,6 +44,15 @@ public class Entity {
     public boolean onPath = false;
     public boolean knockBack = false;
     public String knockBackDirection;
+
+    public boolean guarding = false;
+
+    public boolean transparent = false;
+
+    public boolean offBalance = false;
+
+    public Entity loot;
+    public boolean opened = false;
     public int spriteCounter = 0;
     public int actionLockCounter = 0; //  这个是实体动作计数器，用来控制实体的动作
     public int invincibleCounter = 0;
@@ -47,6 +60,11 @@ public class Entity {
     //STATE
     int dyingCounter = 0;
     int knockBackCounter = 0;
+
+    public int guardCounter = 0;
+    int offBalanceCounter = 0;
+
+
     int hpBarOnCounter = 0;//这个是hp条的开关
     public String name;
     public int defaultSpeed;
@@ -71,14 +89,11 @@ public class Entity {
     public int motion2_duration;
     public Entity currentWeapon;//这个是实体的武器
     public Entity currentShield;//这个是实体的盾牌
-
     public Entity currentLight;
     public Projectile projectile;
 
     public ArrayList<Entity> inventory = new ArrayList<>();
-
     public final int maxInventorySize = 20;
-
     public int price;
     public int value;
     public int attackValue;
@@ -92,6 +107,9 @@ public class Entity {
 
     public int lightRadius;//光半径
 
+    public int durability = 100;
+
+
     public int type; // 0 是player 1 = npc 2 = monster
     public final int type_player = 0;
     public final int type_npc = 1;
@@ -104,6 +122,9 @@ public class Entity {
 
     public final int type_obstacle = 8;
     public final int type_light = 9;
+
+    public final int type_pickaxe = 10;
+
 
     // public Object solidArea;
     public Entity(GamePanel gp) {
@@ -135,7 +156,6 @@ public class Entity {
     }
 
     public int getXdistance(Entity target) {//获取两个实体之间的X轴距离
-
         int xDistance = Math.abs(worldX - target.worldX);
         return xDistance;
     }
@@ -153,8 +173,8 @@ public class Entity {
     }
 
     public int getGoalCol(Entity target) {
-        int goalCol = (target.worldX + target.solidArea.x) / gp.tileSize;
 
+        int goalCol = (target.worldX + target.solidArea.x) / gp.tileSize;
         return goalCol;
     }
 
@@ -163,7 +183,16 @@ public class Entity {
         return goalRow;
     }
 
+    public void setLoot(Entity loot) {
+        this.loot = loot;
+        //setDialogue();
+    }
+
     public void setAction() {
+
+    }
+
+    public void move(String direction) {
 
     }
 
@@ -217,14 +246,13 @@ public class Entity {
     }
 
     ///这个是更新实体的代码，用来控制实体的移动
-    public void update() {
+    public void update() {//这个是更新实体的代码，用来控制实体的移动
         if (knockBack == true) {
             checkCollision();
             if (collisionOn == true) {
                 knockBackCounter = 0;
                 knockBack = false;
                 speed = defaultSpeed;
-
             } else if (collisionOn == false) {
                 switch (knockBackDirection) {
                     case "up":
@@ -243,10 +271,8 @@ public class Entity {
             }
             knockBackCounter++;
             if (knockBackCounter == 10) {
-
                 knockBackCounter = 0;
                 knockBack = false;
-
                 speed = defaultSpeed;
             }
         } else if (attacking == true) {
@@ -286,8 +312,6 @@ public class Entity {
                 }
             }
         }
-
-
         if (invincible == true) {//这段代码的意思就是，如果玩家处于无敌状态，
             // 那么就会让invincibleCounter加1，
             // 然后判断invincibleCounter的值是否大于40，如果大于40，
@@ -301,6 +325,13 @@ public class Entity {
         }
         if (shotAvailCounter < 30) {//确保玩家可以连续攻击
             shotAvailCounter++;
+        }
+        if (offBalance == true) {
+            offBalanceCounter++;
+            if (offBalanceCounter > 60) {
+                offBalance = false;
+                offBalanceCounter = 0;
+            }
         }
     }
 
@@ -361,7 +392,7 @@ public class Entity {
     public void checkStopChasingOrNot(Entity target, int distance, int rate) {
 
         if (getTileDistance(target) > distance) {
-            int i = new Random().nextInt();
+            int i = new Random().nextInt(rate);
             if (i == 0) {
                 onPath = false;
             }
@@ -371,7 +402,7 @@ public class Entity {
     public void checkStartChasingOrNot(Entity target, int distance, int rate) {
 
         if (getTileDistance(target) < distance) {
-            int i = new Random().nextInt();
+            int i = new Random().nextInt(rate);
             if (i == 0) {
                 onPath = true;
             }
@@ -384,6 +415,27 @@ public class Entity {
         target.knockBackDirection = this.direction;
         target.speed += knockBackPower;
         target.knockBack = true;
+    }
+
+    public String getOppositeDirection(String direction) {//获取相反方向
+
+        String oppositeDirection = "";
+
+        switch (direction) {
+            case "up":
+                oppositeDirection = "down";
+                break;
+            case "down":
+                oppositeDirection = "up";
+                break;
+            case "left":
+                oppositeDirection = "right";
+                break;
+            case "right":
+                oppositeDirection = "left";
+                break;
+        }
+        return oppositeDirection;
     }
 
     public void attacking() {
@@ -449,10 +501,9 @@ public class Entity {
         }
     }
 
-    public void getRandomDirection() {
-
+    public void getRandomDirection(int interval) {
         actionLockCounter++;
-        if (actionLockCounter == 120) {
+        if (actionLockCounter == interval) {
             Random random = new Random();
             int i = random.nextInt(100) + 1;
 
@@ -476,15 +527,35 @@ public class Entity {
     public void damagePlayer(int attack) {
         // ，如果玩家没有被保护，则玩家会损失生命值
         if (gp.player.invincible == false) {
-            gp.playSE(6);
             int damage = attack - gp.player.defense;//攻击力减去防御力
-            if (damage < 0) {
-                damage = 0;
+            String canGuardDirection = gp.player.getOppositeDirection(direction);
+            if (gp.player.guarding == true && gp.player.direction.equals(canGuardDirection)) {
+                if (gp.player.guardCounter < 10) {
+                    damage = 0;
+                    gp.playSE(18);
+                    setKnockBack(this, gp.player, knockBackPower);
+
+                    offBalance = true;
+                    spriteCounter = -60;
+                } else {
+
+                    damage /= 3;
+                    gp.playSE(17);
+                }
+
+            } else {
+                gp.playSE(6);
+                if (damage < 1) {
+                    damage = 1;
+                }
+            }
+            if (damage != 0) {//伤害为0则不进行伤害
+                gp.player.transparent = true;
+                setKnockBack(gp.player, this, knockBackPower);
             }
             gp.player.life -= damage;
             gp.player.invincible = true;
         }
-
     }
 
     public void draw(Graphics2D g2) {
@@ -579,6 +650,7 @@ public class Entity {
                     }
                     break;
             }
+
             //Monster HP bar
             if (type == 2 && hpBarOn == true) {//绘制Monster HP bar,当type等于2时才绘制
 
@@ -657,6 +729,17 @@ public class Entity {
 
     public void checkDrop() {//掉落物
 
+        int i = new Random().nextInt(100) + 1;
+
+        if (i < 50) {//当随机数字在0到50之间时，掉落金币
+            dropItem(new OBJ_Coin_Bronze(gp));
+        }
+        if (i >= 50 && i < 75) {//当随机数字在50到75之间时，掉落生命
+            dropItem(new OBJ_Heart(gp));
+        }
+        if (i >= 75 && i < 100) {//当随机数字在75到100之间时，掉落魔法水晶
+            dropItem(new OBJ_ManaCrystal(gp));
+        }
     }
 
     public void dropItem(Entity droppedItem) {//这段代码用来处理道具的掉落逻辑
@@ -794,16 +877,16 @@ public class Entity {
 
         switch (user.direction) {
             case "up":
-                nextWorldY = user.getTopY() - 1;
+                nextWorldY = user.getTopY() - gp.player.speed;
                 break;
             case "down":
-                nextWorldY = user.getBottomY() + 1;
+                nextWorldY = user.getBottomY() + gp.player.speed;
                 break;
             case "left":
-                nextWorldX = user.getLeftX() - 1;
+                nextWorldX = user.getLeftX() - gp.player.speed;
                 break;
             case "right":
-                nextWorldX = user.getRightX() + 1;
+                nextWorldX = user.getRightX() + gp.player.speed;
         }
         int col = nextWorldX / gp.tileSize;
         int row = nextWorldY / gp.tileSize;

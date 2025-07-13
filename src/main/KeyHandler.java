@@ -221,16 +221,13 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_ENTER) {
             if (gp.ui.commandNum == 0) {
                 gp.gameState = gp.playState;
-                gp.retry();
+                gp.resetGame( false);
                 gp.playMusic(0);
             } else if (gp.ui.commandNum == 1) {
                 gp.gameState = gp.titleState;
-                gp.restart();
+                gp.resetGame( true);
             }
-
         }
-
-
     }
 
     public void optionsState(int code) {//这段代码的作用是，当游戏状态为选项状态时，按下ESC键，
@@ -382,7 +379,9 @@ public class KeyHandler implements KeyListener {
                 gp.playMusic(0);
             }
             if (gp.ui.commandNum == 1) {
-                //  add later 选择人物属性
+                gp.saveLoad.load();
+                gp.gameState = gp.playState;
+                gp.playMusic(0);
 
             }
             if (gp.ui.commandNum == 2) {

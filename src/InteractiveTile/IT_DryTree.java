@@ -8,7 +8,6 @@ import java.awt.*;
 public class IT_DryTree extends InteractiveTile {
 
     GamePanel gp;
-
     public IT_DryTree(GamePanel gp, int col, int row) {
         super(gp, col, row);
         this.gp = gp;
@@ -39,7 +38,10 @@ public class IT_DryTree extends InteractiveTile {
     }
 
     public InteractiveTile getDestroyedForm() {
+
+
         InteractiveTile tile = new  IT_Trunk(gp,worldX/gp.tileSize,worldY/gp.tileSize);
+        
         return tile;
     }
     public Color  getParticleColor(){

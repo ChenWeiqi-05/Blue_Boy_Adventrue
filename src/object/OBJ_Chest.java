@@ -4,22 +4,20 @@ import Entity.Entity;
 import main.GamePanel;
 
 public class OBJ_Chest extends Entity {
-
     GamePanel gp;
-    Entity loot;
-
+   /* Entity loot;
     boolean opened = false;
+*/ public static final String objName = "Chest";
 
-    public OBJ_Chest(GamePanel gp, Entity loot) {
+    public OBJ_Chest(GamePanel gp) {
         super(gp);
         this.gp = gp;
-        this.loot = loot;
+        //this.loot = loot;
 
         type = type_obstacle;
-        name = "Chest";
+        name =  objName ;
         image = setup("/objects/chest", gp.tileSize, gp.tileSize);
         image2 = setup("/objects/chest_opened", gp.tileSize, gp.tileSize);
-
         down1 = image;
         collision = true;
 

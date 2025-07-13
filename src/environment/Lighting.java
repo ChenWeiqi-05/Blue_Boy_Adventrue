@@ -9,12 +9,12 @@ public class Lighting {
     GamePanel gp;
     BufferedImage darknessFilter;
 
-   public int dayCounter;
-  public  float filterAlpha = 0f;
-    public  final int day = 0;
+    public int dayCounter;
+    public float filterAlpha = 0f;
+    public final int day = 0;
     public final int dusk = 1;//黄昏
     public final int night = 2;
-    public  final int dawn = 3;//黎明
+    public final int dawn = 3;//黎明
 
     public int dayState = day;
 
@@ -32,7 +32,7 @@ public class Lighting {
         //  Area screenArea = new Area(new Rectangle2D.Double(0, 0, gp.screenWidth, gp.screenHeight));
 //
         if (gp.player.currentLight == null) {
-            g2.setColor(new Color(0, 0, 0.1f, 0.98f));
+            g2.setColor(new Color(0, 0, 0.1f, 0.97f));
         } else {
             int centerX = gp.player.screenX + (gp.tileSize) / 2;
             int centerY = gp.player.screenY + (gp.tileSize) / 2;
@@ -56,10 +56,10 @@ public class Lighting {
             color[5] = new Color(0, 0, 0.1f, 0.76f);
             color[6] = new Color(0, 0, 0.1f, 0.82f);
             color[7] = new Color(0, 0, 0.1f, 0.87f);
-            color[8] = new Color(0, 0, 0.1f, 0.92f);
-            color[9] = new Color(0, 0, 0.1f, 0.96f);
-            color[10] = new Color(0, 0, 0.1f, 0.98f);
-            color[11] = new Color(0, 0, 0.1f, 0.98f);
+            color[8] = new Color(0, 0, 0.1f, 0.91f);
+            color[9] = new Color(0, 0, 0.1f, 0.92f);
+            color[10] = new Color(0, 0, 0.1f, 0.93f);
+            color[11] = new Color(0, 0, 0.1f, 0.94f);
 
 
 //亮度的等级
@@ -91,6 +91,11 @@ public class Lighting {
         g2.dispose();
     }
 
+    public void resetDay() {
+
+        dayState = day;
+        filterAlpha = 0f;
+    }
     public void update() {
 
         if (gp.player.lightUpdated == true) {
@@ -113,29 +118,34 @@ public class Lighting {
                 dayState = night;
             }
         }
-            if (dayState == night) {
-                dayCounter++;
-                if (dayCounter > 1200) {
-                    dayState = dawn;
-                    dayCounter = 0;
-                }
+        if (dayState == night) {
+            dayCounter++;
+            if (dayCounter > 1200) {
+                dayState = dawn;
+                dayCounter = 0;
             }
+        }
 
-            if (dayState == dawn) {
+        if (dayState == dawn) {
 
-                filterAlpha -= 0.001f;
-                if (filterAlpha < 0f) {
-                    filterAlpha = 0;
-                    dayState = day;
-                }
+            filterAlpha -= 0.001f;
+            if (filterAlpha < 0f) {
+                filterAlpha = 0;
+                dayState = day;
             }
+        }
     }
 
     public void draw(Graphics2D g2) {
 
+        if (gp.currentArea == gp.outside) {
 
-        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, filterAlpha));
-        g2.drawImage(darknessFilter, 0, 0, null);
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, filterAlpha));
+        }
+        if (gp.currentArea == gp.outside || gp.currentArea == gp.dungeon) {
+            g2.drawImage(darknessFilter, 0, 0, null);
+        }
+
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 
         String situation = "";

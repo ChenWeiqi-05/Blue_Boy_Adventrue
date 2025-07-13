@@ -4,6 +4,7 @@ import Entity.Entity;
 import Entity.Player;
 import InteractiveTile.InteractiveTile;
 import ai.PathFinder;
+import data.SaveLoad;
 import environment.EnvironmentManager;
 import tile.Map;
 import tile.TileManager;
@@ -23,14 +24,15 @@ public class GamePanel extends JPanel implements Runnable {
     public final int maxScreenRow = 12;
     public final int screenWidth = tileSize * maxScreenCol;//768
     public final int screenHeight = tileSize * maxScreenRow;//576
-    public int maxWorldCol = 50;
-    public int maxWorldRow = 50;
+    public int maxWorldCol;
+    public int maxWorldRow;
     public final int maxMap = 10;
 
 
     public int currentMap = 0;//0 是worldV3 1 是interior01
 
-    public int currentMusic = 0;  //当前播放的音乐编号
+
+    public int currentMusic;  //当前播放的音乐编号
 
     int screenWidth2 = screenWidth;
     int screenHeight2 = screenHeight;
@@ -50,12 +52,12 @@ public class GamePanel extends JPanel implements Runnable {
     Config config = new Config(this);
 
     public PathFinder pFinder = new PathFinder(this);
-
     public EnvironmentManager eManager = new EnvironmentManager(this);
-
     Map map = new Map(this);
 
+    SaveLoad saveLoad = new SaveLoad(this);
 
+    public EntityGenerator eGenerator = new EntityGenerator(this);
     Thread gameThread;
     int playerX = 100;
     int playerY = 100;
@@ -87,6 +89,12 @@ public class GamePanel extends JPanel implements Runnable {
     public final int tradeState = 8;
     public final int sleepState = 9;
     public final int mapState = 10;
+    public int currentArea;
+
+    public int nextArea;
+    public final int outside = 50;
+    public final int indoor = 51;
+    public final int dungeon = 52;
 
 
     public GamePanel() {
@@ -98,17 +106,17 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void setupGame() {
+
         aSetter.setObject();
         aSetter.setNPC();
         aSetter.setMonster();
 
         aSetter.setInteractiveTile();
-
-
         eManager.setup();//设置环境
         //playMusic(0);
         gameState = titleState;//游戏状态的设置
 
+        currentArea = outside;
         tempScreen = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB);//创建一个临时屏幕
 
         g2 = (Graphics2D) tempScreen.getGraphics();//创建一个Graphics2D对象
@@ -118,26 +126,41 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    public void resetGame(boolean restart) {
+
+        currentMap = outside;
+        player.setDefaultPositions();
+        player.restoreStatus();
+        aSetter.setNPC();
+        aSetter.setMonster();
+
+        if (restart == true) {
+            player.setDefaultValues();
+           // player.setItems();
+            aSetter.setObject();
+            aSetter.setInteractiveTile();
+            eManager.lighting.resetDay();
+        }
+    }
+/*
     public void retry() {
         player.setDefaultPositions();
         player.restoreLifeAndMana();
         aSetter.setNPC();
         aSetter.setMonster();
-
     }
 
     public void restart() {
         player.setDefaultPositions();
-      /*  player.setDefaultPositions();
-        player.restoreLifeAndMana();*/
+      *//*  player.setDefaultPositions();
+        player.restoreLifeAndMana();*//*
         player.setItems();
 
         aSetter.setObject();
         aSetter.setNPC();
         aSetter.setMonster();
         aSetter.setInteractiveTile();
-
-    }
+    }*/
 
     public void setFullScreen() {
         //GET LOCAL SCREEN DEVICE
@@ -369,6 +392,23 @@ public class GamePanel extends JPanel implements Runnable {
     public void playSE(int i) {
         music.setFile(i);
         music.play();
+    }
+
+    public void changeArea() {
+        if (nextArea != currentArea) {
+            stopMusic();
+            if (nextArea == outside) {
+                playMusic(0);
+            }
+            if (nextArea == indoor) {
+                playMusic(18);
+            }
+            if (nextArea == dungeon) {
+                playMusic(19);
+            }
+        }
+        currentArea = nextArea;
+        aSetter.setMonster();
     }
 
 

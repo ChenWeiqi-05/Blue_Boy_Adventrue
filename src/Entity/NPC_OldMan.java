@@ -40,10 +40,9 @@ public class NPC_OldMan extends Entity {
         dialogues[0][0] = "A mysterious older:   Boy, I've never met you, but I know \n you're looking for your father..";
         dialogues[0][1] = "A mysterious older:   You're the 78 th teenager to come\n here looking for your father, and my gut tells me you are\none of them..";
         dialogues[0][2] = "A mysterious older:   In the before time that begin your\n adventure please help me  kill the  dirty slime..";
-        dialogues[0][3] = "A mysterious older:   oh... I'm not your father, don't ask\n me I can't  provide any information about your mysterious \nfather..";
+        dialogues[0][3] = "A mysterious older:   oh... I'm not your father, don't ask\n me I can't  provide any information about your mystical \nfather..";
 
     }
-
     public void setAction() {//npc的ai移动
 
         if (onPath == true) {
