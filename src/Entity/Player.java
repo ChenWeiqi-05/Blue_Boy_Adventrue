@@ -55,15 +55,7 @@ public class Player extends Entity {
 
     public void setDefaultValues() {
         setDefaultPositions();
-     /*  worldX = gp.tileSize * 13;
 
-       worldY = gp.tileSize * 14;*/
-    /*  worldX = gp.tileSize * 12;
-        worldY = gp.tileSize * 13;*/
-      /*  worldX = gp.tileSize * 12;
-
-        worldY = gp.tileSize * 12;
-        */
         defaultSpeed = 4;
         gp.currentMap = 0;
         speed = defaultSpeed;
@@ -74,12 +66,13 @@ public class Player extends Entity {
         maxMana = 4;
         mana = maxMana;
         ammo = 10;//玩家石头的弹容量
+
         level = 1;
-        strength = 1;
+        strength = 5;
         dexterity = 1;
         exp = 0;
         nextLevelExp = 5;
-        coin = 1000;
+        coin = 500;
         currentWeapon = new OBJ_Sword_Normal(gp);
         currentShield = new OBJ_Shield_Wood(gp);//添加盾牌
 
@@ -418,14 +411,18 @@ public class Player extends Entity {
         if (mana > maxMana) {//确保玩家生命值不能超过最大生命值
             mana = maxMana;
         }
-        if (life <= 0) {
-            gp.gameState = gp.gameOverState;
-            gp.ui.commandNum = -1;//这段代码的意思是，
-            // 当玩家生命值小于等于0时，游戏状态切换为游戏结束状态，
-            // 并且commandNum设置为-1，表示当前没有选中任何命令。
-            gp.playSE(12);
-            gp.stopMusic();
+        if (keyH.godModeOn == false){
+            if (life <= 0) {
+                gp.gameState = gp.gameOverState;
+                gp.ui.commandNum = -1;//这段代码的意思是，
+                // 当玩家生命值小于等于0时，游戏状态切换为游戏结束状态，
+                // 并且commandNum设置为-1，表示当前没有选中任何命令。
+                gp.playSE(12);
+                gp.stopMusic();
+            }
         }
+
+
     }
 
     public void damageProjectile(int i) {
@@ -777,13 +774,17 @@ public class Player extends Entity {
         if (transparent == true) {//透明
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
         }
-        // g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
-        g2.drawImage(image, tempScreenX, tempScreenY, null);
-        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
-        /*    g2.setFont(new Font("x12y16pxMaruMonica", Font.PLAIN, 26));
-        g2.setColor(Color.white);
-        g2.drawString("Invincible :"+invincibleCounter,10,400);
-  */
+
+        if (drawing == true){
+            g2.drawImage(image, tempScreenX, tempScreenY, null);
+
+        }
+
+          g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+
     }
 
+    public void resetCounter() {
+
+    }
 }

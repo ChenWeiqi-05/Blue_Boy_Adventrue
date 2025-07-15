@@ -26,6 +26,8 @@ public class Entity {
     public String dialogues[][] = new String[20][20];
     public Entity attacker;
     public Entity linkedEntity;//这个是实体的跟随者
+    public boolean temp = false;
+
 
     public int worldX, worldY;//这个是world01的绝对坐标
     public String direction = "down";
@@ -40,7 +42,7 @@ public class Entity {
     public boolean attacking = false;
     public boolean alive = true;
     public boolean dying = false;
-    boolean hpBarOn = false;//这个是hp条的开关
+    public boolean hpBarOn = false;//这个是hp条的开关
     public boolean onPath = false;
     public boolean knockBack = false;
     public String knockBackDirection;
@@ -53,6 +55,12 @@ public class Entity {
 
     public Entity loot;
     public boolean opened = false;
+
+    public boolean inRange = false;
+    public boolean sleep = false;
+    public boolean drawing = true;
+
+
     public int spriteCounter = 0;
     public int actionLockCounter = 0; //  这个是实体动作计数器，用来控制实体的动作
     public int invincibleCounter = 0;
@@ -91,6 +99,8 @@ public class Entity {
     public Entity currentShield;//这个是实体的盾牌
     public Entity currentLight;
     public Projectile projectile;
+    public boolean boss;
+
 
     public ArrayList<Entity> inventory = new ArrayList<>();
     public final int maxInventorySize = 20;
@@ -135,6 +145,18 @@ public class Entity {
         return worldX + solidArea.x;
     }
 
+    public int getScreenX() {
+        int screenX = worldX - gp.player.worldX + gp.player.screenX;
+
+        return screenX;
+    }
+
+    public int getScreenY() {
+        int screenY = worldY - gp.player.worldY + gp.player.screenY;
+
+        return screenY;
+    }
+
     public int getRightX() {
         return worldX + solidArea.x + solidArea.width;
     }
@@ -155,14 +177,25 @@ public class Entity {
         return (worldY + solidArea.y) / gp.tileSize;
     }
 
+    public int getCenterX() {
+        int centerX = worldX + left1.getWidth() / 2;
+        return centerX;
+    }
+
+    public int getCenterY() {
+        int centerY = worldY + up1.getHeight() / 2;
+        return centerY;
+
+    }
+
     public int getXdistance(Entity target) {//获取两个实体之间的X轴距离
-        int xDistance = Math.abs(worldX - target.worldX);
+        int xDistance = Math.abs(getCenterX() - target.getCenterX());
         return xDistance;
     }
 
     public int getYdistance(Entity target) {//获取两个实体之间的y距离
 
-        int yDistance = Math.abs(worldY - target.worldY);
+        int yDistance = Math.abs(getCenterY() - target.getCenterY());
         return yDistance;
     }
 
@@ -245,94 +278,96 @@ public class Entity {
         }
     }
 
-    ///这个是更新实体的代码，用来控制实体的移动
+    /// 这个是更新实体的代码，用来控制实体的移动
     public void update() {//这个是更新实体的代码，用来控制实体的移动
-        if (knockBack == true) {
-            checkCollision();
-            if (collisionOn == true) {
-                knockBackCounter = 0;
-                knockBack = false;
-                speed = defaultSpeed;
-            } else if (collisionOn == false) {
-                switch (knockBackDirection) {
-                    case "up":
-                        worldY -= speed;
-                        break;
-                    case "down":
-                        worldY += speed;
-                        break;
-                    case "left":
-                        worldX -= speed;
-                        break;
-                    case "right":
-                        worldX += speed;
-                        break;
-                }
-            }
-            knockBackCounter++;
-            if (knockBackCounter == 10) {
-                knockBackCounter = 0;
-                knockBack = false;
-                speed = defaultSpeed;
-            }
-        } else if (attacking == true) {
-            attacking();
-            gp.cChecker.checkTile(this);
-            spriteCounter++;
-            if (spriteCounter > 12) {
-                if (spriteNum == 1) {
-                    spriteNum = 2;
-                } else if (spriteNum == 2) {
-                    spriteNum = 1;
-                }
-                spriteCounter = 0;
-            }
-        } else {
-            setAction();//这个是设置实体的动作的代码，用来控制实体的移动
-            checkCollision();
 
-            if (collisionOn == false) {//检测实体是否发生碰撞
-                switch (direction) {
-                    case "up":
-                        //  System.out.println("向上碰撞");
-                        worldY -= speed;
-                        break;
-                    case "down":
-                        //System.out.println("向下碰撞");
-                        worldY += speed;
-                        break;
-                    case "left":
-                        //System.out.println("向左碰撞");
-                        worldX -= speed;
-                        break;
-                    case "right":
-                        // System.out.println("向右碰撞");
-                        worldX += speed;
-                        break;
+        if (sleep == false) {
+
+            if (knockBack == true) {
+                checkCollision();
+                if (collisionOn == true) {
+                    knockBackCounter = 0;
+                    knockBack = false;
+                    speed = defaultSpeed;
+                } else if (collisionOn == false) {
+                    switch (knockBackDirection) {
+                        case "up":
+                            worldY -= speed;
+                            break;
+                        case "down":
+                            worldY += speed;
+                            break;
+                        case "left":
+                            worldX -= speed;
+                            break;
+                        case "right":
+                            worldX += speed;
+                            break;
+                    }
+                }
+                knockBackCounter++;
+                if (knockBackCounter == 10) {
+                    knockBackCounter = 0;
+                    knockBack = false;
+                    speed = defaultSpeed;
+                }
+            } else if (attacking == true) {
+                attacking();
+            } else {
+                setAction();//这个是设置实体的动作的代码，用来控制实体的移动
+                checkCollision();
+
+                if (collisionOn == false) {//检测实体是否发生碰撞
+                    switch (direction) {
+                        case "up":
+                            //  System.out.println("向上碰撞");
+                            worldY -= speed;
+                            break;
+                        case "down":
+                            //System.out.println("向下碰撞");
+                            worldY += speed;
+                            break;
+                        case "left":
+                            //System.out.println("向左碰撞");
+                            worldX -= speed;
+                            break;
+                        case "right":
+                            // System.out.println("向右碰撞");
+                            worldX += speed;
+                            break;
+                    }
+                }
+                spriteCounter++;
+                if (spriteCounter > 12) {
+                    if (spriteNum == 1) {
+                        spriteNum = 2;
+                    } else if (spriteNum == 2) {
+                        spriteNum = 1;
+                    }
+                    spriteCounter = 0;
+                }
+            }
+
+
+            if (invincible == true) {
+                invincibleCounter++;
+                if (invincibleCounter > 20) {
+                    invincible = false;
+                    invincibleCounter = 0;
+                }
+            }
+            if (shotAvailCounter < 30) {//确保玩家可以连续攻击
+                shotAvailCounter++;
+            }
+            if (offBalance == true) {
+                offBalanceCounter++;
+                if (offBalanceCounter > 60) {
+                    offBalance = false;
+                    offBalanceCounter = 0;
                 }
             }
         }
-        if (invincible == true) {//这段代码的意思就是，如果玩家处于无敌状态，
-            // 那么就会让invincibleCounter加1，
-            // 然后判断invincibleCounter的值是否大于40，如果大于40，
-            // 那么就会让invincibleCounter归零，然后让invincible的值变为false，
-            // 这样玩家就可以再次被攻击了。
-            invincibleCounter++;
-            if (invincibleCounter > 40) {
-                invincible = false;
-                invincibleCounter = 0;
-            }
-        }
-        if (shotAvailCounter < 30) {//确保玩家可以连续攻击
-            shotAvailCounter++;
-        }
-        if (offBalance == true) {
-            offBalanceCounter++;
-            if (offBalanceCounter > 60) {
-                offBalance = false;
-                offBalanceCounter = 0;
-            }
-        }
+
     }
 
     public void checkAttackOrNot(int rate, int straight, int horizontal) {//检测是否攻击
@@ -342,22 +377,22 @@ public class Entity {
 
         switch (direction) {//检测方向
             case "up":
-                if (gp.player.worldY < worldY && yDis < straight && xDis < horizontal) {
+                if (gp.player.getCenterY() < getCenterY() && yDis < straight && xDis < horizontal) {
                     targetInRange = true;
                 }
                 break;
             case "down":
-                if (gp.player.worldY > worldY && yDis < straight && xDis < horizontal) {
+                if (gp.player.getCenterY() > getCenterY() && yDis < straight && xDis < horizontal) {
                     targetInRange = true;
                 }
                 break;
             case "left":
-                if (gp.player.worldX < worldX && xDis < straight && yDis < horizontal) {
+                if (gp.player.getCenterX() < getCenterX() && xDis < straight && yDis < horizontal) {
                     targetInRange = true;
                 }
                 break;
             case "right":
-                if (gp.player.worldX > worldX && xDis < straight && yDis < horizontal) {
+                if (gp.player.getCenterX() > getCenterX() && xDis < straight && yDis < horizontal) {
                     targetInRange = true;
                 }
                 break;
@@ -415,6 +450,31 @@ public class Entity {
         target.knockBackDirection = this.direction;
         target.speed += knockBackPower;
         target.knockBack = true;
+    }
+
+    public void moveTowardPlayer(int interval) {
+
+        actionLockCounter++;
+        if (actionLockCounter >= interval) {
+
+            if (getXdistance(gp.player) > getYdistance(gp.player)) {
+
+                if (gp.player.getCenterX() < getCenterX()) {
+                    direction = "left";
+                } else {
+                    direction = "right";
+                }
+
+            } else if (getXdistance(gp.player) < getYdistance(gp.player)) {
+                if (gp.player.getCenterY() < getCenterY()) {
+                    direction = "up";
+                } else {
+                    direction = "down";
+                }
+            }
+            actionLockCounter = 0;
+
+        }
     }
 
     public String getOppositeDirection(String direction) {//获取相反方向
@@ -503,7 +563,7 @@ public class Entity {
 
     public void getRandomDirection(int interval) {
         actionLockCounter++;
-        if (actionLockCounter == interval) {
+        if (actionLockCounter > interval) {
             Random random = new Random();
             int i = random.nextInt(100) + 1;
 
@@ -558,17 +618,26 @@ public class Entity {
         }
     }
 
+    public boolean inCamera() {
+
+        boolean inCamera = false;
+        if (worldX + gp.tileSize * 5 > gp.player.worldX - gp.player.screenX &&
+                worldX - gp.tileSize * 5 < gp.player.worldX + gp.player.screenX &&
+                worldY + gp.tileSize * 5 > gp.player.worldY - gp.player.screenY &&
+                worldY - gp.tileSize * 5 < gp.player.worldY + gp.player.screenY
+        ) {
+            inCamera = true;
+        }
+        return inCamera;
+    }
+
+
     public void draw(Graphics2D g2) {
         BufferedImage image = null;
-        int screenX = worldX - gp.player.worldX + gp.player.screenX;
-        int screenY = worldY - gp.player.worldY + gp.player.screenY;
-        if (worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&//这是一段优化代码，用来判断屏幕是否在屏幕范围内
-                worldX - gp.tileSize < gp.player.worldX + gp.player.screenX &&//
-                worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
-                worldY - gp.tileSize < gp.player.worldY + gp.player.screenY
-        ) {
-            int tempScreenX = screenX;
-            int tempScreenY = screenY;
+
+        if (inCamera() == true) {
+            int tempScreenX = getScreenX();
+            int tempScreenY = getScreenY();
             switch (direction) {
                 case "up":
                     if (attacking == false) {
@@ -580,7 +649,7 @@ public class Entity {
                         }
                     }
                     if (attacking == true) {
-                        tempScreenY = screenY - gp.tileSize;
+                        tempScreenY = getScreenY() - up1.getHeight();
                         if (spriteNum == 1) {
                             image = attackUp1;
                         }
@@ -618,7 +687,7 @@ public class Entity {
                         }
                     }
                     if (attacking == true) {
-                        tempScreenX = screenX - gp.tileSize;//这段代码的
+                        tempScreenX = getScreenX() - left1.getHeight();//这段代码的
                         // 意思是让玩家攻击时，图片向左移动一个tileSize。
                         if (spriteNum == 1) {
                             image = attackLeft1;
@@ -651,24 +720,6 @@ public class Entity {
                     break;
             }
 
-            //Monster HP bar
-            if (type == 2 && hpBarOn == true) {//绘制Monster HP bar,当type等于2时才绘制
-
-                double oneScale = (double) gp.tileSize / maxLife;//计算一个比例
-                double hpBarValue = oneScale * life;//计算Monster HP bar的值
-
-                g2.setColor(new Color(35, 35, 35));
-                g2.fillRect(screenX, screenY - 16, gp.tileSize + 2, 12);
-                g2.setColor(new Color(255, 0, 30));
-                g2.fillRect(screenX, screenY - 15, (int) hpBarValue, 10);
-                //这段代码是绘制Monster HP bar的代码
-
-                hpBarCounter++;
-                if (hpBarCounter > 600) {
-                    hpBarCounter = 0;
-                    hpBarOn = false;
-                }
-            }
             if (invincible == true) {//如果玩家处于被保护状态，则绘制Monster HP bar
                 hpBarOn = true;
                 hpBarCounter = 0;

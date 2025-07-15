@@ -6,9 +6,11 @@ import Entity.NPC_OldMan;
 import InteractiveTile.IT_DestructibleWall;
 import InteractiveTile.IT_DryTree;
 import InteractiveTile.IT_MetalPlate;
+import data.Progress;
 import monster.MON_Bat;
 import monster.MON_GreenSlime;
 import monster.MON_Orc;
+import monster.MON_SkeletonLord;
 import object.*;
 
 public class AssetSetter {
@@ -94,6 +96,10 @@ public class AssetSetter {
         gp.obj[mapNum][i] = new OBJ_ManaCrystal(gp);
         gp.obj[mapNum][i].worldX = gp.tileSize * 22;
         gp.obj[mapNum][i].worldY = gp.tileSize * 29;
+        i++;
+        gp.obj[mapNum][i] = new OBJ_Pickaxe(gp);
+        gp.obj[mapNum][i].worldX = gp.tileSize * 23;
+        gp.obj[mapNum][i].worldY = gp.tileSize * 21;
         /*i++;
         gp.obj[mapNum][i] = new OBJ_Door(gp);
         gp.obj[mapNum][i].worldX = gp.tileSize * 14;
@@ -152,11 +158,23 @@ public class AssetSetter {
         gp.obj[mapNum][i].worldX = gp.tileSize * 27;
         gp.obj[mapNum][i].worldY = gp.tileSize * 15;
 
-      /*  i++;
+
+     /*  i++;
         gp.obj[mapNum][i] = new OBJ_Door_Iron(gp);
         gp.obj[mapNum][i].worldX = gp.tileSize * 18;
         gp.obj[mapNum][i].worldY = gp.tileSize * 23;
 */
+        mapNum=3;
+        i = 0;
+        gp.obj[mapNum][i] = new OBJ_Door_Iron(gp);
+        gp.obj[mapNum][i].worldX = gp.tileSize * 25;
+        gp.obj[mapNum][i].worldY = gp.tileSize * 15;
+        i++;
+        gp.obj[mapNum][i] = new OBJ_BlueHeart(gp);
+        gp.obj[mapNum][i].worldX = gp.tileSize * 25;
+        gp.obj[mapNum][i].worldY = gp.tileSize * 8;
+
+
     }
 
     public void setNPC() {
@@ -219,14 +237,6 @@ public class AssetSetter {
         gp.monster[i].worldX = gp.tileSize * 38;
         gp.monster[i].worldY = gp.tileSize * 42;*/
         int mapNum = 0;
-       /* Random random = new Random();
-        // 仅初始化部分史莱姆(例如10个)，保留空间用于后续生成
-        int initialCount = 1000;
-        for (int i = 0; i < initialCount && i < gp.monster[1].length; i++) {
-            gp.monster[mapNum][i] = new MON_GreenSlime(gp);
-            gp.monster[mapNum][i].worldX = gp.tileSize * (1 + random.nextInt(gp.maxWorldCol - 1));
-            gp.monster[mapNum][i].worldY = gp.tileSize * (1 + random.nextInt(gp.maxWorldRow - 1));
-        }*/
 
         int i = 0;
         gp.monster[mapNum][i] = new MON_GreenSlime(gp);
@@ -294,8 +304,18 @@ public class AssetSetter {
         gp.monster[mapNum][i].worldX = gp.tileSize * 10;
         gp.monster[mapNum][i].worldY = gp.tileSize * 19;
 
+        mapNum = 3;
+        i++;
+        if (Progress.skeletonLordDefeated == false){
+            gp.monster[mapNum][i] = new MON_SkeletonLord(gp);
+            gp.monster[mapNum][i].worldX = gp.tileSize * 23;
+            gp.monster[mapNum][i].worldY = gp.tileSize * 16;
+            i++;
+        }
+
 
     }
+
     public void setInteractiveTile() {
         int mapNum = 0;
         int i = 0;

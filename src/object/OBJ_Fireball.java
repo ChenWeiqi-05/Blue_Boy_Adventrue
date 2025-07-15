@@ -14,11 +14,13 @@ public class OBJ_Fireball extends Projectile {
     public OBJ_Fireball(GamePanel gp) {
         super(gp);
         this.gp = gp;
+
+
         name = objName;
         speed = 5;
         maxLife = 80;
         life = maxLife;
-        attack = 4;
+        attack = 1;
         knockBackPower = 5;
         useCost = 1;
         alive = false;//这段代码的意思是，当火球被创建时，它将处于非活动状态。

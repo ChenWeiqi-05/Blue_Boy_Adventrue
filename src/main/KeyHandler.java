@@ -5,9 +5,9 @@ import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener {
     GamePanel gp;
-    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, shotKeyPressed,spacePressed;
+    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, shotKeyPressed, spacePressed;
     boolean showDebugText = false;
-
+   public boolean godModeOn = false;
 
     public KeyHandler(GamePanel gp) {
 
@@ -20,113 +20,7 @@ public class KeyHandler implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-     /*   int code = e.getKeyCode();
-        GamePanel gp = new GamePanel();*/
- /*       if (gp.gameState == gp.titleState) {
-            if (gp.ui.titleScreenState == 0) {
-                if (code == KeyEvent.VK_W) {
-                    gp.ui.commamdNum--;
-                    if (gp.ui.commamdNum < 0) {
-                        gp.ui.commamdNum = 2;
-                    }
-                }
-                if (code == KeyEvent.VK_S) {
-                    gp.ui.commamdNum++;
-                    if (gp.ui.commamdNum > 2) {
-                        gp.ui.commamdNum = 0;
-                    }
-                }
-            }
 
-            if (code == KeyEvent.VK_ENTER) {
-
-                if (gp.ui.commamdNum == 0) {
-                    gp.gameState = gp.playState;
-                    gp.playMusic(0);
-                }
-                if (gp.ui.commamdNum == 1) {
-                    //  add later
-                }
-                if (gp.ui.commamdNum == 2) {
-                    //  add later
-                    System.exit(0);
-                }
-            }
-        }
-        else if (gp.ui.titleScreenState == 1) {
-            if (gp.gameState == gp.playState) {
-                if (code == KeyEvent.VK_W) {
-                    gp.ui.commamdNum--;
-                    if (gp.ui.commamdNum < 0) {
-                        gp.ui.commamdNum = 2;
-                    }
-                }
-                if (code == KeyEvent.VK_S) {
-                    gp.ui.commamdNum++;
-                    if (gp.ui.commamdNum > 2) {
-                        gp.ui.commamdNum = 0;
-                    }
-                }
-
-            if (code == KeyEvent.VK_ENTER) {
-
-                if (gp.ui.commamdNum == 0) {
-                    //  gp.gameState = gp.playState;
-                    System.out.println("Do Some 法师 specific stuff");
-                    gp.playMusic(0);
-                }
-                if (gp.ui.commamdNum == 1) {
-                    System.out.println("Do Some 近卫 specific stuff");
-                    gp.playMusic(0);
-                    //  add later
-                }
-                if (gp.ui.commamdNum == 2) {
-                    System.out.println("Do Some 医疗 specific stuff");
-                    gp.playMusic(0);
-                    //  add later
-                    gp.playMusic(0);
-                }
-                if (gp.ui.commamdNum == 3) {
-                    System.out.println("Do Some 特种 specific stuff");
-                    //  add later
-                    gp.playMusic(0);
-                }
-*/
- /*           }
-            if (code == KeyEvent.VK_W) {
-                upPressed = true;
-            }
-            if (code == KeyEvent.VK_S) {
-                downPressed = true;
-            }
-            if (code == KeyEvent.VK_A) {
-                leftPressed = true;
-            }
-            if (code == KeyEvent.VK_D) {
-                rightPressed = true;
-            }
-            }
-        }
-    }*/
-//    @Override
-//    public void keyReleased(KeyEvent e) {
-//        int code = e.getKeyCode();
-//
-//        if (code == KeyEvent.VK_W) {
-//            upPressed = false;
-//        }
-//        if (code == KeyEvent.VK_S) {
-//            downPressed = false;
-//        }
-//        if (code == KeyEvent.VK_A) {
-//            leftPressed = false;
-//        }
-//        if (code == KeyEvent.VK_D) {
-//            rightPressed = false;
-//        }
-//
-//    }
-//}
         int code = e.getKeyCode();
         //*************TITLE STATE**************
         // 这段代码用来处理标题界面箭头的移动的
@@ -143,7 +37,7 @@ public class KeyHandler implements KeyListener {
             pauseState(code);
         }
         //DIALOGUE STATE
-        else if (gp.gameState == gp.dialogueState) {
+        else if (gp.gameState == gp.dialogueState|| gp.gameState == gp.cutsceneState) {
             dialogueState(code);
         }
 //CHARACTER STATE
@@ -156,14 +50,13 @@ public class KeyHandler implements KeyListener {
         } else if (gp.gameState == gp.tradeState) {
             tradeState(code);
             //characterState(code);
-        }
-        else if (gp.gameState == gp.mapState) {
+        } else if (gp.gameState == gp.mapState) {
             mapState(code);
         }
     }
 
     public void mapState(int code) {
-        if (code == KeyEvent.VK_M){
+        if (code == KeyEvent.VK_M) {
             gp.gameState = gp.playState;
         }
     }
@@ -221,11 +114,11 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_ENTER) {
             if (gp.ui.commandNum == 0) {
                 gp.gameState = gp.playState;
-                gp.resetGame( false);
+                gp.resetGame(false);
                 gp.playMusic(0);
             } else if (gp.ui.commandNum == 1) {
                 gp.gameState = gp.titleState;
-                gp.resetGame( true);
+                gp.resetGame(true);
             }
         }
     }
@@ -428,17 +321,17 @@ public class KeyHandler implements KeyListener {
                 gp.gameState = gp.playState;
             }
         }
-        if (code == KeyEvent.VK_M){
+        if (code == KeyEvent.VK_M) {
             gp.gameState = gp.mapState;
         }
-        if (code == KeyEvent.VK_X){
-            if (gp.map.miniMapOn == false){
+        if (code == KeyEvent.VK_X) {
+            if (gp.map.miniMapOn == false) {
                 gp.map.miniMapOn = true;
-            }else{
+            } else {
                 gp.map.miniMapOn = false;
             }
         }
-        if (code == KeyEvent.VK_SPACE){
+        if (code == KeyEvent.VK_SPACE) {
 
             spacePressed = true;
 
@@ -462,6 +355,13 @@ public class KeyHandler implements KeyListener {
                 case 1:
                     gp.tileM.loadMap("/maps/interior01.txt", 1);
                     break;
+            }
+        }
+        if (code == KeyEvent.VK_G) {
+            if (godModeOn == false) {
+                godModeOn = true;
+            } else if (godModeOn == true) {
+                godModeOn = false;
             }
         }
 
@@ -491,6 +391,7 @@ public class KeyHandler implements KeyListener {
         }
         playerInventory(code);
     }
+
     @Override
     public void keyReleased(KeyEvent e) {
         int code = e.getKeyCode();
@@ -513,7 +414,7 @@ public class KeyHandler implements KeyListener {
             spacePressed = false;
         }
         if (code == KeyEvent.VK_ENTER) {
-           enterPressed = false;
+            enterPressed = false;
         }
     }
 

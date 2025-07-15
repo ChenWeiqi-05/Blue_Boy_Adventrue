@@ -61,38 +61,26 @@ public class EventHandler {
         int xDistance = Math.abs(gp.player.worldX - previousEventX);
         int yDistance = Math.abs(gp.player.worldX - previousEventY);
         int distance = Math.max(xDistance, yDistance);
-
-
         if (distance > gp.tileSize) {
             canTouchEvent = true;
         }
         if (canTouchEvent == true) {
             if (hit(0, 27, 16, "right") == true) {
 //  判断玩家是否与pit发生碰撞
-                //damagePit(gp.dialogueState);
+                damagePit(gp.dialogueState);
             } else if (hit(0, 23, 12, "up") == true) {
-                //damagePit(gp.dialogueState);
+                damagePit(gp.dialogueState);
             } else if (hit(0, 10, 39, "any") == true) {
-                teleport(1, 12, 13,gp.indoor);
+                teleport(1, 12, 13);
             } else if (hit(1, 12, 13, "any") == true) {
-                teleport(0, 10, 40,gp.outside);
-            } else if (hit(1, 12, 9, "any") == true) {
+                teleport(0, 10, 39);
+            } else if (hit(1, 12, 9, "up")) {
                 speak(gp.npc[1][0]);
-            }else if (hit(0, 12, 9, "any") == true) {
-                teleport(2,9,40, gp.dungeon);
-                    }
-            else if (hit(2, 9, 41, "any") == true) {
-                teleport(0,11,9,gp.outside);
             }
-            else if (hit(2, 8, 7, "any") == true) {
-                teleport(3,25,41,gp.dungeon);
-            }
-            else if (hit(3, 26, 41, "any") == true) {
-                teleport(2,8,8,gp.dungeon);
-            }
+
         }
 
-       if (hit(0, 27, 16, "right") == true) {
+        if (hit(0, 27, 16, "right") == true) {
 //  判断玩家是否与pit发生碰撞
             damagePit(gp.dialogueState);
             count = count + 1;
@@ -103,6 +91,7 @@ public class EventHandler {
             healingPool(gp.dialogueState);
         }
     }
+
     public void speak(Entity entity) {
         if (gp.keyH.enterPressed == true) {
             gp.gameState = gp.dialogueState;
@@ -110,15 +99,15 @@ public class EventHandler {
             entity.speak();
         }
     }
-    public void teleport(int map, int col, int row,int area) {
 
-        gp.gameState = gp.transitionState;
-        gp.nextArea = area;
-        tempMap = map;
-        tempCol = col;
-        tempRow = row;
+    public void teleport(int map, int col, int row) {
+        gp.currentMap = map;
+        gp.player.worldX = gp.tileSize * col;
+        gp.player.worldY = gp.tileSize * row - (gp.tileSize);
+
+        previousEventX = gp.player.worldX;
+        previousEventY = gp.player.worldY - (gp.tileSize);
         canTouchEvent = false;
-
         gp.playSE(13);
     }
 
@@ -135,6 +124,7 @@ public class EventHandler {
                     hit = true;
                     previousEventX = gp.player.worldX;
                     previousEventY = gp.player.worldY;
+
                 }
             }
             gp.player.solidArea.x = gp.player.solidAreaDefaultX;
@@ -143,30 +133,28 @@ public class EventHandler {
             eventRect[map][col][row].y = eventRect[map][col][row].eventRectDefaultY;
         }
         return hit;
+
     }
 
     public void damagePit(int gameState) {//掉落事件
         gp.gameState = gameState;
         gp.playSE(6);
         eventMaster.startDialogue(eventMaster, 0);
-      //  gp.player.life -= 1;
+        gp.player.life -= 1;
         canTouchEvent = false;
-    }
-    public void healingPool(int gameState) {
 
+    }
+
+    public void healingPool(int gameState) {
         if (gp.keyH.enterPressed == true) {
             gp.gameState = gameState;
             gp.player.attackCanceled = true;
             gp.playSE(2);
             eventMaster.startDialogue(eventMaster, 1);
-
-            gp.ui.currentDialogue = "You drink the water .\nYour life and mana have been recovered !\n(The progress has been saved)";
-
             gp.player.life = gp.player.maxLife;
             gp.player.mana = gp.player.maxMana;
-            gp.aSetter.setMonster();
-            gp.saveLoad.save();
 
+            gp.aSetter.setMonster();
         }
     }
 }

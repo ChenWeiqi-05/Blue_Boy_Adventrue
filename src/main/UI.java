@@ -20,7 +20,7 @@ public class UI {
     BufferedImage keyImage;
 
     public GamePanel gp;
-  public   Font maruMonica, cambriaz;
+    public Font maruMonica, cambriaz;
     Graphics2D g2;
     public boolean messageOn = false;
     double playTime;
@@ -85,68 +85,7 @@ public class UI {
     }
 
     public void draw(Graphics2D g2) {
-       /*
-       //*******这里是寻宝游戏的界面*********
-       if (gameFinish == true) {
-            g2.setFont(arial_40);
-            g2.setColor(Color.white);
-            String text;
-            int textLength = 0;
-            int x;
-            int y;
 
-            text = "YOU WIN!";
-            textLength = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
-            x = gp.screenWidth / 2 - textLength / 2;//屏幕宽度/2-tileSize*2
-            y = gp.screenHeight / 2 - (gp.tileSize * 3);//屏幕高度/2-tileSize*3
-            g2.drawString(text, x, y);
-
-            text = "you time is :" + dFormat.format(playTime)+ "!";
-            textLength = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
-            x = gp.screenWidth / 2 - textLength / 2;//屏幕宽度/2-tileSize*2
-            y = gp.screenHeight / 2 + (gp.tileSize * 4);//屏幕高度/2-tileSize*3
-            g2.drawString(text, x, y);
-
-            g2.setFont(arial_40);
-            g2.setColor(Color.yellow);
-            text = "Congratulation!";
-            textLength = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
-            x = gp.screenWidth / 2 - textLength / 2;
-            y = gp.screenHeight / 2 + (gp.tileSize * 3);
-            g2.drawString(text, x, y);
-            gp.gameThread = null;
-        } else {
-            g2.setFont(arial_40);
-            g2.setColor(Color.white);
-            // g2.drawString("key = " +gp.player.hasKey, 25, 50);
-            // BufferedImage keyImage = null;
-            g2.drawImage(keyImage, gp.tileSize / 2, gp.tileSize / 2, gp.tileSize, gp.tileSize, null);
-            g2.drawString("x = " + gp.player.hasKey, 74, 65);
-        *//*if (gp.gameState == gp.titleState) {
-
-            int commandNum = 0;
-            drawTitleScreen(commandNum);
-
-        }*//*
-
-            playTime += (double)1/60;
-            g2.drawString("Time: " + dFormat.format(playTime), gp.tileSize*11, 64);
-
-            //   g2.drawString("x= " + gp.pl, 74, 65);
-            // boolean messageOn = false;
-            if (messageOn == true) {
-                g2.setFont(g2.getFont().deriveFont(30F));
-                g2.drawString(message, gp.tileSize / 2, gp.tileSize * 5);
-
-                messageCounter++;
-
-                if (messageCounter > 120) {
-                    messageCounter = 0;
-                    messageOn = false;
-                }
-            }
-//*******这里是寻宝游戏的界面*********
-        }*/
         this.g2 = g2;
         g2.setFont(maruMonica);
         //g2.setFont(cambriaz);//这里可以设置字体
@@ -158,6 +97,7 @@ public class UI {
         }
         if (gp.gameState == gp.playState) {
             drawPlayerLife();
+            drawMonsterLife();
             drawMessage();
         }
         if (gp.gameState == gp.pauseState) {
@@ -500,7 +440,7 @@ public class UI {
             if (gp.keyH.enterPressed == true) {
                 subState = 0;//退出
                 gp.gameState = gp.titleState;
-                gp.resetGame( true);
+                gp.resetGame(true);
             }
         }
 
@@ -736,7 +676,7 @@ public class UI {
                     textY += 32;//换行
                 }
 
-                g2.drawString("durability: "+ entity.inventory.get(itemIndex).durability,textX,textY+100);
+                g2.drawString("durability: " + entity.inventory.get(itemIndex).durability, textX, textY + 100);
 
             }
         }
@@ -755,12 +695,23 @@ public class UI {
         int x = gp.tileSize / 2;
         int y = gp.tileSize / 2;
         int i = 0;
-//DRAW BLANK HEARTS
+
+        int iconSize = 32;
+        int manaStartX = (gp.tileSize / 2) - 5;
+        int manaStartY = 0;
+        //DRAW BLANK HEARTS
+
         while (i < gp.player.maxLife / 2) {//这个代码的逻辑是，如果生命值是偶数
             // ，就绘制一个完整的生命值，如果生命值是奇数，就绘制一个完整的生命值和半个生命值
-            g2.drawImage(heart_blank, x, y, null);
+            g2.drawImage(heart_blank, x, y, iconSize, iconSize, null);
             i++;
-            x += gp.tileSize;
+            x += iconSize;
+            manaStartY = y + 32;
+
+            if (i % 8 == 0) {
+                x = gp.tileSize / 2;
+                y += iconSize;
+            }
         }
         //reset
         x = gp.tileSize / 2;
@@ -793,6 +744,55 @@ public class UI {
             g2.drawImage(crystal_full, x, y, null);
             i++;
             x += 35;//绘制
+        }
+    }
+
+    public void drawMonsterLife() {
+        //Monster HP bar
+
+        for (int i = 0; i < gp.monster[1].length; i++) {
+
+            Entity monster = gp.monster[gp.currentMap][i];
+            if (monster != null && monster.inCamera() == true) {
+                if (monster.hpBarOn == true && monster.boss == false) {//绘制Monster HP bar,当type等于2时才绘制
+
+                    double oneScale = (double) gp.tileSize / monster.maxLife;//计算一个比例
+                    double hpBarValue = oneScale * monster.life;//计算Monster HP bar的值
+
+                    g2.setColor(new Color(35, 35, 35));
+                    g2.fillRect(monster.getScreenX() - 1, monster.getScreenY() - 16, gp.tileSize + 2, 12);
+
+                    g2.setColor(new Color(255, 0, 30));
+                    g2.fillRect(monster.getScreenX(), monster.getScreenY() - 15, (int) hpBarValue, 10);
+                    //这段代码是绘制Monster HP bar的代码
+
+                    monster.hpBarCounter++;
+                    if (monster.hpBarCounter > 600) {
+                        monster.hpBarCounter = 0;
+                        monster.hpBarOn = false;
+                    }
+                }
+                else if (monster.boss == true) {
+
+                    double oneScale = (double) gp.tileSize * 8 / monster.maxLife;//计算一个比例
+                    double hpBarValue = oneScale * monster.life;//计算Monster HP bar的值
+
+                    int x = gp.screenWidth / 2 - gp.tileSize * 4;
+                    int y = gp.tileSize * 10;
+
+
+                    g2.setColor(new Color(35, 35, 35));
+                    g2.fillRect(x - 1, y - 1, gp.tileSize * 8 + 2, 22);
+
+                    g2.setColor(new Color(255, 0, 30));
+                    g2.fillRect(x, y, (int) hpBarValue, 20);
+                    //这段代码是绘制Monster HP bar的代码
+
+                    g2.setFont(gp.getFont().deriveFont(Font.BOLD, 24f));
+                    g2.setColor(Color.white);
+                    g2.drawString(monster.name, x + 4, y - 10);
+                }
+            }
         }
     }
 
@@ -948,16 +948,22 @@ public class UI {
                 charIndex = 0;
                 combinedText = "";
 
-                if (gp.gameState == gp.dialogueState) {
+                if (gp.gameState == gp.dialogueState || gp.gameState == gp.cutsceneState) {
                     npc.dialogueIndex++;
                     gp.keyH.enterPressed = false;
                 }
             }
-        } else {
+        }
+        else {
             npc.dialogueIndex = 0;
             if (gp.gameState == gp.dialogueState) {
                 gp.gameState = gp.playState;
             }
+            if (gp.gameState == gp.cutsceneState){
+                gp.csManager.scenePhase++;
+            }
+
+
         }
 
 

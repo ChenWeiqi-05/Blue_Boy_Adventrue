@@ -33,6 +33,7 @@ public class MON_Orc extends Entity {
         solidArea.width = 40;
         solidArea.height = 44;
         solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
 
         attackArea.width = 48;
         attackArea.height = 48;
@@ -75,7 +76,7 @@ public class MON_Orc extends Entity {
 
             searchPath(getGoalCol(gp.player), getGoalRow(gp.player));
 
-            checkShootOrNot(200, 30);
+            //checkShootOrNot(200, 30);
         }
         else {
             checkStartChasingOrNot(gp.player,5,100);

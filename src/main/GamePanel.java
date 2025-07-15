@@ -28,9 +28,7 @@ public class GamePanel extends JPanel implements Runnable {
     public int maxWorldRow;
     public final int maxMap = 10;
 
-
     public int currentMap = 0;//0 是worldV3 1 是interior01
-
 
     public int currentMusic;  //当前播放的音乐编号
 
@@ -58,6 +56,9 @@ public class GamePanel extends JPanel implements Runnable {
     SaveLoad saveLoad = new SaveLoad(this);
 
     public EntityGenerator eGenerator = new EntityGenerator(this);
+
+    public CutsceneManager csManager = new CutsceneManager(this);
+
     Thread gameThread;
     int playerX = 100;
     int playerY = 100;
@@ -91,6 +92,10 @@ public class GamePanel extends JPanel implements Runnable {
     public final int mapState = 10;
     public int currentArea;
 
+    public final int cutsceneState = 11;
+    public boolean bossBattleOn = false;
+
+
     public int nextArea;
     public final int outside = 50;
     public final int indoor = 51;
@@ -113,7 +118,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         aSetter.setInteractiveTile();
         eManager.setup();//设置环境
-        //playMusic(0);
+
         gameState = titleState;//游戏状态的设置
 
         currentArea = outside;
@@ -128,39 +133,24 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void resetGame(boolean restart) {
 
+        stopMusic();
         currentMap = outside;
+        removeTempEntity();
+        bossBattleOn = false;
         player.setDefaultPositions();
         player.restoreStatus();
+        player.resetCounter();
         aSetter.setNPC();
         aSetter.setMonster();
 
         if (restart == true) {
             player.setDefaultValues();
-           // player.setItems();
             aSetter.setObject();
             aSetter.setInteractiveTile();
             eManager.lighting.resetDay();
         }
     }
-/*
-    public void retry() {
-        player.setDefaultPositions();
-        player.restoreLifeAndMana();
-        aSetter.setNPC();
-        aSetter.setMonster();
-    }
 
-    public void restart() {
-        player.setDefaultPositions();
-      *//*  player.setDefaultPositions();
-        player.restoreLifeAndMana();*//*
-        player.setItems();
-
-        aSetter.setObject();
-        aSetter.setNPC();
-        aSetter.setMonster();
-        aSetter.setInteractiveTile();
-    }*/
 
     public void setFullScreen() {
         //GET LOCAL SCREEN DEVICE
@@ -333,14 +323,13 @@ public class GamePanel extends JPanel implements Runnable {
                 entityList.get(i).draw(g2);
 
             }
-            for (int i = 0; i < entityList.size(); i++) {//这段代码的作用是删除实体列表中的实体，以便绘制下一个实体，从而绘制下一个实体。
-                entityList.remove(i);
-            }
             entityList.clear();//清空实体列表
 
             eManager.draw(g2);//初始化绘制环境
 
             map.drawMiniMap(g2);
+
+            csManager.draw(g2);
 
             ui.draw(g2);
             // 保持背景绘制
@@ -366,7 +355,11 @@ public class GamePanel extends JPanel implements Runnable {
             g2.drawString("Row" + (player.worldY + player.solidArea.y) / tileSize, x, y);
             y += lineHeight;
 
-            g2.drawString("Draw :" + passed, x, y);
+            g2.drawString("Draw time:" + passed, x, y);
+            y += lineHeight;
+            g2.drawString("God Mode:" + keyH.godModeOn, x, y);
+
+
         }
 
     }
@@ -411,5 +404,18 @@ public class GamePanel extends JPanel implements Runnable {
         aSetter.setMonster();
     }
 
+    public void removeTempEntity() {//删除临时实体
+
+        for (int mapNum = 0; mapNum < maxMap; mapNum++) {
+            for (int i = 0; i < obj[1].length; i++) {
+                if (obj[mapNum][i] != null && obj[mapNum][i].temp == true) {
+                    obj[mapNum][i] = null;
+                }
+
+
+            }
+        }
+
+    }
 
 }
